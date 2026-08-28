@@ -58,31 +58,34 @@
   </div>
 
   <script>
+    // ⬇️ IS LINE ME APNA GOOGLE WEB APP URL PASTE KAREIN ⬇️
+    const API_URL = "https://script.google.com/macros/s/AKfycbyqzZnh-At8zwBg9XCRFvy89jTiXAyVDwkGCT2wJt_51a5tcW0k22pZ5eN3EZpjHk7XZA/exec";
+
     let currentRosterData = []; // Data hold karne ke liye
 
     function showLoader(show) {
       document.getElementById('loader').style.display = show ? 'inline-block' : 'none';
     }
 
-    // 1. Google Apps script backend function call karna
-    function generateRota() {
+    // 1. Web API se data fetch karna
+    async function generateRota() {
       const month = document.getElementById('month').value;
       const year = document.getElementById('year').value;
       showLoader(true);
       document.getElementById('saveBtn').disabled = true;
-      
-      google.script.run
-        .withSuccessHandler(function(data) {
-          currentRosterData = data;
-          renderTable(data);
-          showLoader(false);
-          document.getElementById('saveBtn').disabled = false;
-        })
-        .withFailureHandler(function(err) {
-          alert("Error: " + err.message);
-          showLoader(false);
-        })
-        .generateRotaData(month, year);
+
+      try {
+        const response = await fetch(`${API_URL}?action=generateRota&month=${month}&year=${year}`);
+        const result = await response.json();
+        
+        currentRosterData = result;
+        renderTable(result);
+        document.getElementById('saveBtn').disabled = false;
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        showLoader(false);
+      }
     }
 
     // 2. Table ko HTML me draw karna Colors ke sath
@@ -92,7 +95,7 @@
       for(let r = 0; r < data.length; r++) {
         html += '<tr>';
         for(let c = 0; c < data[r].length; c++) {
-          let cellValue = data[r][c];
+          let cellValue = data[r][c] || '';
           let cssClass = '';
           
           if(r < 2) cssClass = 'header-row'; // First 2 rows bold
@@ -111,16 +114,27 @@
       document.getElementById('tableContainer').innerHTML = html;
     }
 
-    // 3. Save button dabane par wapas backend ko data bhejna
-    function saveRota() {
+    // 3. Save button dabane par Web API ko data bhejna
+    async function saveRota() {
       const month = document.getElementById('month').value;
       showLoader(true);
-      google.script.run
-        .withSuccessHandler(function(res) {
-          alert("✅ Final Rota saved successfully in Google Sheet and History!");
-          showLoader(false);
-        })
-        .saveRotaToSheet(currentRosterData, month);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'saveRota',
+            month: month,
+            data: currentRosterData
+          })
+        });
+        
+        alert("✅ Final Rota saved successfully in Google Sheet and History!");
+      } catch (err) {
+        alert("Save Error: " + err.message);
+      } finally {
+        showLoader(false);
+      }
     }
   </script>
 </body>

@@ -51,17 +51,15 @@
       </div>
     </div>
 
-    <!-- Yahan Rota ka preview aayega -->
     <div class="table-container mt-4" id="tableContainer">
       <h5 class="text-muted text-center mt-3">Preview will appear here...</h5>
     </div>
   </div>
 
   <script>
-    // ⬇️ IS LINE ME APNA GOOGLE WEB APP URL PASTE KAREIN ⬇️
     const API_URL = "https://script.google.com/macros/s/AKfycbyqzZnh-At8zwBg9XCRFvy89jTiXAyVDwkGCT2wJt_51a5tcW0k22pZ5eN3EZpjHk7XZA/exec";
 
-    let currentRosterData = []; // Data hold karne ke liye
+    let currentRosterData = [];
 
     function showLoader(show) {
       document.getElementById('loader').style.display = show ? 'inline-block' : 'none';
@@ -75,31 +73,45 @@
       document.getElementById('saveBtn').disabled = true;
 
       try {
-        const response = await fetch(`${API_URL}?action=generateRota&month=${month}&year=${year}`);
+        const response = await fetch(`${API_URL}?action=generateRota&month=${month}&year=${year}`, {
+          method: 'GET',
+          redirect: 'follow'
+        });
+        
         const result = await response.json();
         
+        if (result.error) {
+          alert("Backend Error: " + result.error);
+          return;
+        }
+
         currentRosterData = result;
         renderTable(result);
         document.getElementById('saveBtn').disabled = false;
       } catch (err) {
-        alert("Error: " + err.message);
+        alert("Fetch Error: " + err.message);
       } finally {
         showLoader(false);
       }
     }
 
-    // 2. Table ko HTML me draw karna Colors ke sath
+    // 2. Table Render Function
     function renderTable(data) {
+      if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById('tableContainer').innerHTML = '<h5 class="text-danger text-center mt-3">No Data Received</h5>';
+        return;
+      }
+
       let html = '<table class="table table-bordered table-sm"><tbody>';
       
       for(let r = 0; r < data.length; r++) {
         html += '<tr>';
         for(let c = 0; c < data[r].length; c++) {
-          let cellValue = data[r][c] || '';
+          let cellValue = (data[r][c] !== null && data[r][c] !== undefined) ? String(data[r][c]) : '';
           let cssClass = '';
           
-          if(r < 2) cssClass = 'header-row'; // First 2 rows bold
-          else if(c > 1) { // Dates wale columns me color apply karna
+          if(r < 2) cssClass = 'header-row'; 
+          else if(c > 1) { 
             if(cellValue.startsWith('M')) cssClass = 'bg-M';
             else if(cellValue.startsWith('E')) cssClass = 'bg-E';
             else if(cellValue.startsWith('N')) cssClass = 'bg-N';
@@ -114,7 +126,7 @@
       document.getElementById('tableContainer').innerHTML = html;
     }
 
-    // 3. Save button dabane par Web API ko data bhejna
+    // 3. Web API ko data bhejna
     async function saveRota() {
       const month = document.getElementById('month').value;
       showLoader(true);
@@ -122,14 +134,21 @@
       try {
         const response = await fetch(API_URL, {
           method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // CORS bypass ke liye text/plain zaroori hai
           body: JSON.stringify({
             action: 'saveRota',
             month: month,
             data: currentRosterData
-          })
+          }),
+          redirect: 'follow'
         });
         
-        alert("✅ Final Rota saved successfully in Google Sheet and History!");
+        const result = await response.json();
+        if (result.status === 'success') {
+          alert("✅ Final Rota saved successfully in Google Sheet and History!");
+        } else {
+          alert("Error: " + (result.message || "Could not save data"));
+        }
       } catch (err) {
         alert("Save Error: " + err.message);
       } finally {

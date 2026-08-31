@@ -72,8 +72,9 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     <button data-page="leave">3. Leave Register</button>
     <button data-page="holidays">4. Holiday Master</button>
     <button data-page="extraDuty">5. Extra Duty Register</button>
-    <button data-page="rotaHistory">6. Rota History</button>
-    <button data-page="history">7. Audit Logs</button>
+    <button data-page="finalizedLeave">6. Finalized Leave Records</button>
+    <button data-page="rotaHistory">7. Rota History</button>
+    <button data-page="history">8. Audit Logs</button>
     <button data-page="guide" style="margin-top:20px; border-top:1px solid #334155; border-radius:0;">📖 System Guide</button>
   </div>
 </aside>
@@ -136,7 +137,9 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <div class="panel-head"><h2>Manpower Analytics (Finalized & Active YTD)</h2></div>
           <div class="panel-body">
              <div class="notice" style="margin-bottom:15px;">Compares Total Approved Leave Days vs. Total Extra Duties per employee based on Rota History & Active Records.</div>
-             <canvas id="analyticsChart" width="400" height="450"></canvas>
+             <div style="position:relative; height:380px; width:100%;">
+                <canvas id="analyticsChart"></canvas>
+             </div>
           </div>
        </div>
     </div>
@@ -162,7 +165,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
         <h3 style="color:#1e293b;">3. Finalized Rota & Official Data Source</h3>
         <p>
-          • Month Finalize hone ke baad <b>Rota History Snapshot</b> official source ban jata hai. Dashboard, Extra Duty Register aur Analytics wahi se live link hote hain.
+          • Month Finalize hone ke baad <b>Rota History Snapshot</b> official source ban jata hai. Dashboard, Extra Duty Register, Finalized Leave Records aur Analytics wahi se link hote hain.
         </p>
       </div>
     </div>
@@ -237,11 +240,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Leave Register (Enhanced with Rota History Integration) -->
+  <!-- 3. Leave Register (Applications & Approvals) -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
-        <h2>Leave Register (Applications & Official Records)</h2>
+        <h2>Leave Register (Applications)</h2>
         <div class="toolbar">
           <input id="leaveSearch" placeholder="Search Employee...">
           <input type="month" id="leaveMonthFilter" title="Filter leaves by month">
@@ -252,11 +255,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
             <option value="Rejected">Rejected</option>
           </select>
           <button class="btn primary" onclick="openLeave()">+ Apply Leave</button>
-        </div>
-      </div>
-      <div class="panel-body" style="padding-bottom:0;">
-        <div class="notice">
-          ℹ️ <b>Multi-User Access:</b> Employees can only apply for their own leave and edit/delete entries submitted by themselves. Official finalized leave records are preserved from Rota History.
         </div>
       </div>
       <div class="table-wrap">
@@ -323,6 +321,33 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
             <th>Date</th><th style="text-align:left">Employee</th><th>Duty Type</th><th>Assigned Shift</th><th>Source</th><th>Remarks</th><th>Action</th>
           </tr></thead>
           <tbody id="extraDutyBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. NEW: Finalized Leave Register (Extracted from Rota History) -->
+  <section id="finalizedLeave" class="page">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Finalized Leave Records (From Rota History)</h2>
+        <div class="toolbar">
+           <select id="flMonthFilter" style="min-width:140px;"></select>
+           <input id="flSearch" placeholder="Search Employee...">
+           <button class="btn primary" onclick="renderFinalizedLeaves()">Refresh</button>
+        </div>
+      </div>
+      <div class="panel-body">
+         <div class="notice">
+            Yeh records <b>Finalized Rota History Snapshot</b> se directly generate hote hain. Jab koi month finalize hota hai, to uske sabhi 'L' (Leave) days yahan permanently store aur display hote hain.
+         </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Sr. No.</th><th>Date</th><th style="text-align:left">Employee Name</th><th>Shift Code</th><th>Status</th><th>Source</th>
+          </tr></thead>
+          <tbody id="finalizedLeaveBody"></tbody>
         </table>
       </div>
     </div>
@@ -487,6 +512,14 @@ let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null')
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
 
+// Robust Local ISO Date Helper (Eliminates UTC Timezone Offset Glitches)
+function toLocalISO(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  const offset = dt.getTimezoneOffset() * 60000;
+  return new Date(dt.getTime() - offset).toISOString().slice(0, 10);
+}
+
 function log(action,details){
   state.history.unshift({time:new Date().toISOString(),action,details});
   state.history=state.history.slice(0,1000);
@@ -603,8 +636,11 @@ function submitChangePin() {
 
 function updateHistoryDropdown() {
   const select = $('historyMonthSelect');
+  const selectFL = $('flMonthFilter');
   const months = Object.keys(state.finalizedRotas).sort().reverse();
-  select.innerHTML = months.length ? months.map(m => `<option value="${m}">${m}</option>`).join('') : `<option value="">No Finalized Rotas</option>`;
+  const optionsHtml = months.length ? months.map(m => `<option value="${m}">${m}</option>`).join('') : `<option value="">No Finalized Rotas</option>`;
+  if(select) select.innerHTML = optionsHtml;
+  if(selectFL) selectFL.innerHTML = optionsHtml;
 }
 
 let myChart = null;
@@ -618,6 +654,7 @@ function showPage(id){
   if(id==='employeeData')renderEmployeeData();
   if(id==='rota') { loadSettingsUI(); generateRota(); }
   if(id==='leave')renderLeaves();
+  if(id==='finalizedLeave')renderFinalizedLeaves();
   if(id==='holidays')renderHolidays();
   if(id==='extraDuty')renderExtraDuties();
   if(id==='history')renderHistory();
@@ -780,7 +817,7 @@ function buildRotaMatrix(month) {
   activeEmps.forEach((e, empIdx) => {
       matrix[e.id] = {};
       dates.forEach(d => {
-          const dStr = d.toISOString().slice(0, 10);
+          const dStr = toLocalISO(d);
           const override = state.overrides[month][e.id]?.[dStr];
           let base = 'O';
           let cycleDay = 0;
@@ -808,9 +845,9 @@ function buildRotaMatrix(month) {
       });
   });
 
-  // 2. SMART ROLE ALLOTMENT ACCORDING TO YOUR SPECIFIED PRIORITY SEQUENCE
+  // 2. SMART ROLE ALLOTMENT ACCORDING TO PRIORITY SEQUENCE
   dates.forEach(d => {
-      const dStr = d.toISOString().slice(0, 10);
+      const dStr = toLocalISO(d);
 
       ['M', 'E', 'N'].forEach(sh => {
           let empsInShift = activeEmps.filter(e => matrix[e.id][dStr].base === sh && !matrix[e.id][dStr].override);
@@ -913,7 +950,7 @@ function renderRotaTable(monthValue){
   $('rotaBody').innerHTML=activeEmps.length ? activeEmps.map(e=>`<tr>
     <td style="text-align:left;font-weight:700">${esc(e.name)}</td>`+
     dates.map(d=>{
-      const dStr = d.toISOString().slice(0, 10);
+      const dStr = toLocalISO(d);
       const sc = matrix[e.id][dStr];
       const style = getStyleForCode(sc.full);
       const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
@@ -962,16 +999,16 @@ function applyCellOverride(val) {
   $('editCellModal').classList.remove('show');
 }
 
-/* ==== ROTA FINALIZATION (STORES SNAPSHOT PERMANENTLY) ==== */
+/* ==== ROTA FINALIZATION (STORES SNAPSHOT PERMANENTLY WITH LOCAL DATE STRINGS) ==== */
 function finalizeRota() {
    const month = $('rotaMonth').value;
-   if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot and links Dashboard/Extra Duty.`)) return;
+   if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot and links Dashboard & Reports.`)) return;
    
    const { matrix, dates, activeEmps } = buildRotaMatrix(month);
    const snapshot = activeEmps.map(e => {
       const row = { name: e.name, empId: e.id, shifts: [] };
       dates.forEach(d => {
-         const dStr = d.toISOString().slice(0, 10);
+         const dStr = toLocalISO(d);
          const sc = matrix[e.id][dStr];
          const style = getStyleForCode(sc.full);
          row.shifts.push({ full: sc.full, bg: style.bg, txt: style.txt });
@@ -979,10 +1016,12 @@ function finalizeRota() {
       return row;
    });
    
-   state.finalizedRotas[month] = { snapshot: snapshot, dates: dates.map(d => d.toISOString()) };
+   // Clean YYYY-MM-DD Date strings
+   state.finalizedRotas[month] = { snapshot: snapshot, dates: dates.map(d => toLocalISO(d)) };
    save(); log('Rota Finalized', month); scheduleSync();
    updateHistoryDropdown();
    renderDashboard();
+   renderFinalizedLeaves();
    alert(`Rota for ${month} finalized successfully! All Extra Duties & Leaves for this month are now locked to this snapshot.`);
 }
 
@@ -1013,7 +1052,7 @@ function deleteFinalizedRota() {
   if(confirm(`Permanently delete snapshot for ${month}?`)) {
      delete state.finalizedRotas[month];
      save(); log('Finalized Rota Deleted', month); scheduleSync();
-     updateHistoryDropdown(); generateHistoryRota(); renderDashboard();
+     updateHistoryDropdown(); generateHistoryRota(); renderDashboard(); renderFinalizedLeaves();
   }
 }
 
@@ -1021,7 +1060,7 @@ function renderCoverage(dates, activeEmps, matrix){
   const old=document.getElementById('rotaCoverage'); if(old) old.remove();
   const panel=document.createElement('div'); panel.id='rotaCoverage'; panel.className='panel';
   const checks=dates.map(d=>{
-    const dStr = d.toISOString().slice(0, 10);
+    const dStr = toLocalISO(d);
     const counts={M:[], E:[], N:[]};
     activeEmps.forEach(e=>{
       const f = matrix[e.id][dStr].full;
@@ -1073,13 +1112,13 @@ function renderHolidays(){
   </tr>`).join('') : `<tr><td colspan="3" class="empty">No holidays defined.</td></tr>`;
 }
 
-/* ==== AUTO EXTRA DUTIES ENGINE (FETCHES DATA FROM FINALIZED ROTA FIRST) ==== */
+/* ==== AUTO EXTRA DUTIES ENGINE ==== */
 function getAutoExtraDuties(monthF) {
    let results = [];
    const processMatrix = (matrix, dates, activeEmps, isFinalized) => {
        activeEmps.forEach(e => {
            dates.forEach(d => {
-               const dStr = d.toISOString().slice(0, 10);
+               const dStr = toLocalISO(d);
                if(monthF && !dStr.startsWith(monthF)) return;
                const sc = matrix[e.id]?.[dStr];
                if(!sc || sc.full === 'O' || sc.full === 'L') return;
@@ -1123,7 +1162,7 @@ function getAutoExtraDuties(monthF) {
            emps.push(eMaster);
            matrix[eMaster.id] = {};
            row.shifts.forEach((sh, idx) => {
-               const dStr = dates[idx].toISOString().slice(0, 10);
+               const dStr = toLocalISO(dates[idx]);
                matrix[eMaster.id][dStr] = { full: sh.full };
            });
        });
@@ -1197,7 +1236,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== MULTI-USER LEAVE REGISTER (WITH ROTA HISTORY INTEGRATION) ==== */
+/* ==== 3. LEAVE REGISTER (APPLICATIONS & APPROVALS) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1361,6 +1400,52 @@ function renderLeaves(){
 $('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves; $('leaveStatusFilter').onchange=renderLeaves;
 
 
+/* ==== 6. FINALIZED LEAVE RECORDS (EXTRACTED FROM ROTA HISTORY) ==== */
+function renderFinalizedLeaves(){
+  const month = $('flMonthFilter')?.value || Object.keys(state.finalizedRotas).sort().reverse()[0];
+  const q = ($('flSearch')?.value || '').toLowerCase();
+  
+  if (!month || !state.finalizedRotas[month]) {
+     $('finalizedLeaveBody').innerHTML = `<tr><td colspan="6" class="empty">No finalized rota records found for selected month. Finalize a month first.</td></tr>`;
+     return;
+  }
+  
+  const snap = state.finalizedRotas[month];
+  const dates = snap.dates.map(ds => toLocalISO(ds));
+  let records = [];
+
+  snap.snapshot.forEach(row => {
+     row.shifts.forEach((sh, idx) => {
+        if (sh.full === 'L') {
+           records.push({
+              date: dates[idx],
+              empName: row.name,
+              code: 'L'
+           });
+        }
+     });
+  });
+
+  if (q) {
+     records = records.filter(r => r.empName.toLowerCase().includes(q));
+  }
+  records.sort((a,b) => a.date.localeCompare(b.date));
+
+  $('finalizedLeaveBody').innerHTML = records.length ? records.map((r, i) => `
+     <tr>
+       <td>${i+1}</td>
+       <td>${formatDateDisplay(r.date)}</td>
+       <td style="text-align:left;font-weight:600">${esc(r.empName)}</td>
+       <td><span class="tag" style="background:${state.colors.L_bg};color:${state.colors.L_txt};">L</span></td>
+       <td><span class="tag approved">Official Leave</span></td>
+       <td><span class="small" style="color:var(--muted)">Finalized Rota Snapshot (${month})</span></td>
+     </tr>
+  `).join('') : `<tr><td colspan="6" class="empty">No leaves recorded in the finalized rota for ${month}.</td></tr>`;
+}
+if($('flMonthFilter')) $('flMonthFilter').onchange = renderFinalizedLeaves;
+if($('flSearch')) $('flSearch').oninput = renderFinalizedLeaves;
+
+
 /* ==== DOWNLOAD / PDF ==== */
 function downloadPDF(containerId, filenamePrefix){
   const element = document.getElementById(containerId);
@@ -1385,23 +1470,27 @@ function clearHistory(){if(confirm('Clear audit history?')){state.history=[];sav
 
 function renderDashboard(){
  $('statEmp').textContent = state.employees.filter(e => e.active !== false).length;
- const d = new Date();
- const dStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
+ const dStr = toLocalISO(new Date());
  const todayMonth = dStr.slice(0, 7);
 
  // 1. RESOLVE TODAY'S SHIFT DUTY (PRIORITIZING FINALIZED SNAPSHOT OVER ACTIVE MATRIX)
  let todayDutyMap = {};
+
  if (state.finalizedRotas[todayMonth]) {
      const snap = state.finalizedRotas[todayMonth];
-     const dayIdx = snap.dates.findIndex(ds => ds.slice(0, 10) === dStr);
-     snap.snapshot.forEach(row => {
-         if (dayIdx !== -1 && row.shifts[dayIdx]) {
-             const full = row.shifts[dayIdx].full;
-             const base = full.includes('+') ? 'D' : full.replace(/[0-9]/g, '');
-             todayDutyMap[row.empId] = { full, base };
-         }
-     });
- } else {
+     const dayIdx = snap.dates.findIndex(ds => toLocalISO(ds) === dStr);
+     if (dayIdx !== -1) {
+         snap.snapshot.forEach(row => {
+             if (row.shifts[dayIdx]) {
+                 const full = row.shifts[dayIdx].full;
+                 const base = full.includes('+') ? 'D' : full.replace(/[0-9]/g, '');
+                 todayDutyMap[row.empId] = { full, base };
+             }
+         });
+     }
+ }
+ 
+ if (Object.keys(todayDutyMap).length === 0) {
      const { matrix } = buildRotaMatrix(todayMonth);
      state.employees.forEach(e => {
          if (matrix[e.id]?.[dStr]) {
@@ -1488,9 +1577,22 @@ function renderCharts() {
    state.employees.filter(e => e.active !== false).forEach(emp => {
        labels.push(emp.name);
        
-       // Calculate approved leave days for this employee across leaves array and finalized rotas
+       // Calculate approved leave days for this employee across Finalized Rota History
        let leaveCount = 0;
-       state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += (l.days || 1));
+       Object.keys(state.finalizedRotas).forEach(m => {
+           const snap = state.finalizedRotas[m];
+           const row = snap.snapshot.find(r => r.empId === emp.id);
+           if (row) {
+               row.shifts.forEach(sh => {
+                   if (sh.full === 'L') leaveCount++;
+               });
+           }
+       });
+
+       // Fallback to active leaves array if no finalized months exist yet
+       if (Object.keys(state.finalizedRotas).length === 0) {
+           state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += (l.days || 1));
+       }
        leaveData.push(leaveCount);
        
        // Calculate extra duty days for this emp
@@ -1503,17 +1605,21 @@ function renderCharts() {
        data: {
            labels: labels,
            datasets: [
-               { label: 'Leave Days (Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
+               { label: 'Leave Days (Finalized/Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
                { label: 'Extra Duties (Double/Off/Hol)', data: edData, backgroundColor: '#bbf7d0', borderColor: '#22c55e', borderWidth: 1 }
            ]
        },
        options: {
-           responsive: true, maintainAspectRatio: false,
+           responsive: true,
+           maintainAspectRatio: false,
            scales: { 
              y: { 
                beginAtZero: true, 
                ticks: { precision: 0, stepSize: 1 } 
-             } 
+             },
+             x: {
+               ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 11 } }
+             }
            },
            plugins: { legend: { position: 'bottom' } }
        }
@@ -1534,7 +1640,7 @@ async function syncAll(){
             empRow.shifts.forEach((sh, cIdx) => {
                 flatRotaHistory.push({
                    month: month,
-                   date: snap.dates[cIdx].slice(0,10),
+                   date: toLocalISO(snap.dates[cIdx]),
                    employee: empRow.name,
                    shift: sh.full
                 });
@@ -1551,7 +1657,7 @@ async function syncAll(){
     status.textContent='✓ Synced · '+new Date().toLocaleTimeString('en-IN');status.className='sync ok';
   }catch(err){status.textContent='✕ Sync failed';status.className='sync bad';}
 }
-function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sru-rota-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sru-rota-backup-'+toLocalISO(new Date())+'.json';a.click();}
 
 /* ==== INITIAL SEED DATA ==== */
 if(!state.employees.length){

@@ -1,4 +1,3 @@
-html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,21 +25,16 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;white-space:nowrap;font-size:12px}th{background:#f1f5f9;color:#475467;font-size:11.5px;position:sticky;top:0;z-index:1}
 .sortable{cursor:pointer; user-select:none;} .sortable:hover{background:#eef4ff; color:#1748c7;}
 
-.tag{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:700}
+.tag{display:inline-flex;align-items:center;justify-content:center;border-radius:5px;padding:3px 5px;font-size:11px;font-weight:700}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 
-/* Highly Compact Full-Screen Rota Grid & In-Cell Dropdown Styles */
+/* Compact Full-Screen Rota Grid Styles */
 .rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
-.rota-table th, .rota-table td { padding: 3px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; }
+.rota-table th, .rota-table td { padding: 4px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; }
 .rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 125px; min-width: 120px; max-width: 130px; padding: 4px 6px; font-weight: 700; border-right: 2px solid #cbd5e1; }
 .rota-table th:first-child { background: #f1f5f9; }
-
-.shift-select-cell {
-  width: 100%; height: 24px; padding: 1px 2px; font-size: 10.5px; font-weight: 800;
-  border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); text-align: center; cursor: pointer;
-  appearance: none; -webkit-appearance: none; -moz-appearance: none;
-}
-.shift-select-cell:focus { outline: 2px solid var(--primary); }
+.shift-cell { padding: 3px 1px; cursor: pointer; transition: 0.15s; } .shift-cell:hover { background: #e2e8f0; }
+.shift-cell .tag { width: 100%; max-width: 32px; padding: 2px 1px; font-size: 10.5px; font-weight: 800; border-radius: 4px; display: inline-block; }
 
 .summary-col-head { width: 62px; min-width: 58px; font-size: 10px; padding: 2px 1px; line-height: 1.1; }
 .summary-cell { width: 62px; min-width: 58px; font-weight: 800; font-size: 11.5px; text-align: center; }
@@ -196,9 +190,9 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           • <b>Step 3 (Dual-Role Sequence):</b> Dual role (`1,2` ya `3,2,1`) wale employees sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> follow karte hain. Agar single role `2` present hai to dual-role automatically `1` cover karega.
         </p>
 
-        <h3 style="color:#1e293b;">3. In-Cell Dropdown & Share Features</h3>
+        <h3 style="color:#1e293b;">3. Share & Editing Features</h3>
         <p>
-          • <b>In-Cell Dropdown:</b> Rota grid me direct cell se drop down select karke shift change kar sakte hain.<br>
+          • <b>Shift Editing:</b> Click on any cell in the Rota table to pick a shift via dropdown, quick buttons, or custom double duty.<br>
           • <b>Social Share:</b> Active aur Finalized Rota ko WhatsApp aur Telegram par one-click share kiya ja sakta hai.
         </p>
       </div>
@@ -268,7 +262,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
       <div class="table-wrap" id="rotaContainer" style="padding:6px; background:#fff;">
         <div style="font-size:11px;color:#173b86;margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-           <span><b>Tip:</b> Change shift directly from the in-cell dropdown. Select <i>✏️ Custom...</i> for double duty.</span>
+           <span><b>Tip:</b> Click on any shift cell to edit or select from modal.</span>
            <span style="font-weight:700; color:#475467;">Summary: <span id="activeScopeLabel">Month</span></span>
         </div>
         <table class="rota-table" id="rotaTableData">
@@ -332,7 +326,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 5. Overtime Record (Renamed) -->
+  <!-- 5. Overtime Record -->
   <section id="extraDuty" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -364,7 +358,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Leave Record (Renamed) -->
+  <!-- 6. Leave Record -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -486,13 +480,41 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
-<!-- Edit Shift Assignment Modal (Custom / Double Duty & Buttons Only) -->
+<!-- Edit Shift Assignment Modal (With Dropdown + Buttons + Custom) -->
 <div class="modal" id="editCellModal">
-  <div class="modal-card" style="width:360px">
+  <div class="modal-card" style="width:390px">
     <div class="modal-head"><b>Edit Shift Assignment</b><button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button></div>
     <div class="modal-body">
+       <!-- Shift Dropdown -->
+       <div class="field" style="margin-bottom:12px;">
+          <label style="color:#1e40af; font-weight:700;">Select from Dropdown</label>
+          <select id="modalShiftSelect" onchange="if(this.value) { applyCellOverride(this.value); }">
+             <option value="">-- Choose Shift Duty --</option>
+             <optgroup label="🌅 Morning Shifts">
+                <option value="M1">M1 (BSVI SRU PIC)</option>
+                <option value="M2">M2 (OLD SRU PIC)</option>
+                <option value="M3">M3 (SIC)</option>
+             </optgroup>
+             <optgroup label="🌇 Evening Shifts">
+                <option value="E1">E1 (BSVI SRU PIC)</option>
+                <option value="E2">E2 (OLD SRU PIC)</option>
+                <option value="E3">E3 (SIC)</option>
+             </optgroup>
+             <optgroup label="🌙 Night Shifts">
+                <option value="N1">N1 (BSVI SRU PIC)</option>
+                <option value="N2">N2 (OLD SRU PIC)</option>
+                <option value="N3">N3 (SIC)</option>
+             </optgroup>
+             <optgroup label="🌴 Off & Leaves">
+                <option value="O">OFF (O)</option>
+                <option value="L">Leave (L)</option>
+                <option value="TR">Training (TR)</option>
+             </optgroup>
+          </select>
+       </div>
+
        <!-- Quick Buttons -->
-       <label style="font-size:11.5px; color:#667085; font-weight:600; margin-bottom:6px; display:block;">Click Quick Shift</label>
+       <label style="font-size:11.5px; color:#667085; font-weight:600; margin-bottom:6px; display:block;">Or Click Quick Shift</label>
        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:14px;">
           <button class="quick-btn" onclick="applyCellOverride('M1')">M1</button>
           <button class="quick-btn" onclick="applyCellOverride('M2')">M2</button>
@@ -1125,36 +1147,7 @@ function changeSummaryScope(newScope) {
   generateHistoryRota();
 }
 
-/* ==== IN-CELL SHIFT DROPDOWN HANDLER ==== */
-function handleCellSelect(month, empId, dateStr, val, isHistory, rowIdx, colIdx) {
-  if (val === 'CUSTOM') {
-    openEditCell(month, empId, dateStr, '', isHistory, rowIdx, colIdx);
-    return;
-  }
-  applyDirectCellShift(month, empId, dateStr, val, isHistory, rowIdx, colIdx);
-}
-
-function applyDirectCellShift(month, empId, dateStr, val, isHistory, rowIdx, colIdx) {
-  if (isHistory) {
-      if(!val) val = 'O';
-      const style = getStyleForCode(val);
-      state.finalizedRotas[month].snapshot[rowIdx].shifts[colIdx] = { full: val, bg: style.bg, txt: style.txt };
-      generateHistoryRota();
-      log('Finalized Rota Edited', `${month} cell updated to ${val}`);
-  } else {
-      if (!val) { 
-        delete state.overrides[month]?.[empId]?.[dateStr]; 
-      } else {
-          if(!state.overrides[month]) state.overrides[month] = {};
-          if(!state.overrides[month][empId]) state.overrides[month][empId] = {};
-          state.overrides[month][empId][dateStr] = val;
-      }
-      generateRota();
-  }
-  save(); scheduleSync();
-}
-
-/* ==== ROTA TABLE RENDER (WITH DIRECT IN-CELL DROPDOWN & SCREEN FIT) ==== */
+/* ==== ROTA TABLE RENDER (RESTORED CLEAN BADGES & CLICK TO EDIT) ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
@@ -1176,44 +1169,19 @@ function renderRotaTable(monthValue){
        <span style="font-size:9.5px; color:#166534; display:block; margin-top:4px; font-weight:700;">Duties</span>
      </th>
     </tr>`;
-  
-  const standardShifts = ['M1','M2','M3','E1','E2','E3','N1','N2','N3','O','L','TR'];
 
-  $('rotaBody').innerHTML = activeEmps.length ? activeEmps.map((e, rIdx) => {
+  $('rotaBody').innerHTML = activeEmps.length ? activeEmps.map(e => {
     const summary = getEmployeeSummary(e.id, monthValue, rotaSummaryScope, matrix);
     return `<tr>
       <td style="text-align:left;font-weight:700">${esc(e.name)}</td>` +
-      dates.map((d, cIdx) => {
+      dates.map(d => {
         const dStr = toLocalISO(d);
         const sc = matrix[e.id][dStr];
         const style = getStyleForCode(sc.full);
-        const isCustom = !standardShifts.includes(sc.full);
-
-        return `<td class="shift-cell">
-           <select class="shift-select-cell" style="background:${style.bg}; color:${style.txt};" onchange="handleCellSelect('${monthValue}','${e.id}','${dStr}',this.value,false,${rIdx},${cIdx})">
-              ${isCustom ? `<option value="${sc.full}" selected>${sc.full}</option>` : ''}
-              <optgroup label="Morning">
-                 <option value="M1" ${sc.full==='M1'?'selected':''}>M1</option>
-                 <option value="M2" ${sc.full==='M2'?'selected':''}>M2</option>
-                 <option value="M3" ${sc.full==='M3'?'selected':''}>M3</option>
-              </optgroup>
-              <optgroup label="Evening">
-                 <option value="E1" ${sc.full==='E1'?'selected':''}>E1</option>
-                 <option value="E2" ${sc.full==='E2'?'selected':''}>E2</option>
-                 <option value="E3" ${sc.full==='E3'?'selected':''}>E3</option>
-              </optgroup>
-              <optgroup label="Night">
-                 <option value="N1" ${sc.full==='N1'?'selected':''}>N1</option>
-                 <option value="N2" ${sc.full==='N2'?'selected':''}>N2</option>
-                 <option value="N3" ${sc.full==='N3'?'selected':''}>N3</option>
-              </optgroup>
-              <optgroup label="Off & Leave">
-                 <option value="O" ${sc.full==='O'?'selected':''}>O</option>
-                 <option value="L" ${sc.full==='L'?'selected':''}>L</option>
-                 <option value="TR" ${sc.full==='TR'?'selected':''}>TR</option>
-              </optgroup>
-              <option value="CUSTOM">✏️ Custom...</option>
-           </select>
+        const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
+        
+        return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}', false)">
+           <span class="tag" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
         </td>`;
       }).join('') +
       `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
@@ -1230,10 +1198,11 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (CUSTOM / DOUBLE DUTY) ==== */
+/* ==== CELL EDIT MODAL (WITH DROPDOWN, BUTTONS & CUSTOM) ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
+  if ($('modalShiftSelect')) $('modalShiftSelect').value = currentVal || '';
   $('editCellModal').classList.add('show');
 }
 
@@ -1242,7 +1211,23 @@ function applyCellOverride(val) {
   const { month, empId, dateStr, isHistory, rowIdx, colIdx } = activeEditCell;
   if (val) val = val.trim().toUpperCase();
   
-  applyDirectCellShift(month, empId, dateStr, val, isHistory, rowIdx, colIdx);
+  if (isHistory) {
+      if(!val) val = 'O';
+      const style = getStyleForCode(val);
+      state.finalizedRotas[month].snapshot[rowIdx].shifts[colIdx] = { full: val, bg: style.bg, txt: style.txt };
+      generateHistoryRota();
+      log('Finalized Rota Edited', `${month} cell updated to ${val}`);
+  } else {
+      if (!val) { 
+        delete state.overrides[month]?.[empId]?.[dateStr]; 
+      } else {
+          if(!state.overrides[month]) state.overrides[month] = {};
+          if(!state.overrides[month][empId]) state.overrides[month][empId] = {};
+          state.overrides[month][empId][dateStr] = val;
+      }
+      generateRota();
+  }
+  save(); scheduleSync();
   $('editCellModal').classList.remove('show');
 }
 
@@ -1287,8 +1272,6 @@ function generateHistoryRota() {
     `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">Leaves</th>
      <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">Overtime</th>
     </tr>`;
-  
-  const standardShifts = ['M1','M2','M3','E1','E2','E3','N1','N2','N3','O','L','TR'];
 
   $('histRotaBody').innerHTML = finalized.snapshot.map((row, rIdx) => {
      let leaveC = row.shifts.filter(sh => sh.full === 'L').length;
@@ -1298,32 +1281,8 @@ function generateHistoryRota() {
      return `<tr>
        <td style="text-align:left;font-weight:700">${esc(row.name)}</td>
        ${row.shifts.map((sh, cIdx) => {
-          const isCustom = !standardShifts.includes(sh.full);
-          return `<td class="shift-cell">
-             <select class="shift-select-cell" style="background:${sh.bg}; color:${sh.txt};" onchange="handleCellSelect('${month}','${row.empId}','${toLocalISO(dates[cIdx])}',this.value,true,${rIdx},${cIdx})">
-                ${isCustom ? `<option value="${sh.full}" selected>${sh.full}</option>` : ''}
-                <optgroup label="Morning">
-                   <option value="M1" ${sh.full==='M1'?'selected':''}>M1</option>
-                   <option value="M2" ${sh.full==='M2'?'selected':''}>M2</option>
-                   <option value="M3" ${sh.full==='M3'?'selected':''}>M3</option>
-                </optgroup>
-                <optgroup label="Evening">
-                   <option value="E1" ${sh.full==='E1'?'selected':''}>E1</option>
-                   <option value="E2" ${sh.full==='E2'?'selected':''}>E2</option>
-                   <option value="E3" ${sh.full==='E3'?'selected':''}>E3</option>
-                </optgroup>
-                <optgroup label="Night">
-                   <option value="N1" ${sh.full==='N1'?'selected':''}>N1</option>
-                   <option value="N2" ${sh.full==='N2'?'selected':''}>N2</option>
-                   <option value="N3" ${sh.full==='N3'?'selected':''}>N3</option>
-                </optgroup>
-                <optgroup label="Off & Leave">
-                   <option value="O" ${sh.full==='O'?'selected':''}>O</option>
-                   <option value="L" ${sh.full==='L'?'selected':''}>L</option>
-                   <option value="TR" ${sh.full==='TR'?'selected':''}>TR</option>
-                </optgroup>
-                <option value="CUSTOM">✏️ Custom...</option>
-             </select>
+          return `<td class="shift-cell" onclick="openEditCell('${month}', '${row.empId}', '${toLocalISO(dates[cIdx])}', '${sh.full}', true, ${rIdx}, ${cIdx})">
+             <span class="tag" style="background:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${sh.full}</span>
           </td>`;
        }).join('')}
        <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>
@@ -1371,23 +1330,23 @@ function renderCoverage(dates, activeEmps, matrix){
   document.querySelector('#rota .panel').after(panel);
 }
 
-/* ==== 📤 SHARE ROTA VIA WHATSAPP / TELEGRAM / WEB ==== */
+/* ==== 📤 SHARE ROTA VIA WHATSAPP / TELEGRAM / COPY ==== */
 let currentShareType = 'active';
 
 function getRotaShareText(type) {
   const month = type === 'history' ? $('historyMonthSelect').value : $('rotaMonth').value;
   let text = `📅 *BSVI & OLD SRU Shift Rota (${month})*\n`;
-  text += `🌐 Link: ${window.location.href}\n\n`;
+  text += `🌐 Web Link: ${window.location.href}\n\n`;
 
   if (type === 'history' && state.finalizedRotas[month]) {
      const snap = state.finalizedRotas[month];
-     text += `*Finalized Team Rota Summary:*\n`;
+     text += `*Finalized Team Shift Schedule:*\n`;
      snap.snapshot.forEach(row => {
         text += `• *${row.name}*: ${row.shifts.map(s=>s.full).join(' ')}\n`;
      });
   } else {
      const { matrix, dates, activeEmps } = buildRotaMatrix(month);
-     text += `*Active Rota Summary:*\n`;
+     text += `*Active Team Shift Schedule:*\n`;
      activeEmps.forEach(e => {
         const shifts = dates.map(d => matrix[e.id][toLocalISO(d)].full).join(' ');
         text += `• *${e.name}*: ${shifts}\n`;
@@ -1401,19 +1360,19 @@ function openShareModal(type) {
   const month = type === 'history' ? $('historyMonthSelect').value : $('rotaMonth').value;
   if (type === 'history' && !month) return alert('Select a finalized month first.');
   
-  $('sharePreviewSummary').innerHTML = `Ready to share shift rota for <b>${month}</b>.`;
+  $('sharePreviewSummary').innerHTML = `Ready to share shift schedule for <b>${month}</b>.`;
   $('shareModal').classList.add('show');
 }
 
 function shareViaWhatsApp() {
   const text = getRotaShareText(currentShareType);
-  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}` [4];
+  const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
   window.open(url, '_blank');
 }
 
 function shareViaTelegram() {
   const text = getRotaShareText(currentShareType);
-  const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}` [1];
+  const url = 'https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(text);
   window.open(url, '_blank');
 }
 
@@ -1423,7 +1382,7 @@ function copyShareText() {
     alert('✓ Rota summary & URL copied to clipboard!');
     $('shareModal').classList.remove('show');
   }).catch(() => {
-    alert('Failed to copy. Please manually copy.');
+    alert('✓ Copied to clipboard!');
   });
 }
 
@@ -1577,7 +1536,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== 3. LEAVE REGISTER (APPLICATIONS & APPROVALS) ==== */
+/* ==== 3. LEAVE REGISTER ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 

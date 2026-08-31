@@ -135,7 +135,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
        <div class="panel" style="margin-bottom:0;">
           <div class="panel-head"><h2>Manpower Analytics (Finalized & Active YTD)</h2></div>
           <div class="panel-body">
-             <div class="notice" style="margin-bottom:15px;">Compares Total Approved Leave Days vs. Total Extra Duties (Auto + Manual) per employee.</div>
+             <div class="notice" style="margin-bottom:15px;">Compares Total Approved Leave Days vs. Total Extra Duties per employee based on Rota History & Active Records.</div>
              <canvas id="analyticsChart" width="400" height="450"></canvas>
           </div>
        </div>
@@ -145,37 +145,24 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
-      <div class="panel-head"><h2>📖 System Guide & Smart Rota Business Rules</h2></div>
+      <div class="panel-head"><h2>📖 System Guide & Smart Rota Rules</h2></div>
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
-        
         <h3 style="color:#1e293b; margin-top:0;">1. Shift Rotation & Single Weekly Off Rule</h3>
         <p>
-          • <b>Standard 7-Day Cycle:</b> System follows the continuous industrial pattern <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b>.<br>
-          • <b>Single Weekly Off Guarantee:</b> Jab Admin kisi employee ka <b>OFF DAY</b> (e.g. <i>Tuesday</i>) select karta hai, to system ka 7-din ka cycle usi day se lock ho jata hai. Isse employee ko hafte me <b>sirf aur sirf 1 OFF</b> milta hai aur multiple off ya gaps ka issue khatam ho jata hai.
+          • <b>Continuous Pattern:</b> Follows <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b>.<br>
+          • <b>Single Weekly Off:</b> Employee ke chosen <b>OFF DAY</b> se cycle sync hota hai jisse hafte me <b>sirf 1 OFF</b> milta hai.
         </p>
 
-        <h3 style="color:#1e293b;">2. Smart Role Allotment Priority Sequence</h3>
+        <h3 style="color:#1e293b;">2. Smart Role Allotment Priority</h3>
         <p>
-          Har shift me minimum 3 critical positions (Role 1, Role 2, Role 3) hoti hain:
-        </p>
-        <ul style="padding-left:20px; margin-top:5px;">
-          <li><b>Step 1 (SIC Priority):</b> Sabse pehle <b>Role 3 (SIC: M3, E3, N3)</b> allot hota hai dedicated SIC staff ko.</li>
-          <li><b>Step 2 (Single-Role PIC Priority):</b> Agar shift me koi single-role PIC (jaise sirf <b>Role 2</b>) employee present hai, to use uska designated role allot hota hai.</li>
-          <li><b>Step 3 (Dual/Multi-Role Cycle Sequence):</b> Dual role (`1,2` ya `3,2,1`) wale employees naturally <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2 ➔ O`</b> sequence follow karte hain (1st shift day par `1` aur 2nd shift day par `2`).<br>
-          <i>Special Condition:</i> Agar shift me single role `2` available hai, to dual-role employee automatically <b>`1`</b> duty sambhalta hai taaki plant ke teeno roles (1, 2, 3) 100% covered rahein!</li>
-          <li><b>Step 4 (Excess Manpower):</b> Extra manpower ko bina kisi conflict ke unke eligible role ke according duty milti hai.</li>
-        </ul>
-
-        <h3 style="color:#1e293b;">3. Finalized Rota & Official Data Storage</h3>
-        <p>
-          • <b>Rota Finalization:</b> Month finalize hote hi snapshot permanent freeze ho jata hai.<br>
-          • <b>Extra Duty Register Data Source:</b> Extra Duty Register and Manpower reports finalized months ke case me direct <b>Finalized Rota Snapshot</b> se auto-detect hoti hain (Double shift `+`, Holiday duty, Off-day duty).
+          • <b>Step 1 (SIC Priority):</b> Sabse pehle Role 3 (`M3, E3, N3`) allot hota hai.<br>
+          • <b>Step 2 (Single-Role PIC):</b> Single-role PIC (jaise role `2`) ko pehle priority milti hai.<br>
+          • <b>Step 3 (Dual-Role Sequence):</b> Dual role (`1,2` ya `3,2,1`) wale employees sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> follow karte hain. Agar single role `2` present hai to dual-role automatically `1` cover karega.
         </p>
 
-        <h3 style="color:#1e293b;">4. Multi-User Access & PIN Security</h3>
+        <h3 style="color:#1e293b;">3. Finalized Rota & Official Data Source</h3>
         <p>
-          • <b>Admin (Default PIN: 1234):</b> Employee Master edit kar sakta hai, leaves approve/reject kar sakta hai aur kisi ka bhi PIN reset kar sakta hai.<br>
-          • <b>Employees (Default PIN: 0000):</b> Sirf apni leave apply kar sakte hain aur apni hi entry ko edit/delete kar sakte hain. Dusre employees ka data read-only rehta hai.
+          • Month Finalize hone ke baad <b>Rota History Snapshot</b> official source ban jata hai. Dashboard, Extra Duty Register aur Analytics wahi se live link hote hain.
         </p>
       </div>
     </div>
@@ -194,7 +181,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice" id="empDataNotice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Dual roles: 1,2 or 3,2,1. Modifying Roles or OFF DAY immediately recalculates the Active Rota.
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Modifying Roles or OFF DAY immediately recalculates the Active Rota.
         </div>
       </div>
       <div class="table-wrap">
@@ -250,11 +237,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Leave Register -->
+  <!-- Leave Register (Enhanced with Rota History Integration) -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
-        <h2>Leave Register</h2>
+        <h2>Leave Register (Applications & Official Records)</h2>
         <div class="toolbar">
           <input id="leaveSearch" placeholder="Search Employee...">
           <input type="month" id="leaveMonthFilter" title="Filter leaves by month">
@@ -265,6 +252,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
             <option value="Rejected">Rejected</option>
           </select>
           <button class="btn primary" onclick="openLeave()">+ Apply Leave</button>
+        </div>
+      </div>
+      <div class="panel-body" style="padding-bottom:0;">
+        <div class="notice">
+          ℹ️ <b>Multi-User Access:</b> Employees can only apply for their own leave and edit/delete entries submitted by themselves. Official finalized leave records are preserved from Rota History.
         </div>
       </div>
       <div class="table-wrap">
@@ -322,7 +314,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
          <div class="notice">
-            The system automatically extracts Double Duties ('+'), Off-Day Duties, and Holiday Duties from the finalized and active rotas.
+            Auto-detected Double Duties ('+'), Off-Day Duties, and Holiday Duties are pulled directly from Finalized Rota History & Active Rotas.
          </div>
       </div>
       <div class="table-wrap">
@@ -539,6 +531,7 @@ function performLogin() {
   updateUserUI();
   renderEmployeeData();
   renderLeaves();
+  renderDashboard();
 }
 
 function logoutUser() {
@@ -547,6 +540,7 @@ function logoutUser() {
   updateUserUI();
   renderEmployeeData();
   renderLeaves();
+  renderDashboard();
 }
 
 function updateUserUI() {
@@ -638,6 +632,7 @@ let currentY = new Date().getFullYear();
 let currentM = ('0' + (new Date().getMonth() + 1)).slice(-2);
 $('rotaMonth').value = `${currentY}-${currentM}`;
 $('edMonthFilter').value = `${currentY}-${currentM}`;
+$('leaveMonthFilter').value = `${currentY}-${currentM}`;
 
 function normalizeRoles(v){
   const a=String(v||'').split(',').map(x=>x.trim()).filter(Boolean);
@@ -967,10 +962,10 @@ function applyCellOverride(val) {
   $('editCellModal').classList.remove('show');
 }
 
-/* ==== ROTA FINALIZATION ==== */
+/* ==== ROTA FINALIZATION (STORES SNAPSHOT PERMANENTLY) ==== */
 function finalizeRota() {
    const month = $('rotaMonth').value;
-   if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot.`)) return;
+   if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot and links Dashboard/Extra Duty.`)) return;
    
    const { matrix, dates, activeEmps } = buildRotaMatrix(month);
    const snapshot = activeEmps.map(e => {
@@ -987,6 +982,7 @@ function finalizeRota() {
    state.finalizedRotas[month] = { snapshot: snapshot, dates: dates.map(d => d.toISOString()) };
    save(); log('Rota Finalized', month); scheduleSync();
    updateHistoryDropdown();
+   renderDashboard();
    alert(`Rota for ${month} finalized successfully! All Extra Duties & Leaves for this month are now locked to this snapshot.`);
 }
 
@@ -1017,7 +1013,7 @@ function deleteFinalizedRota() {
   if(confirm(`Permanently delete snapshot for ${month}?`)) {
      delete state.finalizedRotas[month];
      save(); log('Finalized Rota Deleted', month); scheduleSync();
-     updateHistoryDropdown(); generateHistoryRota();
+     updateHistoryDropdown(); generateHistoryRota(); renderDashboard();
   }
 }
 
@@ -1077,7 +1073,7 @@ function renderHolidays(){
   </tr>`).join('') : `<tr><td colspan="3" class="empty">No holidays defined.</td></tr>`;
 }
 
-/* ==== AUTO EXTRA DUTIES ENGINE (FETCHED PRIMARY FROM FINALIZED ROTA) ==== */
+/* ==== AUTO EXTRA DUTIES ENGINE (FETCHES DATA FROM FINALIZED ROTA FIRST) ==== */
 function getAutoExtraDuties(monthF) {
    let results = [];
    const processMatrix = (matrix, dates, activeEmps, isFinalized) => {
@@ -1201,7 +1197,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== MULTI-USER LEAVE REGISTER ENGINE ==== */
+/* ==== MULTI-USER LEAVE REGISTER (WITH ROTA HISTORY INTEGRATION) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1383,7 +1379,7 @@ function downloadCSV(type) {
 }
 
 
-/* ==== DASHBOARD & ANALYTICS (TODAY'S ALL SHIFTS DEPLOYMENT) ==== */
+/* ==== DASHBOARD & ANALYTICS (REAL-TIME LINKED TO ROTA HISTORY & ACTIVE MATRIX) ==== */
 function renderHistory(){$('historyBody').innerHTML=state.history.map(h=>`<tr><td style="white-space:nowrap">${new Date(h.time).toLocaleString('en-IN')}</td><td style="text-align:left"><b>${esc(h.action)}</b></td><td style="text-align:left">${esc(h.details)}</td></tr>`).join('')||`<tr><td colspan="3" class="empty">No history yet.</td></tr>`}
 function clearHistory(){if(confirm('Clear audit history?')){state.history=[];save();renderHistory();scheduleSync();}}
 
@@ -1391,30 +1387,52 @@ function renderDashboard(){
  $('statEmp').textContent = state.employees.filter(e => e.active !== false).length;
  const d = new Date();
  const dStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
- 
- const counts = { M: 0, E: 0, N: 0, O: 0, L: 0 };
+ const todayMonth = dStr.slice(0, 7);
+
+ // 1. RESOLVE TODAY'S SHIFT DUTY (PRIORITIZING FINALIZED SNAPSHOT OVER ACTIVE MATRIX)
+ let todayDutyMap = {};
+ if (state.finalizedRotas[todayMonth]) {
+     const snap = state.finalizedRotas[todayMonth];
+     const dayIdx = snap.dates.findIndex(ds => ds.slice(0, 10) === dStr);
+     snap.snapshot.forEach(row => {
+         if (dayIdx !== -1 && row.shifts[dayIdx]) {
+             const full = row.shifts[dayIdx].full;
+             const base = full.includes('+') ? 'D' : full.replace(/[0-9]/g, '');
+             todayDutyMap[row.empId] = { full, base };
+         }
+     });
+ } else {
+     const { matrix } = buildRotaMatrix(todayMonth);
+     state.employees.forEach(e => {
+         if (matrix[e.id]?.[dStr]) {
+             todayDutyMap[e.id] = matrix[e.id][dStr];
+         }
+     });
+ }
+
+ const counts = { M: 0, E: 0, N: 0, O: 0, L: 0, D: 0 };
  const shiftGroups = { M: [], E: [], N: [] };
+ const leavesToday = [];
 
  state.employees.filter(e => e.active !== false).forEach(e => {
-   if (activeMatrix[e.id] && activeMatrix[e.id][dStr]) {
-       const sc = activeMatrix[e.id][dStr];
-       const base = sc.base;
+   const duty = todayDutyMap[e.id];
+   if (duty) {
+       const base = duty.base;
        if (counts[base] !== undefined) counts[base]++;
        if (['M', 'E', 'N'].includes(base)) {
-           shiftGroups[base].push({ emp: e, full: sc.full });
+           shiftGroups[base].push({ emp: e, full: duty.full });
+       } else if (base === 'L') {
+           leavesToday.push(e.name);
        }
    }
  });
  
  $('statShift').textContent = `M (${counts.M}) · E (${counts.E}) · N (${counts.N})`;
- $('statShiftSub').textContent = `Off Today: ${counts.O} | Leaves: ${counts.L}`;
+ $('statShiftSub').textContent = `Off Today: ${counts.O} | On Duty: ${counts.M + counts.E + counts.N}`;
+ $('statLeave').textContent = leavesToday.length;
+ $('todayLeavesList').innerHTML = leavesToday.length ? leavesToday.map(name => `<div class="dash-item"><b>${name}</b><span class="tag approved">On Leave</span></div>`).join('') : '<div class="small">No employees on leave today.</div>';
  
- // On Leave Today
- const leavesTodayList = state.leaves.filter(l => l.status === 'Approved' && l.from <= dStr && dStr <= l.to).map(l => state.employees.find(e => e.id === l.empId)?.name).filter(Boolean);
- $('statLeave').textContent = leavesTodayList.length;
- $('todayLeavesList').innerHTML = leavesTodayList.length ? leavesTodayList.map(name => `<div class="dash-item"><b>${name}</b><span class="tag approved">On Leave</span></div>`).join('') : '<div class="small">No employees on leave today.</div>';
- 
- // Extra Duty Today
+ // Extra Duty Today List
  const allED = [...state.extraDuties, ...getAutoExtraDuties()];
  const edTodayList = allED.filter(ed => ed.date === dStr);
  $('statExtra').textContent = edTodayList.length;
@@ -1469,9 +1487,13 @@ function renderCharts() {
    
    state.employees.filter(e => e.active !== false).forEach(emp => {
        labels.push(emp.name);
+       
+       // Calculate approved leave days for this employee across leaves array and finalized rotas
        let leaveCount = 0;
-       state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += l.days);
+       state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += (l.days || 1));
        leaveData.push(leaveCount);
+       
+       // Calculate extra duty days for this emp
        let edCount = allED.filter(ed => ed.empId === emp.id).length;
        edData.push(edCount);
    });
@@ -1487,7 +1509,12 @@ function renderCharts() {
        },
        options: {
            responsive: true, maintainAspectRatio: false,
-           scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+           scales: { 
+             y: { 
+               beginAtZero: true, 
+               ticks: { precision: 0, stepSize: 1 } 
+             } 
+           },
            plugins: { legend: { position: 'bottom' } }
        }
    });

@@ -29,7 +29,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 
 .rota-table th,.rota-table td{text-align:center}.rota-table th:first-child,.rota-table td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:2;border-right:1px solid var(--line)}.rota-table th:first-child{background:#f8fafc}.shift-cell{min-width:60px; cursor:pointer; transition:0.2s;}.shift-cell:hover{background:#f1f5f9;}
-.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.legend span{display:flex;align-items:center;gap:5px}
 .form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field label{display:block;font-size:12px;color:#667085;margin-bottom:5px;font-weight:600}.field input,.field select{width:100%}
 .notice{background:#eef4ff;border:1px solid #c7d7fe;color:#173b86;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
 .empty{padding:30px;text-align:center;color:var(--muted)}
@@ -47,7 +46,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 .user-badge {
   display:flex; align-items:center; gap:8px; background:#e0e7ff; color:#3730a3;
-  padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid #c7d2fe;
+  padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid #c7d2fe;
 }
 
 @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
@@ -79,6 +78,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <!-- User Login / Session Badge -->
       <div class="user-badge">
         <span id="loggedInUserName">👤 Guest (View Only)</span>
+        <button class="btn" style="padding:2px 8px; font-size:11px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
         <button class="btn" style="padding:2px 8px; font-size:11px;" id="loginBtn" onclick="openLoginModal()">Login</button>
       </div>
       <div id="syncStatus" class="sync" style="align-self:center;margin-right:10px;"></div>
@@ -130,17 +130,18 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
-      <div class="panel-head"><h2>📖 System Guide & User Roles</h2></div>
+      <div class="panel-head"><h2>📖 System Guide & User Authentication</h2></div>
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
-        <h3 style="color:#1e293b; margin-top:0;">🔐 Multi-User Permissions</h3>
-        <p>• <b>Admin (PIN: 1234):</b> Can manage all records, approve/reject leaves, edit all rotas, and modify master settings.<br>
-           • <b>Employees (Default PIN: 0000):</b> Can login to their individual profile. They can apply for leave in their own name and can <b>only edit or delete their own leave entries</b>.</p>
+        <h3 style="color:#1e293b; margin-top:0;">🔐 Multi-User Authentication & PIN Recovery</h3>
+        <p>• <b>Admin (Default PIN: 1234):</b> Full access to edit all rotas, approve/reject leaves, add employees, and reset any employee's PIN.<br>
+           • <b>Employees (Default PIN: 0000):</b> Can login to their individual profile. They can apply for leave in their own name and can <b>only edit or delete their own leave entries</b>.<br>
+           • <b>Forgot PIN?:</b> Admin can reset employee PINs anytime from <b>1. Employee Data</b> or in the Google Sheet. If Admin PIN is forgotten, it is stored in the <b>Settings</b> sheet in Google Sheets.</p>
         
         <h3 style="color:#1e293b;">1. Smart Auto-Generation (Greedy Assigner)</h3>
-        <p>The system uses the pattern (e.g., <b>EEMMNNO</b>) and dynamically balances missing roles so that <b>M1, M2, M3</b> are all covered first.</p>
+        <p>Uses the pattern (e.g., <b>EEMMNNO</b>) and dynamically balances multi-role employees to ensure roles <b>M1, M2, M3</b> are all covered.</p>
         
         <h3 style="color:#1e293b;">2. Automated Extra Duties & Overtime</h3>
-        <p>Double shifts (`M1+E2`) or duties on weekly off/holidays are <b>automatically detected</b> and displayed in Section 5.</p>
+        <p>Double shifts (`M1+E2`) or duties on weekly off/holidays are <b>automatically detected</b> in Section 5.</p>
       </div>
     </div>
   </section>
@@ -158,7 +159,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Default PIN for employees is <b>0000</b>.
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Admin can view and change any employee's PIN directly from the table below.
         </div>
       </div>
       <div class="table-wrap">
@@ -374,6 +375,34 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
+<!-- Change PIN Modal -->
+<div class="modal" id="changePinModal">
+  <div class="modal-card" style="width:360px;">
+    <div class="modal-head">
+      <b>Change PIN / Password</b>
+      <button class="btn" onclick="$('changePinModal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:12px;">
+        <label>Current (Old) PIN</label>
+        <input type="password" id="oldPin" placeholder="Enter current PIN">
+      </div>
+      <div class="field" style="margin-bottom:12px;">
+        <label>New PIN / Password</label>
+        <input type="password" id="newPin" maxlength="8" placeholder="Enter new PIN">
+      </div>
+      <div class="field">
+        <label>Confirm New PIN</label>
+        <input type="password" id="confirmPin" maxlength="8" placeholder="Re-enter new PIN">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="$('changePinModal').classList.remove('show')">Cancel</button>
+      <button class="btn primary" onclick="submitChangePin()">Save PIN</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Cell Modal -->
 <div class="modal" id="editCellModal">
   <div class="modal-card" style="width:380px">
@@ -422,7 +451,7 @@ const defaultColors = {
 
 const defaultState={
   employees:[], leaves:[], holidays:[], extraDuties:[], history:[], 
-  pattern:'EEMMNNO', finalizedRotas:{}, colors: defaultColors, overrides:{}
+  adminPin:'1234', pattern:'EEMMNNO', finalizedRotas:{}, colors: defaultColors, overrides:{}
 };
 
 let state=JSON.parse(localStorage.getItem(KEY)||'null')||defaultState;
@@ -430,6 +459,7 @@ if(!state.finalizedRotas) state.finalizedRotas = {};
 if(!state.overrides) state.overrides = {};
 if(!state.colors) state.colors = defaultColors;
 if(!state.pattern) state.pattern = 'EEMMNNO';
+if(!state.adminPin) state.adminPin = '1234';
 if(!state.holidays) state.holidays = [];
 if(!state.extraDuties) state.extraDuties = [];
 
@@ -447,7 +477,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function formatDateDisplay(d){ if(!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-'); }
 function closeModal(){$('modal').classList.remove('show');}
 
-/* ==== USER AUTHENTICATION & SESSIONS ==== */
+/* ==== USER AUTHENTICATION & CHANGE PIN ==== */
 function openLoginModal() {
   const selectGroup = $('loginEmpOptions');
   selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
@@ -458,21 +488,22 @@ function openLoginModal() {
 function performLogin() {
   const selectedVal = $('loginUserSelect').value;
   const pin = $('loginPin').value.trim();
+  const currentAdminPin = state.adminPin || '1234';
 
   if (selectedVal === 'ADMIN') {
-    if (pin === '1234') {
+    if (pin === currentAdminPin) {
       currentUser = { type: 'ADMIN', name: 'Admin', id: 'ADMIN' };
     } else {
-      return alert('Invalid Admin PIN! (Default is 1234)');
+      return alert('Invalid Admin PIN!');
     }
   } else {
     const emp = state.employees.find(e => e.id === selectedVal);
     if (!emp) return alert('Employee not found!');
     const validPin = emp.pin || '0000';
-    if (pin === validPin || pin === '1234') {
+    if (pin === validPin || pin === currentAdminPin) {
       currentUser = { type: 'EMP', name: emp.name, id: emp.id, code: emp.code };
     } else {
-      return alert(`Invalid PIN for ${emp.name}! (Default is 0000)`);
+      return alert(`Invalid PIN for ${emp.name}!`);
     }
   }
 
@@ -490,15 +521,72 @@ function logoutUser() {
 }
 
 function updateUserUI() {
+  const changeBtn = $('changePinBtn');
   if (currentUser) {
     $('loggedInUserName').textContent = currentUser.type === 'ADMIN' ? '👑 Admin' : `👤 ${currentUser.name}`;
     $('loginBtn').textContent = 'Logout';
     $('loginBtn').onclick = logoutUser;
+    if (changeBtn) changeBtn.style.display = 'inline-block';
   } else {
     $('loggedInUserName').textContent = '👤 Guest (View Only)';
     $('loginBtn').textContent = 'Login';
     $('loginBtn').onclick = openLoginModal;
+    if (changeBtn) changeBtn.style.display = 'none';
   }
+}
+
+function openChangePinModal() {
+  if (!currentUser) return alert('Please login first.');
+  $('oldPin').value = '';
+  $('newPin').value = '';
+  $('confirmPin').value = '';
+  $('changePinModal').classList.add('show');
+}
+
+function submitChangePin() {
+  const oldP = $('oldPin').value.trim();
+  const newP = $('newPin').value.trim();
+  const confP = $('confirmPin').value.trim();
+
+  if (!oldP || !newP || !confP) {
+    return alert('Please fill all fields.');
+  }
+
+  if (newP !== confP) {
+    return alert('New PIN and Confirm PIN do not match!');
+  }
+
+  if (newP.length < 4) {
+    return alert('PIN must be at least 4 digits/characters.');
+  }
+
+  if (currentUser.type === 'ADMIN') {
+    const currentAdminPin = state.adminPin || '1234';
+    if (oldP !== currentAdminPin) {
+      return alert('Incorrect Old Admin PIN!');
+    }
+    state.adminPin = newP;
+    save();
+    log('Admin PIN Changed', 'Admin password updated.');
+    scheduleSync();
+    alert('✓ Admin PIN changed successfully!');
+  } else {
+    const emp = state.employees.find(e => e.id === currentUser.id);
+    if (!emp) return alert('Employee record not found.');
+    
+    const validPin = emp.pin || '0000';
+    if (oldP !== validPin) {
+      return alert('Incorrect Old PIN!');
+    }
+    emp.pin = newP;
+    save();
+    log('PIN Changed', `PIN updated for ${emp.name}`);
+    renderEmployeeData();
+    scheduleSync();
+    alert(`✓ PIN for ${emp.name} changed successfully!`);
+  }
+
+  $('changePinModal').classList.remove('show');
 }
 
 function updateHistoryDropdown() {
@@ -559,6 +647,7 @@ function saveSettings() {
 
 /* ==== EMPLOYEE MANAGEMENT ==== */
 function openEmployee(id=null){
+ if(currentUser && currentUser.type !== 'ADMIN') return alert('Only Admin can add or edit employees.');
  const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',pin:'0000',active:true,offset:0 };
  $('modalTitle').textContent=id?'Edit Employee':'Add Employee';
  $('modalBody').innerHTML=`<div class="form-grid">
@@ -592,21 +681,26 @@ function openEmployee(id=null){
 function renderEmployeeData(){
  const q=($('empDataSearch')?.value||'').toLowerCase();
  const arr=state.employees.filter(e=>(e.name+' '+e.code).toLowerCase().includes(q)).sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
+ const isAdmin = currentUser && currentUser.type === 'ADMIN';
+
  $('empDataBody').innerHTML=arr.length?arr.map((e,i)=>`<tr>
    <td>${i+1}</td><td>${esc(e.code)}</td><td style="text-align:left;font-weight:600">${esc(e.name)}</td><td><b>${e.seniority||''}</b></td>
-   <td><input value="${esc(e.roles||'')}" style="width:100px;text-align:center" onchange="quickRole('${e.id}',this.value)" placeholder="1,3"></td>
-   <td><select onchange="quickOff('${e.id}',this.value)">
+   <td><input value="${esc(e.roles||'')}" ${isAdmin?'':'disabled'} style="width:100px;text-align:center" onchange="quickRole('${e.id}',this.value)" placeholder="1,3"></td>
+   <td><select ${isAdmin?'':'disabled'} onchange="quickOff('${e.id}',this.value)">
       <option value="">Not defined</option>${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${e.weeklyOff===d?'selected':''}>${d}</option>`).join('')}
    </select></td>
-   <td><input value="${esc(e.pin||'0000')}" style="width:70px;text-align:center" onchange="quickPin('${e.id}',this.value)"></td>
-   <td><button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button></td>
+   <td><input value="${esc(e.pin||'0000')}" ${isAdmin?'':'disabled'} style="width:70px;text-align:center" onchange="quickPin('${e.id}',this.value)" title="Admin can change PIN here"></td>
+   <td>
+      ${isAdmin ? `<button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button>` : `<span class="small" style="color:var(--muted)">Admin Only</span>`}
+   </td>
  </tr>`).join(''):`<tr><td colspan="8" class="empty">No employees yet.</td></tr>`;
 }
 function quickRole(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.roles=normalizeRoles(v); save(); scheduleSync();}
 function quickOff(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.weeklyOff=v; save(); scheduleSync();}
-function quickPin(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.pin=v.trim()||'0000'; save(); scheduleSync();}
+function quickPin(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.pin=v.trim()||'0000'; save(); log('PIN reset by Admin', e.name); scheduleSync();}
 function sortBySeniority(){state.employees.sort((a,b)=>(a.seniority||9999)-(b.seniority||9999)); save(); renderEmployeeData();}
 function removeEmployee(id){
+ if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete employees.');
  if(!confirm('Delete this employee?'))return; state.employees=state.employees.filter(x=>x.id!==id);
  save();scheduleSync(); renderEmployeeData();
 }
@@ -1256,7 +1350,7 @@ function renderCharts() {
    });
 }
 
-/* ==== BACKEND SYNC ==== */
+/* ==== BACKEND SYNC (TWO-WAY) ==== */
 let syncTimer=null;
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncAll(),1500);}
 
@@ -1280,7 +1374,7 @@ async function syncAll(){
 
     const payload={
         employees:state.employees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
-        history:state.history, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
+        history:state.history, adminPin:state.adminPin, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
         flatRotaHistory: flatRotaHistory, colors:state.colors, overrides:state.overrides
     };
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'syncAll',payload})});

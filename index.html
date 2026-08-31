@@ -11,47 +11,57 @@
 :root{--bg:#f4f7fb;--card:#fff;--text:#18212f;--muted:#6b7280;--line:#e5e7eb;--primary:#1f5eff;--primary2:#1748c7;--green:#0f9d58;--amber:#d97706;--red:#dc2626;--nav:#101828}
 *{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
 button,input,select{font:inherit} button{cursor:pointer;border:0}
-.app{display:flex;min-height:100vh}.sidebar{width:250px;background:var(--nav);color:#fff;padding:22px 16px;position:fixed;inset:0 auto 0 0;overflow-y:auto; z-index:100;}
-.brand{font-weight:800;font-size:18px;padding:8px 10px 24px}.brand small{display:block;color:#98a2b3;font-weight:500;margin-top:5px}
-.nav button{display:block;width:100%;text-align:left;background:transparent;color:#cbd5e1;padding:10px 12px;border-radius:9px;margin:4px 0;transition:0.2s;font-size:13px;}.nav button.active,.nav button:hover{background:#1d2939;color:#fff}
-.main{margin-left:250px;width:calc(100% - 250px);padding:24px;max-width:1700px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.top h1{margin:0;font-size:25px}.top p{margin:5px 0 0;color:var(--muted)}
+.app{display:flex;min-height:100vh}.sidebar{width:240px;background:var(--nav);color:#fff;padding:18px 12px;position:fixed;inset:0 auto 0 0;overflow-y:auto; z-index:100;}
+.brand{font-weight:800;font-size:17px;padding:6px 8px 18px}.brand small{display:block;color:#98a2b3;font-weight:500;margin-top:4px}
+.nav button{display:block;width:100%;text-align:left;background:transparent;color:#cbd5e1;padding:9px 10px;border-radius:8px;margin:3px 0;transition:0.2s;font-size:12.5px;}.nav button.active,.nav button:hover{background:#1d2939;color:#fff}
+.main{margin-left:240px;width:calc(100% - 240px);padding:18px;max-width:1850px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.top h1{margin:0;font-size:23px}.top p{margin:4px 0 0;color:var(--muted)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn{padding:8px 12px;border-radius:6px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;transition:0.1s;}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:var(--primary2)}.btn.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.btn:active{transform:scale(0.97)}
+.btn{padding:7px 11px;border-radius:6px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:600;transition:0.1s;}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:var(--primary2)}.btn.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.btn:active{transform:scale(0.97)}
 .page{display:none; animation:fadeIn 0.3s ease;}.page.active{display:block} @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:17px;box-shadow:0 2px 4px rgba(0,0,0,0.02)}.label{color:var(--muted);font-size:13px;font-weight:600;}.value{font-size:27px;font-weight:800;margin-top:6px}.sub{font-size:12px;color:var(--muted);margin-top:5px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:13px;margin-bottom:18px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03)}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:#f8fafc;}.panel-head h2{font-size:16px;margin:0;color:#1e293b;}.panel-body{padding:18px}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select,input,select{border:1px solid #d0d5dd;border-radius:6px;padding:8px 10px;background:#fff;min-width:130px;font-size:13px}
-.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:850px}th,td{border-bottom:1px solid var(--line);padding:10px 9px;text-align:left;white-space:nowrap;font-size:13px}th{background:#f1f5f9;color:#475467;font-size:12px;position:sticky;top:0;z-index:1}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:0 2px 4px rgba(0,0,0,0.02)}.label{color:var(--muted);font-size:12.5px;font-weight:600;}.value{font-size:25px;font-weight:800;margin-top:4px}.sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03)}.panel-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;background:#f8fafc;}.panel-head h2{font-size:15px;margin:0;color:#1e293b;}.panel-body{padding:15px}
+.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select,input,select{border:1px solid #d0d5dd;border-radius:6px;padding:6px 8px;background:#fff;min-width:110px;font-size:12px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;white-space:nowrap;font-size:12px}th{background:#f1f5f9;color:#475467;font-size:11.5px;position:sticky;top:0;z-index:1}
 .sortable{cursor:pointer; user-select:none;} .sortable:hover{background:#eef4ff; color:#1748c7;}
 
-.tag{display:inline-flex;align-items:center;justify-content:center;border-radius:7px;padding:4px 8px;font-size:12px;font-weight:700}
+.tag{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:700}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 
-.rota-table th,.rota-table td{text-align:center}.rota-table th:first-child,.rota-table td:first-child{text-align:left;position:sticky;left:0;background:#fff;z-index:2;border-right:1px solid var(--line)}.rota-table th:first-child{background:#f8fafc}.shift-cell{min-width:60px; cursor:pointer; transition:0.2s;}.shift-cell:hover{background:#f1f5f9;}
-.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field label{display:block;font-size:12px;color:#667085;margin-bottom:5px;font-weight:600}.field input,.field select{width:100%}
-.notice{background:#eef4ff;border:1px solid #c7d7fe;color:#173b86;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
-.empty{padding:30px;text-align:center;color:var(--muted)}
-.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}.modal.show{display:flex}.modal-card{background:#fff;border-radius:12px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 10px 25px rgba(0,0,0,0.2)}.modal-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.modal-body{padding:18px}.modal-foot{padding:14px 18px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
-.small{font-size:11px;color:var(--muted);display:block;margin-top:2px}.sync{font-size:12px;font-weight:600}.sync.ok{color:var(--green)}.sync.bad{color:var(--red)}
+/* Highly Compact Full-Screen Rota Grid Styles */
+.rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
+.rota-table th, .rota-table td { padding: 4px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; }
+.rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 125px; min-width: 120px; max-width: 130px; padding: 4px 6px; font-weight: 700; border-right: 2px solid #cbd5e1; }
+.rota-table th:first-child { background: #f1f5f9; }
+.shift-cell { padding: 2px 1px; cursor: pointer; transition: 0.15s; } .shift-cell:hover { background: #e2e8f0; }
+.shift-cell .tag { width: 100%; max-width: 32px; padding: 2px 1px; font-size: 10px; font-weight: 800; border-radius: 4px; letter-spacing: -0.3px; display: inline-block; }
 
-.color-config{display:flex;flex-direction:column;gap:5px;padding:8px;background:#f9fafb;border:1px solid var(--line);border-radius:6px;width:140px;}
-.color-config input{width:100%;height:30px;padding:2px;cursor:pointer}
-.quick-btn{padding:6px 12px; border-radius:6px; border:1px solid var(--line); background:#f8fafc; font-weight:bold; cursor:pointer;} .quick-btn:hover{background:#e2e8f0;}
+.summary-col-head { width: 62px; min-width: 58px; font-size: 10px; padding: 2px 1px; line-height: 1.1; }
+.summary-cell { width: 62px; min-width: 58px; font-weight: 800; font-size: 11.5px; text-align: center; }
+
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field label{display:block;font-size:11.5px;color:#667085;margin-bottom:4px;font-weight:600}.field input,.field select{width:100%}
+.notice{background:#eef4ff;border:1px solid #c7d7fe;color:#173b86;padding:10px;border-radius:8px;font-size:12px;line-height:1.4}
+.empty{padding:25px;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:15px;z-index:1000}.modal.show{display:flex}.modal-card{background:#fff;border-radius:12px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 10px 25px rgba(0,0,0,0.2)}.modal-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.modal-body{padding:16px}.modal-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+.small{font-size:10.5px;color:var(--muted);display:block;margin-top:2px}.sync{font-size:11.5px;font-weight:600}.sync.ok{color:var(--green)}.sync.bad{color:var(--red)}
+
+.color-config{display:flex;flex-direction:column;gap:4px;padding:6px;background:#f9fafb;border:1px solid var(--line);border-radius:6px;width:130px;}
+.color-config input{width:100%;height:26px;padding:2px;cursor:pointer}
+.quick-btn{padding:5px 8px; border-radius:6px; border:1px solid var(--line); background:#f8fafc; font-weight:bold; cursor:pointer; font-size:11.5px;} .quick-btn:hover{background:#e2e8f0;}
 
 /* Dashboard Grids */
-.dash-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:18px; align-items:start;}
-.dash-list{display:flex; flex-direction:column; gap:10px; margin-top:10px;}
-.dash-item{display:flex; justify-content:space-between; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid var(--line);}
+.dash-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start;}
+.dash-list{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
+.dash-item{display:flex; justify-content:space-between; padding:8px 10px; background:#f8fafc; border-radius:8px; border:1px solid var(--line); font-size:12px;}
 
 .user-badge {
-  display:flex; align-items:center; gap:8px; background:#e0e7ff; color:#3730a3;
-  padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid #c7d2fe;
+  display:flex; align-items:center; gap:6px; background:#e0e7ff; color:#3730a3;
+  padding:4px 10px; border-radius:20px; font-size:11.5px; font-weight:700; border:1px solid #c7d2fe;
 }
 
 @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
-@media(max-width:1000px){.sidebar{width:210px}.main{margin-left:210px;width:calc(100% - 210px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:14px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:130px}}
+@media(max-width:1000px){.sidebar{width:200px}.main{margin-left:200px;width:calc(100% - 200px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:12px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:120px}}
 </style>
 </head>
 <body>
@@ -68,7 +78,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     <button data-page="finalizedLeave">6. Finalized Leave Records</button>
     <button data-page="rotaHistory">7. Rota History</button>
     <button data-page="history">8. Audit Logs</button>
-    <button data-page="guide" style="margin-top:20px; border-top:1px solid #334155; border-radius:0;">📖 System Guide</button>
+    <button data-page="guide" style="margin-top:15px; border-top:1px solid #334155; border-radius:0;">📖 System Guide</button>
   </div>
 </aside>
 
@@ -77,11 +87,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     <div><h1 id="pageTitle">Dashboard & Analytics</h1><p id="todayText"></p></div>
     <div class="actions">
       <div class="user-badge">
-        <span id="loggedInUserName">👤 Not Logged In</span>
-        <button class="btn" style="padding:2px 8px; font-size:11px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
-        <button class="btn" style="padding:2px 8px; font-size:11px;" id="loginBtn" onclick="openLoginModal(false)">Login</button>
+        <span id="loggedInUserName">👤 Guest (View Only)</span>
+        <button class="btn" style="padding:2px 6px; font-size:10.5px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
+        <button class="btn" style="padding:2px 6px; font-size:10.5px;" id="loginBtn" onclick="openLoginModal(false)">Login</button>
       </div>
-      <div id="syncStatus" class="sync" style="align-self:center;margin-right:10px;"></div>
+      <div id="syncStatus" class="sync" style="align-self:center;margin-right:8px;"></div>
       <button class="btn" onclick="exportData()">Export JSON</button>
       <button class="btn primary" onclick="syncAll()">↥ Sync to Database</button>
     </div>
@@ -93,7 +103,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="card"><div class="label">Total Employees</div><div class="value" id="statEmp">0</div><div class="sub">Active Manpower</div></div>
       <div class="card">
         <div class="label">Today's Shifts</div>
-        <div class="value" id="statShift" style="font-size:19px; line-height:1.2; margin-top:10px;">M · E · N</div>
+        <div class="value" id="statShift" style="font-size:18px; line-height:1.2; margin-top:8px;">M · E · N</div>
         <div class="sub" id="statShiftSub">Deployment Live</div>
       </div>
       <div class="card"><div class="label">On Leave Today</div><div class="value" id="statLeave">0</div><div class="sub" style="color:var(--red)">Approved leaves</div></div>
@@ -102,7 +112,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     
     <div class="dash-grid">
        <!-- Left Side: Today's Unified Compact Deployment Table -->
-       <div style="display:flex; flex-direction:column; gap:18px;">
+       <div style="display:flex; flex-direction:column; gap:16px;">
           <div class="panel" style="margin-bottom:0;">
              <div class="panel-head">
                <h2>Today's Shift Deployment (Morning, Evening & Night)</h2>
@@ -112,7 +122,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
                 <table>
                   <thead>
                     <tr>
-                      <th style="width:170px;">Shift Timing</th>
+                      <th style="width:160px;">Shift Timing</th>
                       <th>Role</th>
                       <th style="text-align:left">Employee Name</th>
                       <th>Duty Code</th>
@@ -124,7 +134,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
              </div>
           </div>
           
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
              <div class="panel" style="margin-bottom:0;">
                 <div class="panel-head" style="background:#fff1f2"><h2 style="color:#be123c">🌴 On Leave Today</h2></div>
                 <div class="panel-body" id="todayLeavesList"></div>
@@ -141,20 +151,20 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <div class="panel-head">
              <h2>Manpower Analytics</h2>
              <div class="toolbar">
-                <select id="chartViewType" onchange="toggleChartViewInputs()" style="min-width:100px;">
+                <select id="chartViewType" onchange="toggleChartViewInputs()" style="min-width:90px;">
                    <option value="ALL">All Time</option>
                    <option value="YEAR">By Year</option>
                    <option value="MONTH" selected>By Month</option>
                 </select>
-                <input type="number" id="chartYearFilter" min="2020" max="2035" value="2026" style="width:85px; display:none;" onchange="renderCharts()" title="Select Year">
-                <input type="month" id="chartMonthFilter" value="2026-08" style="width:125px;" onchange="renderCharts()" title="Select Month">
+                <input type="number" id="chartYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderCharts()" title="Select Year">
+                <input type="month" id="chartMonthFilter" value="2026-08" style="width:120px;" onchange="renderCharts()" title="Select Month">
              </div>
           </div>
           <div class="panel-body">
-             <div class="notice" style="margin-bottom:15px;" id="chartSubtitle">
+             <div class="notice" style="margin-bottom:12px;" id="chartSubtitle">
                 Compares Total Approved Leave Days vs. Total Extra Duties per employee.
              </div>
-             <div style="position:relative; height:380px; width:100%;">
+             <div style="position:relative; height:370px; width:100%;">
                 <canvas id="analyticsChart"></canvas>
              </div>
           </div>
@@ -166,7 +176,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <section id="guide" class="page">
     <div class="panel">
       <div class="panel-head"><h2>📖 System Guide & Smart Rota Rules</h2></div>
-      <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
+      <div class="panel-body" style="line-height:1.6; font-size:13.5px; color:#334155;">
         <h3 style="color:#1e293b; margin-top:0;">1. Shift Rotation & Single Weekly Off Rule</h3>
         <p>
           • <b>Continuous Pattern:</b> Follows <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b>.<br>
@@ -180,14 +190,9 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           • <b>Step 3 (Dual-Role Sequence):</b> Dual role (`1,2` ya `3,2,1`) wale employees sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> follow karte hain. Agar single role `2` present hai to dual-role automatically `1` cover karega.
         </p>
 
-        <h3 style="color:#1e293b;">3. Finalized Rota & Official Data Source</h3>
+        <h3 style="color:#1e293b;">3. Finalized Rota & Summary Columns</h3>
         <p>
-          • Month Finalize hone ke baad <b>Rota History Snapshot</b> official source ban jata hai. Dashboard, Extra Duty Register, Finalized Leave Records aur Analytics wahi se link hote hain.
-        </p>
-
-        <h3 style="color:#1e293b;">4. Mandatory Authentication Gate</h3>
-        <p>
-          • System ko access karne ke liye <b>Login</b> mandatory hai. Login ke baad hi user permissions unlock hoti hain.
+          • Rota table ke end me <b>Leaves</b> aur <b>Extra Duty</b> ke summary columns diye gaye hain jisme top header se <b>Month / Year / All Time</b> filter kiya ja sakta hai.
         </p>
       </div>
     </div>
@@ -218,43 +223,46 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Rota -->
+  <!-- Rota (Screen Fit Optimized) -->
   <section id="rota" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Active Rota Generator</h2>
         <div class="toolbar">
-          <label style="font-size:13px;font-weight:600">Month <input type="month" id="rotaMonth"></label>
+          <label style="font-size:12px;font-weight:600">Month <input type="month" id="rotaMonth"></label>
           <button class="btn primary" onclick="generateRota()">↻ Refresh</button>
           <button class="btn" onclick="downloadPDF('rotaContainer', 'Rota')">Download PDF</button>
           <button class="btn" onclick="downloadCSV('rota')">Download CSV</button>
         </div>
       </div>
       
-      <div class="panel-body" style="border-bottom:1px solid var(--line);">
+      <div class="panel-body" style="border-bottom:1px solid var(--line); padding:10px 14px;">
          <div class="toolbar" style="justify-content:space-between">
             <div class="toolbar">
-               <label style="font-size:13px;font-weight:600;color:#173b86">Duty Pattern: 
-                 <input id="rotaPattern" style="width:130px;text-align:center" title="Default is EEMMNNO" value="EEMMNNO" readonly>
+               <label style="font-size:12px;font-weight:600;color:#173b86">Duty Pattern: 
+                 <input id="rotaPattern" style="width:110px;text-align:center" title="Default is EEMMNNO" value="EEMMNNO" readonly>
                </label>
                <button class="btn" onclick="$('colorPanel').style.display=$('colorPanel').style.display==='none'?'flex':'none'">⚙️ Edit Colors</button>
             </div>
             <button class="btn primary" style="background:#0f9d58;border-color:#0f9d58" onclick="finalizeRota()">✓ Finalize Rota</button>
          </div>
          
-         <div id="colorPanel" style="display:none; gap:12px; flex-wrap:wrap; margin-top:15px; padding:15px; background:#fff; border:1px solid var(--line); border-radius:8px;">
+         <div id="colorPanel" style="display:none; gap:10px; flex-wrap:wrap; margin-top:10px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:8px;">
             <div class="color-config"><b>M (Morning)</b> <label class="small">Bg <input type="color" id="c_M_bg"></label><label class="small">Txt <input type="color" id="c_M_txt"></label></div>
             <div class="color-config"><b>E (Evening)</b> <label class="small">Bg <input type="color" id="c_E_bg"></label><label class="small">Txt <input type="color" id="c_E_txt"></label></div>
             <div class="color-config"><b>N (Night)</b> <label class="small">Bg <input type="color" id="c_N_bg"></label><label class="small">Txt <input type="color" id="c_N_txt"></label></div>
             <div class="color-config"><b>O (OFF)</b> <label class="small">Bg <input type="color" id="c_O_bg"></label><label class="small">Txt <input type="color" id="c_O_txt"></label></div>
             <div class="color-config"><b>L (Leave)</b> <label class="small">Bg <input type="color" id="c_L_bg"></label><label class="small">Txt <input type="color" id="c_L_txt"></label></div>
             <div class="color-config"><b>Double Duty</b> <label class="small">Bg <input type="color" id="c_D_bg"></label><label class="small">Txt <input type="color" id="c_D_txt"></label></div>
-            <div style="width:100%; margin-top:5px;"><button class="btn primary" onclick="saveSettings()">Save Configuration</button></div>
+            <div style="width:100%; margin-top:4px;"><button class="btn primary" onclick="saveSettings()">Save Configuration</button></div>
          </div>
       </div>
 
-      <div class="table-wrap" id="rotaContainer" style="padding:15px;background:#fff">
-        <div style="font-size:12px;color:#173b86;margin-bottom:8px"><b>Tip:</b> Click on any shift cell to edit or override the duty manually.</div>
+      <div class="table-wrap" id="rotaContainer" style="padding:6px; background:#fff;">
+        <div style="font-size:11px;color:#173b86;margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+           <span><b>Tip:</b> Click on any shift cell to edit duty or select from dropdown.</span>
+           <span style="font-weight:700; color:#475467;">Summary View: <span id="activeScopeLabel">Month</span></span>
+        </div>
         <table class="rota-table" id="rotaTableData">
           <thead id="rotaHead"></thead><tbody id="rotaBody"></tbody>
         </table>
@@ -262,7 +270,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register (Applications & Approvals) -->
+  <!-- 3. Leave Register -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -348,13 +356,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Finalized Leave Register (Extracted from Rota History) -->
+  <!-- 6. Finalized Leave Register -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Finalized Leave Records (From Rota History)</h2>
         <div class="toolbar">
-           <select id="flMonthFilter" style="min-width:140px;"></select>
+           <select id="flMonthFilter" style="min-width:130px;"></select>
            <input id="flSearch" placeholder="Search Employee...">
            <button class="btn primary" onclick="renderFinalizedLeaves()">Refresh</button>
         </div>
@@ -375,14 +383,14 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Rota History -->
+  <!-- Rota History (Screen Fit Optimized) -->
   <section id="rotaHistory" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Rota History (Finalized Rotas)</h2>
         <div class="toolbar">
-          <label style="font-size:13px;font-weight:600">Select Month 
-             <select id="historyMonthSelect" style="min-width:140px; margin-left:5px;"></select>
+          <label style="font-size:12px;font-weight:600">Select Month 
+             <select id="historyMonthSelect" style="min-width:130px; margin-left:4px;"></select>
           </label>
           <button class="btn primary" onclick="generateHistoryRota()">View History</button>
           <button class="btn danger" onclick="deleteFinalizedRota()">Delete Snapshot</button>
@@ -390,7 +398,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <button class="btn" onclick="downloadCSV('history')">Download CSV</button>
         </div>
       </div>
-      <div class="table-wrap" id="historyContainer" style="padding:15px;background:#fff">
+      <div class="table-wrap" id="historyContainer" style="padding:6px; background:#fff;">
         <table class="rota-table" id="histTableData">
           <thead id="histRotaHead"></thead><tbody id="histRotaBody"></tbody>
         </table>
@@ -413,13 +421,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 <!-- Mandatory Login Gate Modal -->
 <div class="modal" id="loginModal">
-  <div class="modal-card" style="width:380px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+  <div class="modal-card" style="width:360px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
     <div class="modal-head" style="background:#f8fafc;">
-      <b style="font-size:15px; color:#1e293b;">🔐 User Authentication</b>
+      <b style="font-size:14.5px; color:#1e293b;">🔐 System Authentication</b>
       <button class="btn" id="loginCloseX" onclick="closeLoginModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field" style="margin-bottom:12px;">
+      <div class="field" style="margin-bottom:10px;">
         <label>Select User / Role</label>
         <select id="loginUserSelect">
           <option value="ADMIN">👑 Admin / Supervisor</option>
@@ -430,7 +438,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <label>PIN / Password</label>
         <input type="password" id="loginPin" placeholder="Enter PIN" onkeydown="if(event.key==='Enter') performLogin()">
       </div>
-      <div class="small" style="margin-top:8px; color:var(--muted);">
+      <div class="small" style="margin-top:6px; color:var(--muted);">
         Default Admin PIN is <b>1234</b>. Default Employee PIN is <b>0000</b>.
       </div>
     </div>
@@ -443,17 +451,17 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 <!-- Change PIN Modal -->
 <div class="modal" id="changePinModal">
-  <div class="modal-card" style="width:360px;">
+  <div class="modal-card" style="width:350px;">
     <div class="modal-head">
       <b>Change PIN / Password</b>
       <button class="btn" onclick="$('changePinModal').classList.remove('show')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field" style="margin-bottom:12px;">
+      <div class="field" style="margin-bottom:10px;">
         <label>Current (Old) PIN</label>
         <input type="password" id="oldPin" placeholder="Enter current PIN">
       </div>
-      <div class="field" style="margin-bottom:12px;">
+      <div class="field" style="margin-bottom:10px;">
         <label>New PIN / Password</label>
         <input type="password" id="newPin" maxlength="8" placeholder="Enter new PIN">
       </div>
@@ -469,12 +477,43 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
-<!-- Edit Cell Modal -->
+<!-- Edit Shift Assignment Modal (With Dropdown + Buttons + Custom) -->
 <div class="modal" id="editCellModal">
-  <div class="modal-card" style="width:380px">
+  <div class="modal-card" style="width:390px">
     <div class="modal-head"><b>Edit Shift Assignment</b><button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button></div>
     <div class="modal-body">
-       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px;">
+       
+       <!-- Feature: Dropdown Shift Selector -->
+       <div class="field" style="margin-bottom:12px;">
+          <label style="color:#1e40af; font-weight:700;">Select from Shift Dropdown</label>
+          <select id="cellDropdownSelect" onchange="if(this.value) applyCellOverride(this.value)">
+             <option value="">-- Choose Shift Duty --</option>
+             <optgroup label="🌅 Morning Shifts">
+                <option value="M1">M1 - Morning BSVI SRU PIC</option>
+                <option value="M2">M2 - Morning OLD SRU PIC</option>
+                <option value="M3">M3 - Morning SIC</option>
+             </optgroup>
+             <optgroup label="🌇 Evening Shifts">
+                <option value="E1">E1 - Evening BSVI SRU PIC</option>
+                <option value="E2">E2 - Evening OLD SRU PIC</option>
+                <option value="E3">E3 - Evening SIC</option>
+             </optgroup>
+             <optgroup label="🌙 Night Shifts">
+                <option value="N1">N1 - Night BSVI SRU PIC</option>
+                <option value="N2">N2 - Night OLD SRU PIC</option>
+                <option value="N3">N3 - Night SIC</option>
+             </optgroup>
+             <optgroup label="🌴 Off & Leaves">
+                <option value="O">OFF (O) - Weekly Off</option>
+                <option value="L">L - Approved Leave</option>
+                <option value="TR">TR - Training</option>
+             </optgroup>
+          </select>
+       </div>
+
+       <!-- Quick Buttons -->
+       <label style="font-size:11.5px; color:#667085; font-weight:600; margin-bottom:5px; display:block;">Or Click Quick Shift</label>
+       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:12px;">
           <button class="quick-btn" onclick="applyCellOverride('M1')">M1</button>
           <button class="quick-btn" onclick="applyCellOverride('M2')">M2</button>
           <button class="quick-btn" onclick="applyCellOverride('M3')">M3</button>
@@ -486,11 +525,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <button class="quick-btn" onclick="applyCellOverride('N3')">N3</button>
           <button class="quick-btn" onclick="applyCellOverride('O')">OFF (O)</button>
           <button class="quick-btn" onclick="applyCellOverride('L')">Leave (L)</button>
-          <button class="quick-btn" onclick="applyCellOverride('TR')">Training (TR)</button>
+          <button class="quick-btn" onclick="applyCellOverride('TR')">Training</button>
        </div>
+       
+       <!-- Custom Input -->
        <div class="field">
           <label>Double Duty / Custom</label>
-          <div style="display:flex;gap:5px;">
+          <div style="display:flex;gap:4px;">
              <input type="text" id="customCellInput" placeholder="e.g. M1+E2">
              <button class="btn primary" onclick="applyCellOverride($('customCellInput').value)">Set</button>
           </div>
@@ -530,11 +571,11 @@ if(!state.holidays) state.holidays = [];
 if(!state.extraDuties) state.extraDuties = [];
 
 let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
+let rotaSummaryScope = 'MONTH'; // Summary column scope: 'MONTH', 'YEAR', 'ALL'
 
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
 
-// Robust Local ISO Date Helper (Eliminates UTC Timezone Offset Glitches)
 function toLocalISO(d) {
   if (!d) return '';
   const dt = new Date(d);
@@ -645,7 +686,7 @@ function logoutUser() {
   renderEmployeeData();
   renderLeaves();
   renderDashboard();
-  openLoginModal(true); // Re-open login modal immediately on logout
+  openLoginModal(true);
 }
 
 function updateUserUI() {
@@ -1011,26 +1052,120 @@ function getStyleForCode(fullCode) {
   return { bg: state.colors[`${base}_bg`] || '#f1f5f9', txt: state.colors[`${base}_txt`] || '#000' };
 }
 
+/* ==== EMPLOYEE SUMMARY CALCULATOR FOR ROTA COLUMNS ==== */
+function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
+  let leaveCount = 0;
+  let edCount = 0;
+  const targetYear = currentMonthStr.slice(0, 4);
+
+  // 1. Calculate Leaves
+  if (scope === 'MONTH') {
+    if (currentMatrix && currentMatrix[empId]) {
+      Object.values(currentMatrix[empId]).forEach(sc => {
+        if (sc.full === 'L') leaveCount++;
+      });
+    }
+  } else if (scope === 'YEAR') {
+    Object.keys(state.finalizedRotas).forEach(m => {
+      if (m.startsWith(targetYear)) {
+        const snap = state.finalizedRotas[m];
+        const row = snap.snapshot.find(r => r.empId === empId);
+        if (row) {
+          row.shifts.forEach(sh => { if (sh.full === 'L') leaveCount++; });
+        }
+      }
+    });
+    // Active leaves in this year
+    state.leaves.filter(l => l.empId === empId && l.status === 'Approved').forEach(l => {
+      const d1 = new Date(l.from); const d2 = new Date(l.to);
+      for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
+        const dStr = toLocalISO(dt);
+        if (dStr.startsWith(targetYear) && !state.finalizedRotas[dStr.slice(0, 7)]) {
+          leaveCount++;
+        }
+      }
+    });
+  } else { // 'ALL'
+    Object.keys(state.finalizedRotas).forEach(m => {
+      const snap = state.finalizedRotas[m];
+      const row = snap.snapshot.find(r => r.empId === empId);
+      if (row) {
+        row.shifts.forEach(sh => { if (sh.full === 'L') leaveCount++; });
+      }
+    });
+    state.leaves.filter(l => l.empId === empId && l.status === 'Approved').forEach(l => {
+      const d1 = new Date(l.from); const d2 = new Date(l.to);
+      for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
+        const dStr = toLocalISO(dt);
+        if (!state.finalizedRotas[dStr.slice(0, 7)]) {
+          leaveCount++;
+        }
+      }
+    });
+  }
+
+  // 2. Calculate Extra Duties
+  const allED = [...state.extraDuties, ...getAutoExtraDuties(scope === 'MONTH' ? currentMonthStr : null)];
+  edCount = allED.filter(ed => {
+    if (ed.empId !== empId) return false;
+    if (scope === 'MONTH') return ed.date.startsWith(currentMonthStr);
+    if (scope === 'YEAR') return ed.date.startsWith(targetYear);
+    return true;
+  }).length;
+
+  return { leaves: leaveCount, extraDuties: edCount };
+}
+
+function changeSummaryScope(newScope) {
+  rotaSummaryScope = newScope;
+  const labelText = newScope === 'ALL' ? 'All Time' : newScope === 'YEAR' ? 'Year' : 'Month';
+  if($('activeScopeLabel')) $('activeScopeLabel').textContent = labelText;
+  generateRota(false);
+  generateHistoryRota();
+}
+
+/* ==== ROTA TABLE RENDER WITH SCREEN FIT & SUMMARY COLUMNS ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
   const { matrix, dates, activeEmps } = buildRotaMatrix(monthValue);
   activeMatrix = matrix; 
   
-  $('rotaHead').innerHTML='<tr><th>Employee</th>'+dates.map(d=>`<th>${d.getDate()}<br><span class="small">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('')+'</tr>';
+  // Header with Dates + 2 Summary Columns (Leaves & Extra Duty) with Dropdown
+  $('rotaHead').innerHTML = '<tr><th>Employee</th>' + 
+    dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9.5px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
+    `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">
+       Leaves
+       <select onchange="changeSummaryScope(this.value)" style="font-size:9.5px; padding:1px 2px; min-width:50px; margin-top:2px; display:block; width:100%;">
+         <option value="MONTH" ${rotaSummaryScope==='MONTH'?'selected':''}>Month</option>
+         <option value="YEAR" ${rotaSummaryScope==='YEAR'?'selected':''}>Year</option>
+         <option value="ALL" ${rotaSummaryScope==='ALL'?'selected':''}>All</option>
+       </select>
+     </th>
+     <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">
+       Extra
+       <span style="font-size:9.5px; color:#166534; display:block; margin-top:4px; font-weight:700;">Duties</span>
+     </th>
+    </tr>`;
   
-  $('rotaBody').innerHTML=activeEmps.length ? activeEmps.map(e=>`<tr>
-    <td style="text-align:left;font-weight:700">${esc(e.name)}</td>`+
-    dates.map(d=>{
-      const dStr = toLocalISO(d);
-      const sc = matrix[e.id][dStr];
-      const style = getStyleForCode(sc.full);
-      const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
-      
-      return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}', false)">
-         <span class="tag" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
-      </td>`
-    }).join('')+'</tr>').join('') : `<tr><td colspan="${dates.length+1}" class="empty">Add employees first.</td></tr>`;
+  $('rotaBody').innerHTML = activeEmps.length ? activeEmps.map(e => {
+    const summary = getEmployeeSummary(e.id, monthValue, rotaSummaryScope, matrix);
+    return `<tr>
+      <td style="text-align:left;font-weight:700">${esc(e.name)}</td>` +
+      dates.map(d => {
+        const dStr = toLocalISO(d);
+        const sc = matrix[e.id][dStr];
+        const style = getStyleForCode(sc.full);
+        const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
+        
+        return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}', false)">
+           <span class="tag" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
+        </td>`;
+      }).join('') +
+      `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
+       <td class="summary-cell" style="background:#f0fdf4; color:#15803d;">${summary.extraDuties}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="${dates.length+3}" class="empty">Add employees first.</td></tr>`;
     
   renderCoverage(dates, activeEmps, matrix);
 }
@@ -1041,10 +1176,11 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL ==== */
+/* ==== CELL EDIT MODAL (WITH DROPDOWN & BUTTONS) ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
+  if($('cellDropdownSelect')) $('cellDropdownSelect').value = currentVal || '';
   $('editCellModal').classList.add('show');
 }
 
@@ -1106,12 +1242,23 @@ function generateHistoryRota() {
   
   const finalized = state.finalizedRotas[month];
   const dates = finalized.dates.map(ds => new Date(ds));
-  $('histRotaHead').innerHTML = '<tr><th style="text-align:left">Employee</th>' + dates.map(d=>`<th>${d.getDate()}<br><span class="small">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('')+'</tr>';
+  
+  $('histRotaHead').innerHTML = '<tr><th style="text-align:left">Employee</th>' + 
+    dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9.5px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
+    `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">Leaves</th>
+     <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">Extra Duties</th>
+    </tr>`;
   
   $('histRotaBody').innerHTML = finalized.snapshot.map((row, rIdx) => {
+     let leaveC = row.shifts.filter(sh => sh.full === 'L').length;
+     const allED = [...state.extraDuties, ...getAutoExtraDuties(month)];
+     let edC = allED.filter(ed => ed.empId === row.empId && ed.date.startsWith(month)).length;
+
      return `<tr>
        <td style="text-align:left;font-weight:700">${esc(row.name)}</td>
        ${row.shifts.map((sh, cIdx) => `<td class="shift-cell" onclick="openEditCell('${month}', null, null, '${sh.full}', true, ${rIdx}, ${cIdx})"><span class="tag" style="background:${sh.bg};color:${sh.txt};border:1px solid ${sh.txt}40">${sh.full}</span></td>`).join('')}
+       <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>
+       <td class="summary-cell" style="background:#f0fdf4; color:#15803d;">${edC}</td>
      </tr>`;
   }).join('');
 }
@@ -1218,7 +1365,7 @@ function getAutoExtraDuties(monthF) {
    
    const processedMonths = new Set();
 
-   // 1. Process Finalized Snapshots first (Official Source of Truth)
+   // 1. Process Finalized Snapshots first
    Object.keys(state.finalizedRotas).forEach(m => {
        if(monthF && m !== monthF) return;
        processedMonths.add(m);
@@ -1307,7 +1454,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== 3. LEAVE REGISTER (APPLICATIONS & APPROVALS - UPDATES APPLY DATE ON EDIT) ==== */
+/* ==== 3. LEAVE REGISTER (APPLICATIONS & APPROVALS) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1372,7 +1519,7 @@ function openLeave(id=null){
     const d2 = new Date(l.to);
     l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
 
-    // Update Apply Date to TODAY upon both Application & Edit
+    // Updates Apply Date to TODAY upon creation & modification
     l.applyDate = toLocalISO(new Date());
 
     if (!isEdit) {
@@ -1469,7 +1616,7 @@ function renderLeaves(){
 $('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves; $('leaveStatusFilter').onchange=renderLeaves;
 
 
-/* ==== 6. FINALIZED LEAVE RECORDS (EXTRACTED FROM ROTA HISTORY) ==== */
+/* ==== 6. FINALIZED LEAVE RECORDS (FROM ROTA HISTORY) ==== */
 function renderFinalizedLeaves(){
   const month = $('flMonthFilter')?.value || Object.keys(state.finalizedRotas).sort().reverse()[0];
   const q = ($('flSearch')?.value || '').toLowerCase();
@@ -1519,7 +1666,7 @@ if($('flSearch')) $('flSearch').oninput = renderFinalizedLeaves;
 function downloadPDF(containerId, filenamePrefix){
   const element = document.getElementById(containerId);
   const month = containerId === 'historyContainer' ? $('historyMonthSelect').value : $('rotaMonth').value;
-  const opt = { margin:0.2, filename:`${filenamePrefix}_${month}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'a4',orientation:'landscape'} };
+  const opt = { margin:0.15, filename:`${filenamePrefix}_${month}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'a4',orientation:'landscape'} };
   html2pdf().set(opt).from(element).save();
 }
 function downloadCSV(type) {
@@ -1533,7 +1680,7 @@ function downloadCSV(type) {
 }
 
 
-/* ==== DASHBOARD & ANALYTICS (UNIFIED CLEAN TABLE & FILTERED ANALYTICS) ==== */
+/* ==== DASHBOARD & ANALYTICS ==== */
 function toggleChartViewInputs() {
   const type = $('chartViewType').value;
   if (type === 'ALL') {
@@ -1560,7 +1707,6 @@ function renderDashboard(){
  const dStr = toLocalISO(new Date());
  const todayMonth = dStr.slice(0, 7);
 
- // 1. RESOLVE TODAY'S SHIFT DUTY (PRIORITIZING FINALIZED SNAPSHOT OVER ACTIVE MATRIX)
  let todayDutyMap = {};
 
  if (state.finalizedRotas[todayMonth]) {
@@ -1608,7 +1754,6 @@ function renderDashboard(){
  $('statLeave').textContent = leavesToday.length;
  $('todayLeavesList').innerHTML = leavesToday.length ? leavesToday.map(name => `<div class="dash-item"><b>${name}</b><span class="tag approved">On Leave</span></div>`).join('') : '<div class="small">No employees on leave today.</div>';
  
- // Extra Duty Today List
  const allED = [...state.extraDuties, ...getAutoExtraDuties()];
  const edTodayList = allED.filter(ed => ed.date === dStr);
  $('statExtra').textContent = edTodayList.length;
@@ -1617,7 +1762,6 @@ function renderDashboard(){
      return `<div class="dash-item"><b>${empName}</b><span class="tag approved">${ed.type}</span></div>`
  }).join('') : '<div class="small">No extra duties scheduled today.</div>';
 
- // Unified Optimized Single Table for Today's Deployment
  const shiftMeta = [
    { key: 'M', label: '🌅 Morning (06:00 - 14:00)', bg: state.colors.M_bg, txt: state.colors.M_txt },
    { key: 'E', label: '🌇 Evening (14:00 - 22:00)', bg: state.colors.E_bg, txt: state.colors.E_txt },
@@ -1681,7 +1825,7 @@ function renderCharts() {
        let leaveCount = 0;
        const countedDates = new Set();
 
-       // 1. Count from Finalized Rota Snapshots
+       // Count from Finalized Rota Snapshots
        Object.keys(state.finalizedRotas).forEach(m => {
            if (viewType === 'MONTH' && m !== targetMonth) return;
            if (viewType === 'YEAR' && !m.startsWith(targetYear)) return;
@@ -1699,7 +1843,7 @@ function renderCharts() {
            }
        });
 
-       // 2. Count from Active Leaves array for dates/months not yet finalized
+       // Count from Active Leaves array
        state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => {
            const d1 = new Date(l.from);
            const d2 = new Date(l.to);

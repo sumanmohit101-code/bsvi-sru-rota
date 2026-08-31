@@ -16,7 +16,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .nav button{display:block;width:100%;text-align:left;background:transparent;color:#cbd5e1;padding:10px 12px;border-radius:9px;margin:4px 0;transition:0.2s;font-size:13px;}.nav button.active,.nav button:hover{background:#1d2939;color:#fff}
 .main{margin-left:250px;width:calc(100% - 250px);padding:24px;max-width:1700px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}.top h1{margin:0;font-size:25px}.top p{margin:5px 0 0;color:var(--muted)}
-.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{padding:8px 12px;border-radius:6px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;transition:0.1s;}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:var(--primary2)}.btn.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.btn:active{transform:scale(0.97)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{padding:8px 12px;border-radius:6px;background:#fff;border:1px solid var(--line);font-size:13px;font-weight:600;transition:0.1s;}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:var(--primary2)}.btn.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.btn:active{transform:scale(0.97)}
 .page{display:none; animation:fadeIn 0.3s ease;}.page.active{display:block} @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:17px;box-shadow:0 2px 4px rgba(0,0,0,0.02)}.label{color:var(--muted);font-size:13px;font-weight:600;}.value{font-size:27px;font-weight:800;margin-top:6px}.sub{font-size:12px;color:var(--muted);margin-top:5px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:13px;margin-bottom:18px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03)}.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;background:#f8fafc;}.panel-head h2{font-size:16px;margin:0;color:#1e293b;}.panel-body{padding:18px}
@@ -44,6 +45,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .dash-list{display:flex; flex-direction:column; gap:10px; margin-top:10px;}
 .dash-item{display:flex; justify-content:space-between; padding:10px; background:#f8fafc; border-radius:8px; border:1px solid var(--line);}
 
+.user-badge {
+  display:flex; align-items:center; gap:8px; background:#e0e7ff; color:#3730a3;
+  padding:6px 12px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid #c7d2fe;
+}
+
 @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
 @media(max-width:1000px){.sidebar{width:210px}.main{margin-left:210px;width:calc(100% - 210px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:14px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:130px}}
@@ -70,8 +76,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <div class="top">
     <div><h1 id="pageTitle">Dashboard & Analytics</h1><p id="todayText"></p></div>
     <div class="actions">
+      <!-- User Login / Session Badge -->
+      <div class="user-badge">
+        <span id="loggedInUserName">👤 Guest (View Only)</span>
+        <button class="btn" style="padding:2px 8px; font-size:11px;" id="loginBtn" onclick="openLoginModal()">Login</button>
+      </div>
       <div id="syncStatus" class="sync" style="align-self:center;margin-right:10px;"></div>
-      <button class="btn" onclick="exportData()">Export App JSON</button>
+      <button class="btn" onclick="exportData()">Export JSON</button>
       <button class="btn primary" onclick="syncAll()">↥ Sync to Database</button>
     </div>
   </div>
@@ -86,7 +97,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
     
     <div class="dash-grid">
-       <!-- Left Side: Today's Snapshot -->
        <div style="display:flex; flex-direction:column; gap:18px;">
           <div class="panel" style="margin-bottom:0;">
              <div class="panel-head"><h2>Today's Live Deployment (<span id="dashShiftName"></span>)</h2><button class="btn" onclick="showPage('rota')">Open Rota</button></div>
@@ -107,7 +117,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
        </div>
        
-       <!-- Right Side: Analytics Chart -->
        <div class="panel" style="margin-bottom:0;">
           <div class="panel-head"><h2>Manpower Analytics (YTD)</h2></div>
           <div class="panel-body">
@@ -121,19 +130,17 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
-      <div class="panel-head"><h2>📖 System Guide & Smart Rules</h2></div>
+      <div class="panel-head"><h2>📖 System Guide & User Roles</h2></div>
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
-        <h3 style="color:#1e293b; margin-top:0;">1. Smart Auto-Generation (Greedy Assigner)</h3>
-        <p>The system uses the continuous pattern (e.g., <b>EEMMNNO</b>). <br>It features a <b>Smart Balancer</b>: Before repeating any role (like assigning two E1s), the system checks which roles (1, 2, or 3) are missing in a shift. It dynamically assigns your multi-role employees to ensure <b>M1, M2, and M3</b> are all covered first!</p>
+        <h3 style="color:#1e293b; margin-top:0;">🔐 Multi-User Permissions</h3>
+        <p>• <b>Admin (PIN: 1234):</b> Can manage all records, approve/reject leaves, edit all rotas, and modify master settings.<br>
+           • <b>Employees (Default PIN: 0000):</b> Can login to their individual profile. They can apply for leave in their own name and can <b>only edit or delete their own leave entries</b>.</p>
+        
+        <h3 style="color:#1e293b;">1. Smart Auto-Generation (Greedy Assigner)</h3>
+        <p>The system uses the pattern (e.g., <b>EEMMNNO</b>) and dynamically balances missing roles so that <b>M1, M2, M3</b> are all covered first.</p>
         
         <h3 style="color:#1e293b;">2. Automated Extra Duties & Overtime</h3>
-        <p>If an employee works a double shift (e.g., `M1+E2`), or works on their Off day/Holiday, it is <b>automatically detected</b> from the Rota. Go to <b>5. Extra Duty Register</b> to view these automated logs, which is highly useful for accurate tracking and HR overtime reporting.</p>
-
-        <h3 style="color:#1e293b;">3. Overrides & Editing Shifts</h3>
-        <p>If the smart generator needs an adjustment, <b>click on any shift cell</b> in the Rota grid. A popup allows you to select a quick shift or type a double-duty custom shift. Manual edits highlight with a slightly darker border.</p>
-
-        <h3 style="color:#1e293b;">4. Finalize Rota & Google Sheet History Sync</h3>
-        <p>Once happy with a month, click <b>✓ Finalize Rota</b>. It saves a permanent snapshot. <br><b>Google Sheet Sync:</b> The system sends a flattened version of finalized rotas to your Google backend. Your Apps Script will receive the rows perfectly formatted as: <i>Month, Date, Employee, Shift</i>.</p>
+        <p>Double shifts (`M1+E2`) or duties on weekly off/holidays are <b>automatically detected</b> and displayed in Section 5.</p>
       </div>
     </div>
   </section>
@@ -151,14 +158,14 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Use comma for multiple roles (e.g. 1,3 or 1,2).
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Default PIN for employees is <b>0000</b>.
         </div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
             <th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th>
-            <th>Roles (1, 2, 3)</th><th>OFF DAY</th><th>Actions</th>
+            <th>Roles (1, 2, 3)</th><th>OFF DAY</th><th>Login PIN</th><th>Actions</th>
           </tr></thead>
           <tbody id="empDataBody"></tbody>
         </table>
@@ -202,7 +209,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
 
       <div class="table-wrap" id="rotaContainer" style="padding:15px;background:#fff">
-        <div style="font-size:12px;color:#173b86;margin-bottom:8px"><b>Tip:</b> Click on any shift cell to edit or override the duty manually. (Auto-Extra Duty triggers based on Overrides, Holidays, and Off-Days).</div>
+        <div style="font-size:12px;color:#173b86;margin-bottom:8px"><b>Tip:</b> Click on any shift cell to edit or override the duty manually.</div>
         <table class="rota-table" id="rotaTableData">
           <thead id="rotaHead"></thead><tbody id="rotaBody"></tbody>
         </table>
@@ -225,6 +232,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
             <option value="Rejected">Rejected</option>
           </select>
           <button class="btn primary" onclick="openLeave()">+ Apply Leave</button>
+        </div>
+      </div>
+      <div class="panel-body" style="padding-bottom:0;">
+        <div class="notice">
+          ℹ️ <b>Multi-User Note:</b> Non-admin users can only apply for their own leave and edit/delete entries submitted by themselves.
         </div>
       </div>
       <div class="table-wrap">
@@ -255,9 +267,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <h2>Holiday Master</h2>
         <button class="btn primary" onclick="openHoliday()">+ Add Holiday</button>
       </div>
-      <div class="panel-body">
-         <div class="small">If an employee is assigned a working shift on a holiday listed here, it automatically adds to their Extra Duty record.</div>
-      </div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Date</th><th>Holiday Name</th><th>Action</th></tr></thead>
@@ -285,7 +294,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
          <div class="notice">
-            The system <b>automatically detects</b> Double Duties (shifts containing '+'), Off-Day Duties, and Holiday Duties from the active and finalized rotas for the selected month. Auto-detected entries cannot be deleted here (edit the Rota instead).
+            The system detects Double Duties ('+'), Off-Day Duties, and Holiday Duties automatically.
          </div>
       </div>
       <div class="table-wrap">
@@ -314,9 +323,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <button class="btn" onclick="downloadCSV('history')">Download CSV</button>
         </div>
       </div>
-      <div class="panel-body">
-         <div class="small">Select a finalized month from the dropdown above. Click on any cell in the table to make post-finalization edits.</div>
-      </div>
       <div class="table-wrap" id="historyContainer" style="padding:15px;background:#fff">
         <table class="rota-table" id="histTableData">
           <thead id="histRotaHead"></thead><tbody id="histRotaBody"></tbody>
@@ -335,9 +341,40 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 </main>
 </div>
 
-<!-- Modal Forms -->
+<!-- Standard Modal -->
 <div class="modal" id="modal"><div class="modal-card"><div class="modal-head"><b id="modalTitle">Form</b><button class="btn" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="modalSave">Save</button></div></div></div>
 
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+  <div class="modal-card" style="width:380px;">
+    <div class="modal-head">
+      <b>User Login / Authentication</b>
+      <button class="btn" onclick="$('loginModal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field" style="margin-bottom:12px;">
+        <label>Select User / Role</label>
+        <select id="loginUserSelect">
+          <option value="ADMIN">👑 Admin / Supervisor</option>
+          <optgroup label="Employees" id="loginEmpOptions"></optgroup>
+        </select>
+      </div>
+      <div class="field">
+        <label>PIN / Password</label>
+        <input type="password" id="loginPin" placeholder="Admin: 1234 | Emp: 0000">
+      </div>
+      <div class="small" style="margin-top:8px; color:var(--muted);">
+        Default Admin PIN is <b>1234</b>. Default Employee PIN is <b>0000</b>.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="$('loginModal').classList.remove('show')">Cancel</button>
+      <button class="btn primary" onclick="performLogin()">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Cell Modal -->
 <div class="modal" id="editCellModal">
   <div class="modal-card" style="width:380px">
     <div class="modal-head"><b>Edit Shift Assignment</b><button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button></div>
@@ -396,13 +433,73 @@ if(!state.pattern) state.pattern = 'EEMMNNO';
 if(!state.holidays) state.holidays = [];
 if(!state.extraDuties) state.extraDuties = [];
 
+let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
+
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
 
-function log(action,details){state.history.unshift({time:new Date().toISOString(),action,details});state.history=state.history.slice(0,1000);save();renderHistory();}
+function log(action,details){
+  state.history.unshift({time:new Date().toISOString(),action,details});
+  state.history=state.history.slice(0,1000);
+  save();renderHistory();
+}
 function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
 function formatDateDisplay(d){ if(!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-'); }
 function closeModal(){$('modal').classList.remove('show');}
+
+/* ==== USER AUTHENTICATION & SESSIONS ==== */
+function openLoginModal() {
+  const selectGroup = $('loginEmpOptions');
+  selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
+  $('loginPin').value = '';
+  $('loginModal').classList.add('show');
+}
+
+function performLogin() {
+  const selectedVal = $('loginUserSelect').value;
+  const pin = $('loginPin').value.trim();
+
+  if (selectedVal === 'ADMIN') {
+    if (pin === '1234') {
+      currentUser = { type: 'ADMIN', name: 'Admin', id: 'ADMIN' };
+    } else {
+      return alert('Invalid Admin PIN! (Default is 1234)');
+    }
+  } else {
+    const emp = state.employees.find(e => e.id === selectedVal);
+    if (!emp) return alert('Employee not found!');
+    const validPin = emp.pin || '0000';
+    if (pin === validPin || pin === '1234') {
+      currentUser = { type: 'EMP', name: emp.name, id: emp.id, code: emp.code };
+    } else {
+      return alert(`Invalid PIN for ${emp.name}! (Default is 0000)`);
+    }
+  }
+
+  localStorage.setItem('sru_current_user', JSON.stringify(currentUser));
+  $('loginModal').classList.remove('show');
+  updateUserUI();
+  renderLeaves();
+}
+
+function logoutUser() {
+  currentUser = null;
+  localStorage.removeItem('sru_current_user');
+  updateUserUI();
+  renderLeaves();
+}
+
+function updateUserUI() {
+  if (currentUser) {
+    $('loggedInUserName').textContent = currentUser.type === 'ADMIN' ? '👑 Admin' : `👤 ${currentUser.name}`;
+    $('loginBtn').textContent = 'Logout';
+    $('loginBtn').onclick = logoutUser;
+  } else {
+    $('loggedInUserName').textContent = '👤 Guest (View Only)';
+    $('loginBtn').textContent = 'Login';
+    $('loginBtn').onclick = openLoginModal;
+  }
+}
 
 function updateHistoryDropdown() {
   const select = $('historyMonthSelect');
@@ -410,7 +507,7 @@ function updateHistoryDropdown() {
   select.innerHTML = months.length ? months.map(m => `<option value="${m}">${m}</option>`).join('') : `<option value="">No Finalized Rotas</option>`;
 }
 
-let myChart = null; // Chart.js instance
+let myChart = null;
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
@@ -462,7 +559,7 @@ function saveSettings() {
 
 /* ==== EMPLOYEE MANAGEMENT ==== */
 function openEmployee(id=null){
- const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',active:true,offset:0 };
+ const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',pin:'0000',active:true,offset:0 };
  $('modalTitle').textContent=id?'Edit Employee':'Add Employee';
  $('modalBody').innerHTML=`<div class="form-grid">
  <div class="field"><label>Emp ID</label><input id="f_code" value="${esc(e.code)}"></div>
@@ -473,6 +570,7 @@ function openEmployee(id=null){
    <option value="">Not defined</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option>
    <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
  </select></div>
+ <div class="field"><label>Login PIN</label><input id="f_pin" maxlength="6" value="${esc(e.pin||'0000')}"></div>
  <div class="field"><label>Cycle Offset (0–6)</label><input id="f_offset" type="number" min="0" max="6" value="${e.offset||0}"></div>
  <div class="field"><label>Active</label><select id="f_active"><option value="true">Yes</option><option value="false">No</option></select></div>
  </div>`;
@@ -480,7 +578,8 @@ function openEmployee(id=null){
  $('modalSave').onclick=()=>{
    e.code=$('f_code').value.trim(); e.name=$('f_name').value.trim();
    e.seniority=Math.max(1,Number($('f_seniority').value)||1); e.roles=normalizeRoles($('f_roles').value);
-   e.weeklyOff=$('f_off').value; e.offset=Math.max(0,Math.min(6,Number($('f_offset').value)||0));
+   e.weeklyOff=$('f_off').value; e.pin=$('f_pin').value.trim() || '0000';
+   e.offset=Math.max(0,Math.min(6,Number($('f_offset').value)||0));
    e.active=$('f_active').value==='true';
    if(!e.code||!e.name)return alert('Emp ID and Employee Name are required.');
    if(!id)state.employees.push(e);
@@ -499,11 +598,13 @@ function renderEmployeeData(){
    <td><select onchange="quickOff('${e.id}',this.value)">
       <option value="">Not defined</option>${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${e.weeklyOff===d?'selected':''}>${d}</option>`).join('')}
    </select></td>
+   <td><input value="${esc(e.pin||'0000')}" style="width:70px;text-align:center" onchange="quickPin('${e.id}',this.value)"></td>
    <td><button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button></td>
- </tr>`).join(''):`<tr><td colspan="7" class="empty">No employees yet.</td></tr>`;
+ </tr>`).join(''):`<tr><td colspan="8" class="empty">No employees yet.</td></tr>`;
 }
-function quickRole(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.roles=normalizeRoles(v); save(); log('Roles updated',`${e.code}: ${e.roles}`); renderEmployeeData(); scheduleSync();}
-function quickOff(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.weeklyOff=v; save(); log('OFF DAY updated',`${e.code}: ${v||'Not defined'}`); renderEmployeeData(); scheduleSync();}
+function quickRole(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.roles=normalizeRoles(v); save(); scheduleSync();}
+function quickOff(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.weeklyOff=v; save(); scheduleSync();}
+function quickPin(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.pin=v.trim()||'0000'; save(); scheduleSync();}
 function sortBySeniority(){state.employees.sort((a,b)=>(a.seniority||9999)-(b.seniority||9999)); save(); renderEmployeeData();}
 function removeEmployee(id){
  if(!confirm('Delete this employee?'))return; state.employees=state.employees.filter(x=>x.id!==id);
@@ -512,7 +613,7 @@ function removeEmployee(id){
 $('empDataSearch').oninput=renderEmployeeData;
 
 
-/* ==== SMART ROTA ENGINE (FIXED COVERAGE ALGORITHM) ==== */
+/* ==== SMART ROTA ENGINE ==== */
 function dateRange(month){
  const [y,m]=month.split('-').map(Number),end=new Date(y,m,0),a=[];
  for(let d=1;d<=end.getDate();d++)a.push(new Date(y,m-1,d));
@@ -527,7 +628,6 @@ function buildRotaMatrix(month) {
   const activeEmps = state.employees.filter(e => e.active !== false).sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
   if(!state.overrides[month]) state.overrides[month] = {};
 
-  // 1. Base Shifts
   activeEmps.forEach(e => {
       matrix[e.id] = {};
       dates.forEach(d => {
@@ -547,7 +647,6 @@ function buildRotaMatrix(month) {
       });
   });
 
-  // 2. SMART BALANCER for Roles (Fill Gaps First)
   dates.forEach(d => {
       const dStr = d.toISOString().slice(0, 10);
       const prevD = new Date(d); prevD.setDate(d.getDate() - 1);
@@ -558,7 +657,6 @@ function buildRotaMatrix(month) {
           let neededRoles = ['1', '2', '3']; 
           let assignments = {};
 
-          // Hardcode Single-Role Employees
           empsInShift.forEach(e => {
               const roles = normalizeRoles(e.roles).split(',').filter(Boolean);
               if(roles.length === 1) {
@@ -567,16 +665,13 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // Fill gaps with multi-role employees
           empsInShift.forEach(e => {
               if (assignments[e.id]) return; 
               const roles = normalizeRoles(e.roles).split(',').filter(Boolean);
               let chosen = null;
-              
               for(let r of roles) {
                   if(neededRoles.includes(r)) { chosen = r; neededRoles = neededRoles.filter(nr => nr !== r); break; }
               }
-              // Normal toggle if no gaps
               if(!chosen) {
                   if (roles.includes('1') && roles.includes('2')) {
                       const prevBase = matrix[e.id][prevDStr]?.base;
@@ -589,7 +684,6 @@ function buildRotaMatrix(month) {
           empsInShift.forEach(e => { matrix[e.id][dStr].full = sh + (assignments[e.id] || ''); });
       });
 
-      // 3. Apply Overrides
       activeEmps.forEach(e => {
           if (matrix[e.id][dStr].override) {
               const ov = matrix[e.id][dStr].override.toUpperCase();
@@ -640,6 +734,10 @@ $('rotaMonth').onchange=generateRota;
 
 /* ==== CELL EDIT MODAL ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
+  if(!currentUser || currentUser.type !== 'ADMIN') {
+    alert('Only Admin / Supervisor can override shift duties directly in the Rota.');
+    return;
+  }
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
   $('editCellModal').classList.add('show');
@@ -648,7 +746,6 @@ function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colI
 function applyCellOverride(val) {
   if(!activeEditCell) return;
   const { month, empId, dateStr, isHistory, rowIdx, colIdx } = activeEditCell;
-  
   if (val) val = val.trim().toUpperCase();
   
   if (isHistory) {
@@ -656,7 +753,6 @@ function applyCellOverride(val) {
       const style = getStyleForCode(val);
       state.finalizedRotas[month].snapshot[rowIdx].shifts[colIdx] = { full: val, bg: style.bg, txt: style.txt };
       generateHistoryRota();
-      log('Finalized Rota Edited', `${month} snapshot updated.`);
   } else {
       if (!val) { delete state.overrides[month][empId][dateStr]; } 
       else {
@@ -670,10 +766,13 @@ function applyCellOverride(val) {
   $('editCellModal').classList.remove('show');
 }
 
-/* ==== ROTA FINALIZATION & HISTORY ==== */
+/* ==== ROTA FINALIZATION ==== */
 function finalizeRota() {
+   if(!currentUser || currentUser.type !== 'ADMIN') {
+     return alert('Permission Denied! Only Admin can finalize rota.');
+   }
    const month = $('rotaMonth').value;
-   if(!confirm(`Finalize Rota for ${month}?\n\nThis takes an exact snapshot of the current view and saves it in Rota History.`)) return;
+   if(!confirm(`Finalize Rota for ${month}?`)) return;
    
    const { matrix, dates, activeEmps } = buildRotaMatrix(month);
    const snapshot = activeEmps.map(e => {
@@ -690,14 +789,14 @@ function finalizeRota() {
    state.finalizedRotas[month] = { snapshot: snapshot, dates: dates.map(d => d.toISOString()) };
    save(); log('Rota Finalized', month); scheduleSync();
    updateHistoryDropdown();
-   alert(`Rota for ${month} finalized successfully! View in Rota History.`);
+   alert(`Rota for ${month} finalized successfully!`);
 }
 
 function generateHistoryRota() {
   const month = $('historyMonthSelect').value;
   if(!month) {
      $('histRotaHead').innerHTML = '';
-     $('histRotaBody').innerHTML = `<tr><td class="empty">No finalized rotas found. Finalize a month first.</td></tr>`;
+     $('histRotaBody').innerHTML = `<tr><td class="empty">No finalized rotas found.</td></tr>`;
      return;
   }
   
@@ -715,9 +814,10 @@ function generateHistoryRota() {
 $('historyMonthSelect').onchange = generateHistoryRota;
 
 function deleteFinalizedRota() {
+  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete finalized rota.');
   const month = $('historyMonthSelect').value;
   if(!month || !state.finalizedRotas[month]) return alert('Select a finalized rota first.');
-  if(confirm(`Permanently delete the finalized snapshot for ${month}?`)) {
+  if(confirm(`Permanently delete snapshot for ${month}?`)) {
      delete state.finalizedRotas[month];
      save(); log('Finalized Rota Deleted', month); scheduleSync();
      updateHistoryDropdown(); generateHistoryRota();
@@ -754,6 +854,7 @@ function renderCoverage(dates, activeEmps, matrix){
 
 /* ==== HOLIDAYS ==== */
 function openHoliday(idx=null){
+  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can add/edit holidays.');
   const h=idx!==null?state.holidays[idx]:{date:'',name:''};
   $('modalTitle').textContent=idx!==null?'Edit Holiday':'Add Holiday';
   $('modalBody').innerHTML=`<div class="form-grid" style="grid-template-columns:1fr 1fr;">
@@ -769,6 +870,7 @@ function openHoliday(idx=null){
   $('modal').classList.add('show');
 }
 function removeHoliday(idx){
+  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete holidays.');
   if(confirm('Delete holiday?')){ state.holidays.splice(idx,1); save(); renderHolidays(); scheduleSync(); }
 }
 function renderHolidays(){
@@ -787,19 +889,14 @@ function getAutoExtraDuties(monthF) {
        activeEmps.forEach(e => {
            dates.forEach(d => {
                const dStr = d.toISOString().slice(0, 10);
-               if(monthF && !dStr.startsWith(monthF)) return; // Filter by month
+               if(monthF && !dStr.startsWith(monthF)) return;
                const sc = matrix[e.id][dStr];
                if(!sc || sc.full === 'O' || sc.full === 'L') return;
                
                let types = [];
-               // Double duty detection
                if(sc.full.includes('+')) types.push('Double Duty');
-               
-               // Holiday duty detection
                const isHol = state.holidays.find(h => h.date === dStr);
                if(isHol) types.push(`Holiday Duty (${isHol.name})`);
-               
-               // Off day detection (only for active matrix since finalized lacks weeklyOff context sometimes, but we use master)
                if(e.weeklyOff && e.weeklyOff === d.toLocaleDateString('en-US',{weekday:'long'})) {
                    types.push('Off Day Duty');
                }
@@ -818,14 +915,12 @@ function getAutoExtraDuties(monthF) {
        });
    };
    
-   // Run for current Active Rota (if it matches filter)
    const { matrix: activeM, dates: activeD, activeEmps: activeE } = buildRotaMatrix($('rotaMonth').value);
    processMatrix(activeM, activeD, activeE, false);
    
-   // Run for Finalized Rotas
    Object.keys(state.finalizedRotas).forEach(m => {
-       if(monthF && m !== monthF) return; // Skip if filter applied and no match
-       if(m === $('rotaMonth').value) return; // Skip if already covered by active
+       if(monthF && m !== monthF) return;
+       if(m === $('rotaMonth').value) return;
        
        const snap = state.finalizedRotas[m];
        const dates = snap.dates.map(ds => new Date(ds));
@@ -876,8 +971,6 @@ function removeExtraDuty(id){
 function renderExtraDuties(){
   const mF = $('edMonthFilter').value;
   const tF = $('edTypeFilter').value;
-  
-  // Combine Manual & Auto Extra Duties
   let allED = [...state.extraDuties, ...getAutoExtraDuties(mF)];
   
   let list = allED.filter(x => {
@@ -904,7 +997,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== LEAVE REGISTER ==== */
+/* ==== MULTI-USER LEAVE REGISTER ENGINE ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -913,79 +1006,159 @@ function sortLeave(key) {
 }
 
 function openLeave(id=null){
- const l=id?state.leaves.find(x=>x.id===id):{id:'L'+Date.now(),empId:state.employees[0]?.id||'',from:'',to:'',type:'CL',reason:'',status:'Approved', applyDate:new Date().toISOString().slice(0, 10)};
- $('modalTitle').textContent=id?'Edit Leave':'Apply Leave';
- $('modalBody').innerHTML=`<div class="form-grid">
- <div class="field"><label>Employee</label><select id="l_emp">${state.employees.map(e=>`<option value="${e.id}">${esc(e.code)} — ${esc(e.name)}</option>`).join('')}</select></div>
- <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
- <div class="field"><label>To Date</label><input id="l_to" type="date" value="${esc(l.to)}"></div>
- <div class="field" style="grid-column:1/-1"><label>Reason</label><input id="l_reason" value="${esc(l.reason)}"></div>
- <div class="field"><label>Status</label><select id="l_status"><option>Approved</option><option>Pending</option><option>Rejected</option></select></div>
- </div>`;
- $('l_emp').value=l.empId; $('l_status').value = l.status;
- $('modalSave').onclick=()=>{
-   l.empId=$('l_emp').value;l.from=$('l_from').value;l.to=$('l_to').value;l.reason=$('l_reason').value.trim();l.status=$('l_status').value;
-   if(!l.from||!l.to)return alert('Select dates.');
-   if(l.to<l.from)return alert('To date cannot be before From date.');
-   const d1 = new Date(l.from); const d2 = new Date(l.to);
-   l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
-   if(!id){
-     l.applyDate = new Date().toISOString().slice(0, 10);
-     state.leaves.push(l); log('Leave applied',`From ${l.from} to ${l.to}`);
-   }else{ log('Leave updated',l.id); }
-   save();closeModal();renderLeaves();renderDashboard();generateRota();scheduleSync();
- };
- $('modal').classList.add('show');
+  if (!currentUser) {
+    alert('Please login first to apply or edit leave.');
+    openLoginModal();
+    return;
+  }
+
+  const isEdit = !!id;
+  const l = isEdit 
+    ? state.leaves.find(x => x.id === id) 
+    : { id: 'L' + Date.now(), empId: currentUser.type === 'ADMIN' ? (state.employees[0]?.id || '') : currentUser.id, from: '', to: '', type: 'CL', reason: '', status: 'Pending', applyDate: new Date().toISOString().slice(0, 10) };
+
+  if (isEdit && currentUser.type !== 'ADMIN' && l.empId !== currentUser.id) {
+    return alert('Permission Denied! You can only edit your own leave requests.');
+  }
+
+  $('modalTitle').textContent = isEdit ? 'Edit Leave' : 'Apply Leave';
+
+  let empSelectHtml = '';
+  if (currentUser.type === 'ADMIN') {
+    empSelectHtml = `<select id="l_emp">${state.employees.map(e => `<option value="${e.id}">${esc(e.code)} — ${esc(e.name)}</option>`).join('')}</select>`;
+  } else {
+    empSelectHtml = `<input id="l_emp_display" value="${esc(currentUser.name)} (${esc(currentUser.code)})" disabled style="background:#f1f5f9;">
+                     <input type="hidden" id="l_emp" value="${currentUser.id}">`;
+  }
+
+  let statusHtml = '';
+  if (currentUser.type === 'ADMIN') {
+    statusHtml = `<select id="l_status"><option>Pending</option><option>Approved</option><option>Rejected</option></select>`;
+  } else {
+    statusHtml = `<input id="l_status_display" value="${l.status || 'Pending'}" disabled style="background:#f1f5f9;">
+                  <input type="hidden" id="l_status" value="${l.status || 'Pending'}">`;
+  }
+
+  $('modalBody').innerHTML = `<div class="form-grid">
+    <div class="field"><label>Employee</label>${empSelectHtml}</div>
+    <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
+    <div class="field"><label>To Date</label><input id="l_to" type="date" value="${esc(l.to)}"></div>
+    <div class="field" style="grid-column:1/-1"><label>Reason</label><input id="l_reason" value="${esc(l.reason)}" placeholder="Reason for leave"></div>
+    <div class="field"><label>Status</label>${statusHtml}</div>
+  </div>`;
+
+  if (currentUser.type === 'ADMIN') {
+    $('l_emp').value = l.empId;
+    $('l_status').value = l.status;
+  }
+
+  $('modalSave').onclick = () => {
+    l.empId = $('l_emp').value;
+    l.from = $('l_from').value;
+    l.to = $('l_to').value;
+    l.reason = $('l_reason').value.trim();
+    l.status = $('l_status').value;
+
+    if (!l.from || !l.to) return alert('Select dates.');
+    if (l.to < l.from) return alert('To date cannot be before From date.');
+
+    const d1 = new Date(l.from);
+    const d2 = new Date(l.to);
+    l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
+
+    if (!isEdit) {
+      l.applyDate = new Date().toISOString().slice(0, 10);
+      state.leaves.push(l);
+      log('Leave applied', `By ${currentUser.name}: ${l.from} to ${l.to}`);
+    } else {
+      log('Leave updated', `${l.id} by ${currentUser.name}`);
+    }
+
+    save();
+    closeModal();
+    renderLeaves();
+    renderDashboard();
+    generateRota();
+    scheduleSync();
+  };
+
+  $('modal').classList.add('show');
 }
 
 function removeLeave(id){
-  if(!confirm('Delete this leave record?')) return;
-  state.leaves = state.leaves.filter(l => l.id !== id);
-  save(); log('Leave deleted', id); renderLeaves(); renderDashboard(); generateRota(); scheduleSync();
+  const l = state.leaves.find(x => x.id === id);
+  if (!l) return;
+
+  if (!currentUser) {
+    return alert('Please login first to delete.');
+  }
+  if (currentUser.type !== 'ADMIN' && currentUser.id !== l.empId) {
+    return alert('Access Denied! You are not authorized to delete another employee\'s leave.');
+  }
+
+  if (!confirm('Are you sure you want to delete this leave record?')) return;
+
+  state.leaves = state.leaves.filter(x => x.id !== id);
+  save();
+  log('Leave deleted', `${id} deleted by ${currentUser.name}`);
+  renderLeaves();
+  renderDashboard();
+  generateRota();
+  scheduleSync();
 }
 
 function renderLeaves(){
- const q=($('leaveSearch')?.value||'').toLowerCase();
- const monthF=($('leaveMonthFilter')?.value);
- const statusF=($('leaveStatusFilter')?.value);
+  const q = ($('leaveSearch')?.value || '').toLowerCase();
+  const monthF = ($('leaveMonthFilter')?.value);
+  const statusF = ($('leaveStatusFilter')?.value);
  
- let displayList = state.leaves.filter(l=>{
-   const e=state.employees.find(x=>x.id===l.empId);
-   let matchQ = (e?.name+' '+e?.code).toLowerCase().includes(q);
-   let matchS = statusF ? l.status === statusF : true;
-   let matchM = true;
-   if(monthF) {
-     const monthStart = monthF + '-01'; const monthEnd = monthF + '-31';
-     matchM = (l.from <= monthEnd && l.to >= monthStart);
-   }
-   return matchQ && matchS && matchM;
- });
+  let displayList = state.leaves.filter(l => {
+    const e = state.employees.find(x => x.id === l.empId);
+    let matchQ = (e?.name + ' ' + e?.code).toLowerCase().includes(q);
+    let matchS = statusF ? l.status === statusF : true;
+    let matchM = true;
+    if (monthF) {
+      const monthStart = monthF + '-01';
+      const monthEnd = monthF + '-31';
+      matchM = (l.from <= monthEnd && l.to >= monthStart);
+    }
+    return matchQ && matchS && matchM;
+  });
  
- displayList.sort((a,b) => {
-   let valA, valB;
-   if (leaveSort.key === 'emp') {
-     valA = (state.employees.find(x=>x.id===a.empId)?.name || '').toLowerCase();
-     valB = (state.employees.find(x=>x.id===b.empId)?.name || '').toLowerCase();
-   } else { valA = a[leaveSort.key]; valB = b[leaveSort.key]; }
-   if (valA < valB) return leaveSort.desc ? 1 : -1;
-   if (valA > valB) return leaveSort.desc ? -1 : 1;
-   return 0;
- });
+  displayList.sort((a, b) => {
+    let valA, valB;
+    if (leaveSort.key === 'emp') {
+      valA = (state.employees.find(x => x.id === a.empId)?.name || '').toLowerCase();
+      valB = (state.employees.find(x => x.id === b.empId)?.name || '').toLowerCase();
+    } else {
+      valA = a[leaveSort.key];
+      valB = b[leaveSort.key];
+    }
+    if (valA < valB) return leaveSort.desc ? 1 : -1;
+    if (valA > valB) return leaveSort.desc ? -1 : 1;
+    return 0;
+  });
  
- $('leaveBody').innerHTML=displayList.length ? displayList.map((l, i)=>{
-   const e=state.employees.find(x=>x.id===l.empId)||{};
-   return `<tr>
-     <td>${i+1}</td>
-     <td>${formatDateDisplay(l.applyDate)}</td>
-     <td style="text-align:left;font-weight:600">${esc(e.name||'Unknown')}</td>
-     <td>${formatDateDisplay(l.from)}</td>
-     <td>${formatDateDisplay(l.to)}</td>
-     <td><b>${l.days || 1}</b></td>
-     <td>${esc(l.reason)}</td>
-     <td><span class="tag ${l.status.toLowerCase()}">${esc(l.status)}</span></td>
-     <td><button class="btn" onclick="openLeave('${l.id}')">Edit</button> <button class="btn danger" onclick="removeLeave('${l.id}')">Del</button></td>
-   </tr>`
- }).join('') : `<tr><td colspan="9" class="empty">No leave records match the filters.</td></tr>`;
+  $('leaveBody').innerHTML = displayList.length ? displayList.map((l, i) => {
+    const e = state.employees.find(x => x.id === l.empId) || {};
+    const hasPermission = currentUser && (currentUser.type === 'ADMIN' || currentUser.id === l.empId);
+
+    const actionButtons = hasPermission 
+      ? `<button class="btn" onclick="openLeave('${l.id}')">Edit</button> <button class="btn danger" onclick="removeLeave('${l.id}')">Del</button>`
+      : `<span class="small" style="color:var(--muted); font-weight:600;">🔒 Restricted</span>`;
+
+    return `<tr>
+      <td>${i + 1}</td>
+      <td>${formatDateDisplay(l.applyDate)}</td>
+      <td style="text-align:left;font-weight:600">${esc(e.name || 'Unknown')}</td>
+      <td>${formatDateDisplay(l.from)}</td>
+      <td>${formatDateDisplay(l.to)}</td>
+      <td><b>${l.days || 1}</b></td>
+      <td>${esc(l.reason)}</td>
+      <td><span class="tag ${l.status.toLowerCase()}">${esc(l.status)}</span></td>
+      <td>${actionButtons}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="9" class="empty">No leave records match the filters.</td></tr>`;
 }
 $('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves; $('leaveStatusFilter').onchange=renderLeaves;
 
@@ -1010,14 +1183,13 @@ function downloadCSV(type) {
 
 /* ==== DASHBOARD & ANALYTICS ==== */
 function renderHistory(){$('historyBody').innerHTML=state.history.map(h=>`<tr><td style="white-space:nowrap">${new Date(h.time).toLocaleString('en-IN')}</td><td style="text-align:left"><b>${esc(h.action)}</b></td><td style="text-align:left">${esc(h.details)}</td></tr>`).join('')||`<tr><td colspan="3" class="empty">No history yet.</td></tr>`}
-function clearHistory(){if(confirm('Clear local audit history?')){state.history=[];save();renderHistory();scheduleSync();}}
+function clearHistory(){if(confirm('Clear audit history?')){state.history=[];save();renderHistory();scheduleSync();}}
 
 function renderDashboard(){
  $('statEmp').textContent=state.employees.filter(e=>e.active!==false).length;
  const d=new Date(); const counts={M:0,E:0,N:0,O:0,L:0};
  const dStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
  
- // Active Shift Count
  state.employees.filter(e=>e.active!==false).forEach(e=>{
    if(activeMatrix[e.id] && activeMatrix[e.id][dStr]) {
        const base = activeMatrix[e.id][dStr].base;
@@ -1030,13 +1202,10 @@ function renderDashboard(){
  $('dashShiftName').textContent = {M:'Morning',E:'Evening',N:'Night'}[s];
  $('statShiftSub').textContent=`M ${counts.M} · E ${counts.E} · N ${counts.N} · O ${counts.O} · L ${counts.L}`;
  
- // Leave Today List
  const leavesTodayList = state.leaves.filter(l=>l.status==='Approved'&&l.from<=dStr&&dStr<=l.to).map(l => state.employees.find(e=>e.id===l.empId)?.name).filter(Boolean);
  $('statLeave').textContent=leavesTodayList.length;
- $('statPending').textContent=state.leaves.filter(l=>l.status==='Pending').length;
- $('todayLeavesList').innerHTML = leavesTodayList.length ? leavesTodayList.map(name => `<div class="dash-item"><b>${name}</b><span class="tag leave">On Leave</span></div>`).join('') : '<div class="small">No employees on leave today.</div>';
+ $('todayLeavesList').innerHTML = leavesTodayList.length ? leavesTodayList.map(name => `<div class="dash-item"><b>${name}</b><span class="tag approved">On Leave</span></div>`).join('') : '<div class="small">No employees on leave today.</div>';
  
- // Extra Duty Today List
  const allED = [...state.extraDuties, ...getAutoExtraDuties()];
  const edTodayList = allED.filter(ed => ed.date === dStr);
  $('statExtra').textContent=edTodayList.length;
@@ -1045,11 +1214,9 @@ function renderDashboard(){
      return `<div class="dash-item"><b>${empName}</b><span class="tag approved">${ed.type}</span></div>`
  }).join('') : '<div class="small">No extra duties scheduled today.</div>';
 
- // Today's Deployment 
  const arr=state.employees.filter(e=>e.active!==false).map(e=>({e,sc:activeMatrix[e.id]?.[dStr]})).filter(x=>x.sc && x.sc.base===s);
  $('todayDeployment').innerHTML=arr.length?`<table><thead><tr><th>Role</th><th>Employee Name</th><th>Shift Duty</th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="color:var(--muted)">${esc(x.sc.full.replace(/[^0-9]/g,''))}</b></td><td style="font-weight:600">${esc(x.e.name)}</td><td><span class="tag" style="background:${state.colors[`${s}_bg`]};color:${state.colors[`${s}_txt`]}">${x.sc.full}</span></td></tr>`).join('')}</tbody></table>`:`<div class="empty">No manpower assigned to ${s} shift today.</div>`;
  
- // Update Charts
  renderCharts();
 }
 
@@ -1061,18 +1228,13 @@ function renderCharts() {
    const labels = [];
    const leaveData = [];
    const edData = [];
-   
    const allED = [...state.extraDuties, ...getAutoExtraDuties()];
    
    state.employees.filter(e=>e.active!==false).forEach(emp => {
        labels.push(emp.name);
-       
-       // Calculate approved leave days for this emp
        let leaveCount = 0;
        state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += l.days);
        leaveData.push(leaveCount);
-       
-       // Calculate extra duty days for this emp
        let edCount = allED.filter(ed => ed.empId === emp.id).length;
        edData.push(edCount);
    });
@@ -1099,9 +1261,8 @@ let syncTimer=null;
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncAll(),1500);}
 
 async function syncAll(){
-  const status=$('syncStatus'); status.textContent='Syncing to database…';status.className='sync';
+  const status=$('syncStatus'); status.textContent='Syncing…';status.className='sync';
   try{
-    // Flatten finalized rotas for easier Google Sheet integration
     const flatRotaHistory = [];
     Object.keys(state.finalizedRotas).forEach(month => {
         const snap = state.finalizedRotas[month];
@@ -1120,16 +1281,15 @@ async function syncAll(){
     const payload={
         employees:state.employees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
         history:state.history, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
-        flatRotaHistory: flatRotaHistory, // Perfect format for Google Sheet logging
-        colors:state.colors, overrides:state.overrides
+        flatRotaHistory: flatRotaHistory, colors:state.colors, overrides:state.overrides
     };
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'syncAll',payload})});
-    status.textContent='✓ Database Synced · '+new Date().toLocaleTimeString('en-IN');status.className='sync ok';
+    status.textContent='✓ Synced · '+new Date().toLocaleTimeString('en-IN');status.className='sync ok';
   }catch(err){status.textContent='✕ Sync failed';status.className='sync bad';}
 }
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sru-rota-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();}
 
-/* ==== FULL SEED DATA ==== */
+/* ==== INITIAL SEED DATA ==== */
 if(!state.employees.length){
  const empSeed=[
  ['83096','Jai Bhagwan',1,'3,2','Friday'],
@@ -1145,7 +1305,7 @@ if(!state.employees.length){
  ['517591','Sachin Garg',11,'1,2','Thursday']
  ];
  state.employees=empSeed.map((x,i)=>({
-   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:'',active:true,offset:i%7
+   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:'',pin:'0000',active:true,offset:i%7
  }));
 
  const leaveSeed = [
@@ -1186,7 +1346,13 @@ if(!state.employees.length){
  save();
 }
 
-renderEmployeeData();renderLeaves();renderHistory(); generateRota(false); renderDashboard(); updateHistoryDropdown();
+renderEmployeeData();
+renderLeaves();
+renderHistory();
+generateRota(false);
+renderDashboard();
+updateHistoryDropdown();
+updateUserUI();
 </script>
 </body>
 </html>

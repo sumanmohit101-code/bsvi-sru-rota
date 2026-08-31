@@ -136,11 +136,24 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
        </div>
        
-       <!-- Right Side: Analytics Chart -->
+       <!-- Right Side: Analytics Chart (With Filter: All Time, Year, Month) -->
        <div class="panel" style="margin-bottom:0;">
-          <div class="panel-head"><h2>Manpower Analytics (Finalized & Active YTD)</h2></div>
+          <div class="panel-head">
+             <h2>Manpower Analytics</h2>
+             <div class="toolbar">
+                <select id="chartViewType" onchange="toggleChartViewInputs()" style="min-width:100px;">
+                   <option value="ALL">All Time</option>
+                   <option value="YEAR">By Year</option>
+                   <option value="MONTH" selected>By Month</option>
+                </select>
+                <input type="number" id="chartYearFilter" min="2020" max="2035" value="2026" style="width:85px; display:none;" onchange="renderCharts()" title="Select Year">
+                <input type="month" id="chartMonthFilter" value="2026-08" style="width:125px;" onchange="renderCharts()" title="Select Month">
+             </div>
+          </div>
           <div class="panel-body">
-             <div class="notice" style="margin-bottom:15px;">Compares Total Approved Leave Days vs. Total Extra Duties per employee based on Rota History & Active Records.</div>
+             <div class="notice" style="margin-bottom:15px;" id="chartSubtitle">
+                Compares Total Approved Leave Days vs. Total Extra Duties per employee.
+             </div>
              <div style="position:relative; height:380px; width:100%;">
                 <canvas id="analyticsChart"></canvas>
              </div>
@@ -1033,7 +1046,7 @@ function applyCellOverride(val) {
   $('editCellModal').classList.remove('show');
 }
 
-/* ==== ROTA FINALIZATION (STORES SNAPSHOT PERMANENTLY WITH LOCAL DATE STRINGS) ==== */
+/* ==== ROTA FINALIZATION ==== */
 function finalizeRota() {
    const month = $('rotaMonth').value;
    if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot and links Dashboard & Reports.`)) return;
@@ -1269,7 +1282,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== 3. LEAVE REGISTER (APPLICATIONS & APPROVALS) ==== */
+/* ==== 3. LEAVE REGISTER (APPLICATIONS & APPROVALS - UPDATES APPLY DATE ON EDIT) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1287,7 +1300,7 @@ function openLeave(id=null){
   const isEdit = !!id;
   const l = isEdit 
     ? state.leaves.find(x => x.id === id) 
-    : { id: 'L' + Date.now(), empId: currentUser.type === 'ADMIN' ? (state.employees[0]?.id || '') : currentUser.id, from: '', to: '', type: 'CL', reason: '', status: 'Pending', applyDate: new Date().toISOString().slice(0, 10) };
+    : { id: 'L' + Date.now(), empId: currentUser.type === 'ADMIN' ? (state.employees[0]?.id || '') : currentUser.id, from: '', to: '', type: 'CL', reason: '', status: 'Pending', applyDate: toLocalISO(new Date()) };
 
   if (isEdit && currentUser.type !== 'ADMIN' && l.empId !== currentUser.id) {
     return alert('Permission Denied! You can only edit your own leave requests.');
@@ -1338,12 +1351,14 @@ function openLeave(id=null){
     const d2 = new Date(l.to);
     l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
 
+    // Update Apply Date to TODAY upon both Application & Edit
+    l.applyDate = toLocalISO(new Date());
+
     if (!isEdit) {
-      l.applyDate = new Date().toISOString().slice(0, 10);
       state.leaves.push(l);
       log('Leave applied', `By ${currentUser.name}: ${l.from} to ${l.to}`);
     } else {
-      log('Leave updated', `${l.id} by ${currentUser.name}`);
+      log('Leave updated', `${l.id} by ${currentUser.name} on ${l.applyDate}`);
     }
 
     save();
@@ -1497,7 +1512,25 @@ function downloadCSV(type) {
 }
 
 
-/* ==== DASHBOARD & ANALYTICS (UNIFIED CLEAN TABLE & ROBUST DATA LINK) ==== */
+/* ==== DASHBOARD & ANALYTICS (UNIFIED CLEAN TABLE & FILTERED ANALYTICS) ==== */
+function toggleChartViewInputs() {
+  const type = $('chartViewType').value;
+  if (type === 'ALL') {
+    $('chartYearFilter').style.display = 'none';
+    $('chartMonthFilter').style.display = 'none';
+    $('chartSubtitle').textContent = 'Showing All Time Manpower Analytics (Approved Leaves vs. Extra Duties).';
+  } else if (type === 'YEAR') {
+    $('chartYearFilter').style.display = 'inline-block';
+    $('chartMonthFilter').style.display = 'none';
+    $('chartSubtitle').textContent = `Showing Manpower Analytics for Year ${$('chartYearFilter').value}.`;
+  } else if (type === 'MONTH') {
+    $('chartYearFilter').style.display = 'none';
+    $('chartMonthFilter').style.display = 'inline-block';
+    $('chartSubtitle').textContent = `Showing Manpower Analytics for Month ${$('chartMonthFilter').value}.`;
+  }
+  renderCharts();
+}
+
 function renderHistory(){$('historyBody').innerHTML=state.history.map(h=>`<tr><td style="white-space:nowrap">${new Date(h.time).toLocaleString('en-IN')}</td><td style="text-align:left"><b>${esc(h.action)}</b></td><td style="text-align:left">${esc(h.details)}</td></tr>`).join('')||`<tr><td colspan="3" class="empty">No history yet.</td></tr>`}
 function clearHistory(){if(confirm('Clear audit history?')){state.history=[];save();renderHistory();scheduleSync();}}
 
@@ -1571,11 +1604,9 @@ function renderDashboard(){
  ];
 
  let tableHtml = '';
- let totalActiveRendered = 0;
 
  shiftMeta.forEach(sm => {
     const list = shiftGroups[sm.key];
-    totalActiveRendered += list.length;
     if(list.length) {
        list.forEach((item, idx) => {
           const shiftCol = idx === 0 ? `<td rowspan="${list.length}" style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line); color:#1e293b;"><span class="tag" style="background:${sm.bg};color:${sm.txt};margin-bottom:4px;">${sm.key}</span><br>${sm.label}</td>` : '';
@@ -1608,34 +1639,68 @@ function renderCharts() {
    if(!ctx) return;
    if(myChart) myChart.destroy();
    
+   const viewType = $('chartViewType')?.value || 'MONTH';
+   const targetYear = $('chartYearFilter')?.value || '2026';
+   const targetMonth = $('chartMonthFilter')?.value || '2026-08';
+
    const labels = [];
    const leaveData = [];
    const edData = [];
-   const allED = [...state.extraDuties, ...getAutoExtraDuties()];
    
+   // Extra Duties according to timeframe
+   const allED = [...state.extraDuties, ...getAutoExtraDuties(viewType === 'MONTH' ? targetMonth : null)];
+   const filteredED = allED.filter(ed => {
+      if (viewType === 'MONTH') return ed.date.startsWith(targetMonth);
+      if (viewType === 'YEAR') return ed.date.startsWith(targetYear);
+      return true;
+   });
+
    state.employees.filter(e => e.active !== false).forEach(emp => {
        labels.push(emp.name);
        
-       // Calculate approved leave days for this employee across Finalized Rota History
        let leaveCount = 0;
+       const countedDates = new Set();
+
+       // 1. Count from Finalized Rota Snapshots
        Object.keys(state.finalizedRotas).forEach(m => {
+           if (viewType === 'MONTH' && m !== targetMonth) return;
+           if (viewType === 'YEAR' && !m.startsWith(targetYear)) return;
+
            const snap = state.finalizedRotas[m];
+           const dates = snap.dates.map(ds => toLocalISO(ds));
            const row = snap.snapshot.find(r => r.empId === emp.id);
            if (row) {
-               row.shifts.forEach(sh => {
-                   if (sh.full === 'L') leaveCount++;
+               row.shifts.forEach((sh, idx) => {
+                   if (sh.full === 'L') {
+                       leaveCount++;
+                       countedDates.add(dates[idx]);
+                   }
                });
            }
        });
 
-       // Fallback to active leaves array if no finalized months exist yet
-       if (Object.keys(state.finalizedRotas).length === 0) {
-           state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += (l.days || 1));
-       }
+       // 2. Count from Active Leaves array for dates/months not yet finalized
+       state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => {
+           const d1 = new Date(l.from);
+           const d2 = new Date(l.to);
+           for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
+              const dStr = toLocalISO(dt);
+              if (viewType === 'MONTH' && !dStr.startsWith(targetMonth)) continue;
+              if (viewType === 'YEAR' && !dStr.startsWith(targetYear)) continue;
+
+              const mStr = dStr.slice(0, 7);
+              // Only count if this month is NOT already counted via finalized rota
+              if (!state.finalizedRotas[mStr] && !countedDates.has(dStr)) {
+                  leaveCount++;
+                  countedDates.add(dStr);
+              }
+           }
+       });
+
        leaveData.push(leaveCount);
-       
-       // Calculate extra duty days for this emp
-       let edCount = allED.filter(ed => ed.empId === emp.id).length;
+
+       // Extra duty count for this employee
+       let edCount = filteredED.filter(ed => ed.empId === emp.id).length;
        edData.push(edCount);
    });
    
@@ -1644,7 +1709,7 @@ function renderCharts() {
        data: {
            labels: labels,
            datasets: [
-               { label: 'Leave Days (Finalized/Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
+               { label: 'Leave Days (Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
                { label: 'Extra Duties (Double/Off/Hol)', data: edData, backgroundColor: '#bbf7d0', borderColor: '#22c55e', borderWidth: 1 }
            ]
        },

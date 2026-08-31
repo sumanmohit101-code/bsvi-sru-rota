@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,13 +29,18 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .tag{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:700}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 
-/* Highly Compact Full-Screen Rota Grid Styles */
+/* Highly Compact Full-Screen Rota Grid & In-Cell Dropdown Styles */
 .rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
-.rota-table th, .rota-table td { padding: 4px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; }
+.rota-table th, .rota-table td { padding: 3px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; }
 .rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 125px; min-width: 120px; max-width: 130px; padding: 4px 6px; font-weight: 700; border-right: 2px solid #cbd5e1; }
 .rota-table th:first-child { background: #f1f5f9; }
-.shift-cell { padding: 2px 1px; cursor: pointer; transition: 0.15s; } .shift-cell:hover { background: #e2e8f0; }
-.shift-cell .tag { width: 100%; max-width: 32px; padding: 2px 1px; font-size: 10px; font-weight: 800; border-radius: 4px; letter-spacing: -0.3px; display: inline-block; }
+
+.shift-select-cell {
+  width: 100%; height: 24px; padding: 1px 2px; font-size: 10.5px; font-weight: 800;
+  border-radius: 4px; border: 1px solid rgba(0,0,0,0.15); text-align: center; cursor: pointer;
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+}
+.shift-select-cell:focus { outline: 2px solid var(--primary); }
 
 .summary-col-head { width: 62px; min-width: 58px; font-size: 10px; padding: 2px 1px; line-height: 1.1; }
 .summary-cell { width: 62px; min-width: 58px; font-weight: 800; font-size: 11.5px; text-align: center; }
@@ -74,8 +80,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     <button data-page="rota">2. Active Rota</button>
     <button data-page="leave">3. Leave Register</button>
     <button data-page="holidays">4. Holiday Master</button>
-    <button data-page="extraDuty">5. Extra Duty Register</button>
-    <button data-page="finalizedLeave">6. Finalized Leave Records</button>
+    <button data-page="extraDuty">5. Overtime Record</button>
+    <button data-page="finalizedLeave">6. Leave Record</button>
     <button data-page="rotaHistory">7. Rota History</button>
     <button data-page="history">8. Audit Logs</button>
     <button data-page="guide" style="margin-top:15px; border-top:1px solid #334155; border-radius:0;">📖 System Guide</button>
@@ -107,7 +113,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <div class="sub" id="statShiftSub">Deployment Live</div>
       </div>
       <div class="card"><div class="label">On Leave Today</div><div class="value" id="statLeave">0</div><div class="sub" style="color:var(--red)">Approved leaves</div></div>
-      <div class="card"><div class="label">Extra Duties Today</div><div class="value" id="statExtra">0</div><div class="sub" style="color:var(--green)">Double/Holiday/Off</div></div>
+      <div class="card"><div class="label">Overtime Duties Today</div><div class="value" id="statExtra">0</div><div class="sub" style="color:var(--green)">Double/Holiday/Off</div></div>
     </div>
     
     <div class="dash-grid">
@@ -140,13 +146,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
                 <div class="panel-body" id="todayLeavesList"></div>
              </div>
              <div class="panel" style="margin-bottom:0;">
-                <div class="panel-head" style="background:#f0fdf4"><h2 style="color:#15803d">⚡ Extra Duties Today</h2></div>
+                <div class="panel-head" style="background:#f0fdf4"><h2 style="color:#15803d">⚡ Overtime Duties Today</h2></div>
                 <div class="panel-body" id="todayExtraList"></div>
              </div>
           </div>
        </div>
        
-       <!-- Right Side: Analytics Chart (With Filter: All Time, Year, Month) -->
+       <!-- Right Side: Analytics Chart -->
        <div class="panel" style="margin-bottom:0;">
           <div class="panel-head">
              <h2>Manpower Analytics</h2>
@@ -162,7 +168,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
           <div class="panel-body">
              <div class="notice" style="margin-bottom:12px;" id="chartSubtitle">
-                Compares Total Approved Leave Days vs. Total Extra Duties per employee.
+                Compares Total Approved Leave Days vs. Total Overtime Duties per employee.
              </div>
              <div style="position:relative; height:370px; width:100%;">
                 <canvas id="analyticsChart"></canvas>
@@ -190,9 +196,10 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           • <b>Step 3 (Dual-Role Sequence):</b> Dual role (`1,2` ya `3,2,1`) wale employees sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> follow karte hain. Agar single role `2` present hai to dual-role automatically `1` cover karega.
         </p>
 
-        <h3 style="color:#1e293b;">3. Finalized Rota & Summary Columns</h3>
+        <h3 style="color:#1e293b;">3. In-Cell Dropdown & Share Features</h3>
         <p>
-          • Rota table ke end me <b>Leaves</b> aur <b>Extra Duty</b> ke summary columns diye gaye hain jisme top header se <b>Month / Year / All Time</b> filter kiya ja sakta hai.
+          • <b>In-Cell Dropdown:</b> Rota grid me direct cell se drop down select karke shift change kar sakte hain.<br>
+          • <b>Social Share:</b> Active aur Finalized Rota ko WhatsApp aur Telegram par one-click share kiya ja sakta hai.
         </p>
       </div>
     </div>
@@ -223,7 +230,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Rota (Screen Fit Optimized) -->
+  <!-- Active Rota -->
   <section id="rota" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -231,6 +238,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <div class="toolbar">
           <label style="font-size:12px;font-weight:600">Month <input type="month" id="rotaMonth"></label>
           <button class="btn primary" onclick="generateRota()">↻ Refresh</button>
+          <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366;" onclick="openShareModal('active')">📤 Share Rota</button>
           <button class="btn" onclick="downloadPDF('rotaContainer', 'Rota')">Download PDF</button>
           <button class="btn" onclick="downloadCSV('rota')">Download CSV</button>
         </div>
@@ -260,8 +268,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
       <div class="table-wrap" id="rotaContainer" style="padding:6px; background:#fff;">
         <div style="font-size:11px;color:#173b86;margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
-           <span><b>Tip:</b> Click on any shift cell to edit duty or select from dropdown.</span>
-           <span style="font-weight:700; color:#475467;">Summary View: <span id="activeScopeLabel">Month</span></span>
+           <span><b>Tip:</b> Change shift directly from the in-cell dropdown. Select <i>✏️ Custom...</i> for double duty.</span>
+           <span style="font-weight:700; color:#475467;">Summary: <span id="activeScopeLabel">Month</span></span>
         </div>
         <table class="rota-table" id="rotaTableData">
           <thead id="rotaHead"></thead><tbody id="rotaBody"></tbody>
@@ -324,11 +332,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Extra Duty -->
+  <!-- 5. Overtime Record (Renamed) -->
   <section id="extraDuty" class="page">
     <div class="panel">
       <div class="panel-head">
-        <h2>Extra Duty Register (Auto + Manual)</h2>
+        <h2>Overtime Record (Auto + Manual)</h2>
         <div class="toolbar">
            <input type="month" id="edMonthFilter" title="Filter by month">
            <select id="edTypeFilter">
@@ -356,11 +364,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Finalized Leave Register -->
+  <!-- 6. Leave Record (Renamed) -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
-        <h2>Finalized Leave Records (From Rota History)</h2>
+        <h2>Leave Record (From Rota History)</h2>
         <div class="toolbar">
            <select id="flMonthFilter" style="min-width:130px;"></select>
            <input id="flSearch" placeholder="Search Employee...">
@@ -383,7 +391,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- Rota History (Screen Fit Optimized) -->
+  <!-- Rota History -->
   <section id="rotaHistory" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -393,6 +401,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
              <select id="historyMonthSelect" style="min-width:130px; margin-left:4px;"></select>
           </label>
           <button class="btn primary" onclick="generateHistoryRota()">View History</button>
+          <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366;" onclick="openShareModal('history')">📤 Share Rota</button>
           <button class="btn danger" onclick="deleteFinalizedRota()">Delete Snapshot</button>
           <button class="btn" onclick="downloadPDF('historyContainer', 'Rota_History')">Download PDF</button>
           <button class="btn" onclick="downloadCSV('history')">Download CSV</button>
@@ -477,43 +486,14 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
-<!-- Edit Shift Assignment Modal (With Dropdown + Buttons + Custom) -->
+<!-- Edit Shift Assignment Modal (Custom / Double Duty & Buttons Only) -->
 <div class="modal" id="editCellModal">
-  <div class="modal-card" style="width:390px">
+  <div class="modal-card" style="width:360px">
     <div class="modal-head"><b>Edit Shift Assignment</b><button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button></div>
     <div class="modal-body">
-       
-       <!-- Feature: Dropdown Shift Selector -->
-       <div class="field" style="margin-bottom:12px;">
-          <label style="color:#1e40af; font-weight:700;">Select from Shift Dropdown</label>
-          <select id="cellDropdownSelect" onchange="if(this.value) applyCellOverride(this.value)">
-             <option value="">-- Choose Shift Duty --</option>
-             <optgroup label="🌅 Morning Shifts">
-                <option value="M1">M1 - Morning BSVI SRU PIC</option>
-                <option value="M2">M2 - Morning OLD SRU PIC</option>
-                <option value="M3">M3 - Morning SIC</option>
-             </optgroup>
-             <optgroup label="🌇 Evening Shifts">
-                <option value="E1">E1 - Evening BSVI SRU PIC</option>
-                <option value="E2">E2 - Evening OLD SRU PIC</option>
-                <option value="E3">E3 - Evening SIC</option>
-             </optgroup>
-             <optgroup label="🌙 Night Shifts">
-                <option value="N1">N1 - Night BSVI SRU PIC</option>
-                <option value="N2">N2 - Night OLD SRU PIC</option>
-                <option value="N3">N3 - Night SIC</option>
-             </optgroup>
-             <optgroup label="🌴 Off & Leaves">
-                <option value="O">OFF (O) - Weekly Off</option>
-                <option value="L">L - Approved Leave</option>
-                <option value="TR">TR - Training</option>
-             </optgroup>
-          </select>
-       </div>
-
        <!-- Quick Buttons -->
-       <label style="font-size:11.5px; color:#667085; font-weight:600; margin-bottom:5px; display:block;">Or Click Quick Shift</label>
-       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:12px;">
+       <label style="font-size:11.5px; color:#667085; font-weight:600; margin-bottom:6px; display:block;">Click Quick Shift</label>
+       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:14px;">
           <button class="quick-btn" onclick="applyCellOverride('M1')">M1</button>
           <button class="quick-btn" onclick="applyCellOverride('M2')">M2</button>
           <button class="quick-btn" onclick="applyCellOverride('M3')">M3</button>
@@ -528,9 +508,9 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <button class="quick-btn" onclick="applyCellOverride('TR')">Training</button>
        </div>
        
-       <!-- Custom Input -->
+       <!-- Custom Input for Double Duty -->
        <div class="field">
-          <label>Double Duty / Custom</label>
+          <label>Double Duty / Custom Text</label>
           <div style="display:flex;gap:4px;">
              <input type="text" id="customCellInput" placeholder="e.g. M1+E2">
              <button class="btn primary" onclick="applyCellOverride($('customCellInput').value)">Set</button>
@@ -539,6 +519,30 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
     <div class="modal-foot">
        <button class="btn danger" onclick="applyCellOverride(null)">Clear Override (Auto)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 📤 Share Rota Modal -->
+<div class="modal" id="shareModal">
+  <div class="modal-card" style="width:420px;">
+    <div class="modal-head" style="background:#f8fafc;">
+      <b>📤 Share Shift Rota</b>
+      <button class="btn" onclick="$('shareModal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+       <div style="margin-bottom:12px; font-size:13px; color:#334155;" id="sharePreviewSummary"></div>
+       <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366; padding:10px; font-weight:700;" onclick="shareViaWhatsApp()">
+             💬 Share on WhatsApp
+          </button>
+          <button class="btn" style="background:#0088cc; color:#fff; border-color:#0088cc; padding:10px; font-weight:700;" onclick="shareViaTelegram()">
+             ✈️ Share on Telegram
+          </button>
+          <button class="btn primary" style="padding:10px; font-weight:700;" onclick="copyShareText()">
+             📋 Copy Rota Summary & Link
+          </button>
+       </div>
     </div>
   </div>
 </div>
@@ -571,7 +575,7 @@ if(!state.holidays) state.holidays = [];
 if(!state.extraDuties) state.extraDuties = [];
 
 let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
-let rotaSummaryScope = 'MONTH'; // Summary column scope: 'MONTH', 'YEAR', 'ALL'
+let rotaSummaryScope = 'MONTH';
 
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
@@ -926,7 +930,7 @@ function buildRotaMatrix(month) {
 
   const dayMap = { 'sunday':0, 'monday':1, 'tuesday':2, 'wednesday':3, 'thursday':4, 'friday':5, 'saturday':6 };
 
-  // 1. Calculate Base Shift & Relative Day in Cycle (0=O, 1=E1, 2=E2, 3=M1, 4=M2, 5=N1, 6=N2)
+  // 1. Calculate Base Shift & Relative Day in Cycle
   activeEmps.forEach((e, empIdx) => {
       matrix[e.id] = {};
       dates.forEach(d => {
@@ -1058,7 +1062,6 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
   let edCount = 0;
   const targetYear = currentMonthStr.slice(0, 4);
 
-  // 1. Calculate Leaves
   if (scope === 'MONTH') {
     if (currentMatrix && currentMatrix[empId]) {
       Object.values(currentMatrix[empId]).forEach(sc => {
@@ -1075,7 +1078,6 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
         }
       }
     });
-    // Active leaves in this year
     state.leaves.filter(l => l.empId === empId && l.status === 'Approved').forEach(l => {
       const d1 = new Date(l.from); const d2 = new Date(l.to);
       for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
@@ -1085,7 +1087,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
         }
       }
     });
-  } else { // 'ALL'
+  } else {
     Object.keys(state.finalizedRotas).forEach(m => {
       const snap = state.finalizedRotas[m];
       const row = snap.snapshot.find(r => r.empId === empId);
@@ -1104,7 +1106,6 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
     });
   }
 
-  // 2. Calculate Extra Duties
   const allED = [...state.extraDuties, ...getAutoExtraDuties(scope === 'MONTH' ? currentMonthStr : null)];
   edCount = allED.filter(ed => {
     if (ed.empId !== empId) return false;
@@ -1124,14 +1125,42 @@ function changeSummaryScope(newScope) {
   generateHistoryRota();
 }
 
-/* ==== ROTA TABLE RENDER WITH SCREEN FIT & SUMMARY COLUMNS ==== */
+/* ==== IN-CELL SHIFT DROPDOWN HANDLER ==== */
+function handleCellSelect(month, empId, dateStr, val, isHistory, rowIdx, colIdx) {
+  if (val === 'CUSTOM') {
+    openEditCell(month, empId, dateStr, '', isHistory, rowIdx, colIdx);
+    return;
+  }
+  applyDirectCellShift(month, empId, dateStr, val, isHistory, rowIdx, colIdx);
+}
+
+function applyDirectCellShift(month, empId, dateStr, val, isHistory, rowIdx, colIdx) {
+  if (isHistory) {
+      if(!val) val = 'O';
+      const style = getStyleForCode(val);
+      state.finalizedRotas[month].snapshot[rowIdx].shifts[colIdx] = { full: val, bg: style.bg, txt: style.txt };
+      generateHistoryRota();
+      log('Finalized Rota Edited', `${month} cell updated to ${val}`);
+  } else {
+      if (!val) { 
+        delete state.overrides[month]?.[empId]?.[dateStr]; 
+      } else {
+          if(!state.overrides[month]) state.overrides[month] = {};
+          if(!state.overrides[month][empId]) state.overrides[month][empId] = {};
+          state.overrides[month][empId][dateStr] = val;
+      }
+      generateRota();
+  }
+  save(); scheduleSync();
+}
+
+/* ==== ROTA TABLE RENDER (WITH DIRECT IN-CELL DROPDOWN & SCREEN FIT) ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
   const { matrix, dates, activeEmps } = buildRotaMatrix(monthValue);
   activeMatrix = matrix; 
   
-  // Header with Dates + 2 Summary Columns (Leaves & Extra Duty) with Dropdown
   $('rotaHead').innerHTML = '<tr><th>Employee</th>' + 
     dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9.5px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
     `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">
@@ -1148,18 +1177,43 @@ function renderRotaTable(monthValue){
      </th>
     </tr>`;
   
-  $('rotaBody').innerHTML = activeEmps.length ? activeEmps.map(e => {
+  const standardShifts = ['M1','M2','M3','E1','E2','E3','N1','N2','N3','O','L','TR'];
+
+  $('rotaBody').innerHTML = activeEmps.length ? activeEmps.map((e, rIdx) => {
     const summary = getEmployeeSummary(e.id, monthValue, rotaSummaryScope, matrix);
     return `<tr>
       <td style="text-align:left;font-weight:700">${esc(e.name)}</td>` +
-      dates.map(d => {
+      dates.map((d, cIdx) => {
         const dStr = toLocalISO(d);
         const sc = matrix[e.id][dStr];
         const style = getStyleForCode(sc.full);
-        const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
-        
-        return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}', false)">
-           <span class="tag" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
+        const isCustom = !standardShifts.includes(sc.full);
+
+        return `<td class="shift-cell">
+           <select class="shift-select-cell" style="background:${style.bg}; color:${style.txt};" onchange="handleCellSelect('${monthValue}','${e.id}','${dStr}',this.value,false,${rIdx},${cIdx})">
+              ${isCustom ? `<option value="${sc.full}" selected>${sc.full}</option>` : ''}
+              <optgroup label="Morning">
+                 <option value="M1" ${sc.full==='M1'?'selected':''}>M1</option>
+                 <option value="M2" ${sc.full==='M2'?'selected':''}>M2</option>
+                 <option value="M3" ${sc.full==='M3'?'selected':''}>M3</option>
+              </optgroup>
+              <optgroup label="Evening">
+                 <option value="E1" ${sc.full==='E1'?'selected':''}>E1</option>
+                 <option value="E2" ${sc.full==='E2'?'selected':''}>E2</option>
+                 <option value="E3" ${sc.full==='E3'?'selected':''}>E3</option>
+              </optgroup>
+              <optgroup label="Night">
+                 <option value="N1" ${sc.full==='N1'?'selected':''}>N1</option>
+                 <option value="N2" ${sc.full==='N2'?'selected':''}>N2</option>
+                 <option value="N3" ${sc.full==='N3'?'selected':''}>N3</option>
+              </optgroup>
+              <optgroup label="Off & Leave">
+                 <option value="O" ${sc.full==='O'?'selected':''}>O</option>
+                 <option value="L" ${sc.full==='L'?'selected':''}>L</option>
+                 <option value="TR" ${sc.full==='TR'?'selected':''}>TR</option>
+              </optgroup>
+              <option value="CUSTOM">✏️ Custom...</option>
+           </select>
         </td>`;
       }).join('') +
       `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
@@ -1176,11 +1230,10 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (WITH DROPDOWN & BUTTONS) ==== */
+/* ==== CELL EDIT MODAL (CUSTOM / DOUBLE DUTY) ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
-  if($('cellDropdownSelect')) $('cellDropdownSelect').value = currentVal || '';
   $('editCellModal').classList.add('show');
 }
 
@@ -1189,21 +1242,7 @@ function applyCellOverride(val) {
   const { month, empId, dateStr, isHistory, rowIdx, colIdx } = activeEditCell;
   if (val) val = val.trim().toUpperCase();
   
-  if (isHistory) {
-      if(!val) val = 'O';
-      const style = getStyleForCode(val);
-      state.finalizedRotas[month].snapshot[rowIdx].shifts[colIdx] = { full: val, bg: style.bg, txt: style.txt };
-      generateHistoryRota();
-  } else {
-      if (!val) { delete state.overrides[month][empId][dateStr]; } 
-      else {
-          if(!state.overrides[month]) state.overrides[month] = {};
-          if(!state.overrides[month][empId]) state.overrides[month][empId] = {};
-          state.overrides[month][empId][dateStr] = val;
-      }
-      generateRota();
-  }
-  save(); scheduleSync();
+  applyDirectCellShift(month, empId, dateStr, val, isHistory, rowIdx, colIdx);
   $('editCellModal').classList.remove('show');
 }
 
@@ -1229,7 +1268,7 @@ function finalizeRota() {
    updateHistoryDropdown();
    renderDashboard();
    renderFinalizedLeaves();
-   alert(`Rota for ${month} finalized successfully! All Extra Duties & Leaves for this month are now locked to this snapshot.`);
+   alert(`Rota for ${month} finalized successfully! All Overtime Duties & Leaves for this month are now locked.`);
 }
 
 function generateHistoryRota() {
@@ -1246,9 +1285,11 @@ function generateHistoryRota() {
   $('histRotaHead').innerHTML = '<tr><th style="text-align:left">Employee</th>' + 
     dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9.5px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
     `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">Leaves</th>
-     <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">Extra Duties</th>
+     <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">Overtime</th>
     </tr>`;
   
+  const standardShifts = ['M1','M2','M3','E1','E2','E3','N1','N2','N3','O','L','TR'];
+
   $('histRotaBody').innerHTML = finalized.snapshot.map((row, rIdx) => {
      let leaveC = row.shifts.filter(sh => sh.full === 'L').length;
      const allED = [...state.extraDuties, ...getAutoExtraDuties(month)];
@@ -1256,7 +1297,35 @@ function generateHistoryRota() {
 
      return `<tr>
        <td style="text-align:left;font-weight:700">${esc(row.name)}</td>
-       ${row.shifts.map((sh, cIdx) => `<td class="shift-cell" onclick="openEditCell('${month}', null, null, '${sh.full}', true, ${rIdx}, ${cIdx})"><span class="tag" style="background:${sh.bg};color:${sh.txt};border:1px solid ${sh.txt}40">${sh.full}</span></td>`).join('')}
+       ${row.shifts.map((sh, cIdx) => {
+          const isCustom = !standardShifts.includes(sh.full);
+          return `<td class="shift-cell">
+             <select class="shift-select-cell" style="background:${sh.bg}; color:${sh.txt};" onchange="handleCellSelect('${month}','${row.empId}','${toLocalISO(dates[cIdx])}',this.value,true,${rIdx},${cIdx})">
+                ${isCustom ? `<option value="${sh.full}" selected>${sh.full}</option>` : ''}
+                <optgroup label="Morning">
+                   <option value="M1" ${sh.full==='M1'?'selected':''}>M1</option>
+                   <option value="M2" ${sh.full==='M2'?'selected':''}>M2</option>
+                   <option value="M3" ${sh.full==='M3'?'selected':''}>M3</option>
+                </optgroup>
+                <optgroup label="Evening">
+                   <option value="E1" ${sh.full==='E1'?'selected':''}>E1</option>
+                   <option value="E2" ${sh.full==='E2'?'selected':''}>E2</option>
+                   <option value="E3" ${sh.full==='E3'?'selected':''}>E3</option>
+                </optgroup>
+                <optgroup label="Night">
+                   <option value="N1" ${sh.full==='N1'?'selected':''}>N1</option>
+                   <option value="N2" ${sh.full==='N2'?'selected':''}>N2</option>
+                   <option value="N3" ${sh.full==='N3'?'selected':''}>N3</option>
+                </optgroup>
+                <optgroup label="Off & Leave">
+                   <option value="O" ${sh.full==='O'?'selected':''}>O</option>
+                   <option value="L" ${sh.full==='L'?'selected':''}>L</option>
+                   <option value="TR" ${sh.full==='TR'?'selected':''}>TR</option>
+                </optgroup>
+                <option value="CUSTOM">✏️ Custom...</option>
+             </select>
+          </td>`;
+       }).join('')}
        <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>
        <td class="summary-cell" style="background:#f0fdf4; color:#15803d;">${edC}</td>
      </tr>`;
@@ -1302,6 +1371,62 @@ function renderCoverage(dates, activeEmps, matrix){
   document.querySelector('#rota .panel').after(panel);
 }
 
+/* ==== 📤 SHARE ROTA VIA WHATSAPP / TELEGRAM / WEB ==== */
+let currentShareType = 'active';
+
+function getRotaShareText(type) {
+  const month = type === 'history' ? $('historyMonthSelect').value : $('rotaMonth').value;
+  let text = `📅 *BSVI & OLD SRU Shift Rota (${month})*\n`;
+  text += `🌐 Link: ${window.location.href}\n\n`;
+
+  if (type === 'history' && state.finalizedRotas[month]) {
+     const snap = state.finalizedRotas[month];
+     text += `*Finalized Team Rota Summary:*\n`;
+     snap.snapshot.forEach(row => {
+        text += `• *${row.name}*: ${row.shifts.map(s=>s.full).join(' ')}\n`;
+     });
+  } else {
+     const { matrix, dates, activeEmps } = buildRotaMatrix(month);
+     text += `*Active Rota Summary:*\n`;
+     activeEmps.forEach(e => {
+        const shifts = dates.map(d => matrix[e.id][toLocalISO(d)].full).join(' ');
+        text += `• *${e.name}*: ${shifts}\n`;
+     });
+  }
+  return text;
+}
+
+function openShareModal(type) {
+  currentShareType = type;
+  const month = type === 'history' ? $('historyMonthSelect').value : $('rotaMonth').value;
+  if (type === 'history' && !month) return alert('Select a finalized month first.');
+  
+  $('sharePreviewSummary').innerHTML = `Ready to share shift rota for <b>${month}</b>.`;
+  $('shareModal').classList.add('show');
+}
+
+function shareViaWhatsApp() {
+  const text = getRotaShareText(currentShareType);
+  const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}` [4];
+  window.open(url, '_blank');
+}
+
+function shareViaTelegram() {
+  const text = getRotaShareText(currentShareType);
+  const url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(text)}` [1];
+  window.open(url, '_blank');
+}
+
+function copyShareText() {
+  const text = getRotaShareText(currentShareType);
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✓ Rota summary & URL copied to clipboard!');
+    $('shareModal').classList.remove('show');
+  }).catch(() => {
+    alert('Failed to copy. Please manually copy.');
+  });
+}
+
 /* ==== HOLIDAYS ==== */
 function openHoliday(idx=null){
   const h=idx!==null?state.holidays[idx]:{date:'',name:''};
@@ -1330,7 +1455,7 @@ function renderHolidays(){
   </tr>`).join('') : `<tr><td colspan="3" class="empty">No holidays defined.</td></tr>`;
 }
 
-/* ==== AUTO EXTRA DUTIES ENGINE ==== */
+/* ==== AUTO OVERTIME DUTIES ENGINE ==== */
 function getAutoExtraDuties(monthF) {
    let results = [];
    const processMatrix = (matrix, dates, activeEmps, isFinalized) => {
@@ -1365,7 +1490,6 @@ function getAutoExtraDuties(monthF) {
    
    const processedMonths = new Set();
 
-   // 1. Process Finalized Snapshots first
    Object.keys(state.finalizedRotas).forEach(m => {
        if(monthF && m !== monthF) return;
        processedMonths.add(m);
@@ -1387,7 +1511,6 @@ function getAutoExtraDuties(monthF) {
        processMatrix(matrix, dates, emps, true);
    });
 
-   // 2. Process Active Rota ONLY for months not yet finalized
    const currentRotaM = $('rotaMonth')?.value || '2026-08';
    if(!processedMonths.has(currentRotaM)) {
        if(!monthF || monthF === currentRotaM) {
@@ -1399,10 +1522,10 @@ function getAutoExtraDuties(monthF) {
    return results;
 }
 
-/* ==== EXTRA DUTY REGISTER ==== */
+/* ==== OVERTIME RECORD (MANUAL + AUTO) ==== */
 function openExtraDuty(id=null){
   const ed = id ? state.extraDuties.find(x=>x.id===id) : {id:'ED'+Date.now(), empId:state.employees[0]?.id||'', date:'', type:'Double Duty', details:'', remarks:''};
-  $('modalTitle').textContent=id?'Edit Extra Duty':'Log Extra Duty';
+  $('modalTitle').textContent=id?'Edit Overtime':'Log Overtime';
   $('modalBody').innerHTML=`<div class="form-grid" style="grid-template-columns:1fr 1fr;">
     <div class="field"><label>Employee</label><select id="ed_emp">${state.employees.map(e=>`<option value="${e.id}">${esc(e.code)} — ${esc(e.name)}</option>`).join('')}</select></div>
     <div class="field"><label>Date</label><input type="date" id="ed_date" value="${esc(ed.date)}"></div>
@@ -1417,12 +1540,12 @@ function openExtraDuty(id=null){
     ed.empId=$('ed_emp').value; ed.date=$('ed_date').value; ed.type=$('ed_type').value; ed.details=$('ed_details').value; ed.remarks=$('ed_remarks').value;
     if(!ed.date) return alert('Select a date.');
     if(!id) state.extraDuties.push(ed);
-    save(); log('Extra Duty saved', ed.type); renderExtraDuties(); closeModal(); scheduleSync();
+    save(); log('Overtime saved', ed.type); renderExtraDuties(); closeModal(); scheduleSync();
   };
   $('modal').classList.add('show');
 }
 function removeExtraDuty(id){
-  if(confirm('Delete extra duty record?')){ state.extraDuties = state.extraDuties.filter(x=>x.id!==id); save(); renderExtraDuties(); scheduleSync(); }
+  if(confirm('Delete overtime record?')){ state.extraDuties = state.extraDuties.filter(x=>x.id!==id); save(); renderExtraDuties(); scheduleSync(); }
 }
 
 function renderExtraDuties(){
@@ -1448,7 +1571,7 @@ function renderExtraDuties(){
        <td>${esc(ed.remarks)}</td>
        <td>${actBtns}</td>
      </tr>`;
-  }).join('') : `<tr><td colspan="7" class="empty">No extra duties match filters.</td></tr>`;
+  }).join('') : `<tr><td colspan="7" class="empty">No overtime records match filters.</td></tr>`;
 }
 $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
@@ -1519,7 +1642,6 @@ function openLeave(id=null){
     const d2 = new Date(l.to);
     l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
 
-    // Updates Apply Date to TODAY upon creation & modification
     l.applyDate = toLocalISO(new Date());
 
     if (!isEdit) {
@@ -1616,7 +1738,7 @@ function renderLeaves(){
 $('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves; $('leaveStatusFilter').onchange=renderLeaves;
 
 
-/* ==== 6. FINALIZED LEAVE RECORDS (FROM ROTA HISTORY) ==== */
+/* ==== 6. LEAVE RECORD (FROM ROTA HISTORY) ==== */
 function renderFinalizedLeaves(){
   const month = $('flMonthFilter')?.value || Object.keys(state.finalizedRotas).sort().reverse()[0];
   const q = ($('flSearch')?.value || '').toLowerCase();
@@ -1686,7 +1808,7 @@ function toggleChartViewInputs() {
   if (type === 'ALL') {
     $('chartYearFilter').style.display = 'none';
     $('chartMonthFilter').style.display = 'none';
-    $('chartSubtitle').textContent = 'Showing All Time Manpower Analytics (Approved Leaves vs. Extra Duties).';
+    $('chartSubtitle').textContent = 'Showing All Time Manpower Analytics (Approved Leaves vs. Overtime Duties).';
   } else if (type === 'YEAR') {
     $('chartYearFilter').style.display = 'inline-block';
     $('chartMonthFilter').style.display = 'none';
@@ -1760,7 +1882,7 @@ function renderDashboard(){
  $('todayExtraList').innerHTML = edTodayList.length ? edTodayList.map(ed => {
      const empName = state.employees.find(e => e.id === ed.empId)?.name || 'Unknown';
      return `<div class="dash-item"><b>${empName}</b><span class="tag approved">${ed.type}</span></div>`
- }).join('') : '<div class="small">No extra duties scheduled today.</div>';
+ }).join('') : '<div class="small">No overtime scheduled today.</div>';
 
  const shiftMeta = [
    { key: 'M', label: '🌅 Morning (06:00 - 14:00)', bg: state.colors.M_bg, txt: state.colors.M_txt },
@@ -1825,7 +1947,6 @@ function renderCharts() {
        let leaveCount = 0;
        const countedDates = new Set();
 
-       // Count from Finalized Rota Snapshots
        Object.keys(state.finalizedRotas).forEach(m => {
            if (viewType === 'MONTH' && m !== targetMonth) return;
            if (viewType === 'YEAR' && !m.startsWith(targetYear)) return;
@@ -1843,7 +1964,6 @@ function renderCharts() {
            }
        });
 
-       // Count from Active Leaves array
        state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => {
            const d1 = new Date(l.from);
            const d2 = new Date(l.to);
@@ -1871,7 +1991,7 @@ function renderCharts() {
            labels: labels,
            datasets: [
                { label: 'Leave Days (Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
-               { label: 'Extra Duties (Double/Off/Hol)', data: edData, backgroundColor: '#bbf7d0', borderColor: '#22c55e', borderWidth: 1 }
+               { label: 'Overtime Duties', data: edData, backgroundColor: '#bbf7d0', borderColor: '#22c55e', borderWidth: 1 }
            ]
        },
        options: {
@@ -1990,7 +2110,6 @@ updateHistoryDropdown();
 updateUserUI();
 fetchCloudData();
 
-// Mandatory Login Gate Check on initial launch
 if (!currentUser) {
   openLoginModal(true);
 }

@@ -49,6 +49,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid #c7d2fe;
 }
 
+.shift-block {
+  background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px;
+}
+.shift-block-head {
+  font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 10px; display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding-bottom: 6px;
+}
+
 @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
 @media(max-width:1000px){.sidebar{width:210px}.main{margin-left:210px;width:calc(100% - 210px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:14px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:130px}}
@@ -90,17 +97,25 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <section id="dashboard" class="page active">
     <div class="cards">
       <div class="card"><div class="label">Total Employees</div><div class="value" id="statEmp">0</div><div class="sub">Active Manpower</div></div>
-      <div class="card"><div class="label">Current Shift</div><div class="value" id="statShift">—</div><div class="sub" id="statShiftSub">Live Tracking</div></div>
+      <div class="card">
+        <div class="label">Today's Shifts</div>
+        <div class="value" id="statShift" style="font-size:19px; line-height:1.2; margin-top:10px;">M · E · N</div>
+        <div class="sub" id="statShiftSub">Deployment Live</div>
+      </div>
       <div class="card"><div class="label">On Leave Today</div><div class="value" id="statLeave">0</div><div class="sub" style="color:var(--red)">Approved leaves</div></div>
       <div class="card"><div class="label">Extra Duties Today</div><div class="value" id="statExtra">0</div><div class="sub" style="color:var(--green)">Double/Holiday/Off</div></div>
     </div>
     
     <div class="dash-grid">
+       <!-- Left Side: Today's Full Shift Deployment -->
        <div style="display:flex; flex-direction:column; gap:18px;">
           <div class="panel" style="margin-bottom:0;">
-             <div class="panel-head"><h2>Today's Live Deployment (<span id="dashShiftName"></span>)</h2><button class="btn" onclick="showPage('rota')">Open Rota</button></div>
+             <div class="panel-head">
+               <h2>Today's Shift Deployment (Morning, Evening & Night)</h2>
+               <button class="btn" onclick="showPage('rota')">Open Active Rota</button>
+             </div>
              <div class="panel-body">
-                <div id="todayDeployment" class="table-wrap"></div>
+                <div id="todayDeployment"></div>
              </div>
           </div>
           
@@ -116,8 +131,9 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
        </div>
        
+       <!-- Right Side: Analytics Chart -->
        <div class="panel" style="margin-bottom:0;">
-          <div class="panel-head"><h2>Manpower Analytics (YTD)</h2></div>
+          <div class="panel-head"><h2>Manpower Analytics (Finalized & Active YTD)</h2></div>
           <div class="panel-body">
              <div class="notice" style="margin-bottom:15px;">Compares Total Approved Leave Days vs. Total Extra Duties (Auto + Manual) per employee.</div>
              <canvas id="analyticsChart" width="400" height="450"></canvas>
@@ -129,14 +145,37 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
-      <div class="panel-head"><h2>📖 System Guide & Smart Rota Rules</h2></div>
+      <div class="panel-head"><h2>📖 System Guide & Smart Rota Business Rules</h2></div>
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
-        <h3 style="color:#1e293b; margin-top:0;">⚡ Smart Rota & Role Sequence Rules</h3>
+        
+        <h3 style="color:#1e293b; margin-top:0;">1. Shift Rotation & Single Weekly Off Rule</h3>
         <p>
-          1. <b>SIC Priority Allotment:</b> Sabse pehle SIC (Role 3: `M3, E3, N3`) allot hota hai.<br>
-          2. <b>Single Role Priority:</b> Agar single-role employee (jaise role `2`) shift me hai, to use uska role diya jata hai aur dual-role wale ko role `1` assign hota hai.<br>
-          3. <b>Dual Role Sequence (`E1-E2-M1-M2-N1-N2-O`):</b> Multi-role employees shift pair ke 1st day par role `1` aur 2nd day par role `2` handle karte hain.<br>
-          4. <b>Weekly OFF:</b> Single weekly off rule ke tehat hafte me exactly 1 Off milta hai.
+          • <b>Standard 7-Day Cycle:</b> System follows the continuous industrial pattern <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b>.<br>
+          • <b>Single Weekly Off Guarantee:</b> Jab Admin kisi employee ka <b>OFF DAY</b> (e.g. <i>Tuesday</i>) select karta hai, to system ka 7-din ka cycle usi day se lock ho jata hai. Isse employee ko hafte me <b>sirf aur sirf 1 OFF</b> milta hai aur multiple off ya gaps ka issue khatam ho jata hai.
+        </p>
+
+        <h3 style="color:#1e293b;">2. Smart Role Allotment Priority Sequence</h3>
+        <p>
+          Har shift me minimum 3 critical positions (Role 1, Role 2, Role 3) hoti hain:
+        </p>
+        <ul style="padding-left:20px; margin-top:5px;">
+          <li><b>Step 1 (SIC Priority):</b> Sabse pehle <b>Role 3 (SIC: M3, E3, N3)</b> allot hota hai dedicated SIC staff ko.</li>
+          <li><b>Step 2 (Single-Role PIC Priority):</b> Agar shift me koi single-role PIC (jaise sirf <b>Role 2</b>) employee present hai, to use uska designated role allot hota hai.</li>
+          <li><b>Step 3 (Dual/Multi-Role Cycle Sequence):</b> Dual role (`1,2` ya `3,2,1`) wale employees naturally <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2 ➔ O`</b> sequence follow karte hain (1st shift day par `1` aur 2nd shift day par `2`).<br>
+          <i>Special Condition:</i> Agar shift me single role `2` available hai, to dual-role employee automatically <b>`1`</b> duty sambhalta hai taaki plant ke teeno roles (1, 2, 3) 100% covered rahein!</li>
+          <li><b>Step 4 (Excess Manpower):</b> Extra manpower ko bina kisi conflict ke unke eligible role ke according duty milti hai.</li>
+        </ul>
+
+        <h3 style="color:#1e293b;">3. Finalized Rota & Official Data Storage</h3>
+        <p>
+          • <b>Rota Finalization:</b> Month finalize hote hi snapshot permanent freeze ho jata hai.<br>
+          • <b>Extra Duty Register Data Source:</b> Extra Duty Register and Manpower reports finalized months ke case me direct <b>Finalized Rota Snapshot</b> se auto-detect hoti hain (Double shift `+`, Holiday duty, Off-day duty).
+        </p>
+
+        <h3 style="color:#1e293b;">4. Multi-User Access & PIN Security</h3>
+        <p>
+          • <b>Admin (Default PIN: 1234):</b> Employee Master edit kar sakta hai, leaves approve/reject kar sakta hai aur kisi ka bhi PIN reset kar sakta hai.<br>
+          • <b>Employees (Default PIN: 0000):</b> Sirf apni leave apply kar sakte hain aur apni hi entry ko edit/delete kar sakte hain. Dusre employees ka data read-only rehta hai.
         </p>
       </div>
     </div>
@@ -155,7 +194,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice" id="empDataNotice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Dual roles: 1,2 or 3,2,1. Changes to Roles or OFF DAY immediately update the Active Rota.
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Dual roles: 1,2 or 3,2,1. Modifying Roles or OFF DAY immediately recalculates the Active Rota.
         </div>
       </div>
       <div class="table-wrap">
@@ -283,7 +322,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
          <div class="notice">
-            The system detects Double Duties ('+'), Off-Day Duties, and Holiday Duties automatically.
+            The system automatically extracts Double Duties ('+'), Off-Day Duties, and Holiday Duties from the finalized and active rotas.
          </div>
       </div>
       <div class="table-wrap">
@@ -749,7 +788,7 @@ function buildRotaMatrix(month) {
           const dStr = d.toISOString().slice(0, 10);
           const override = state.overrides[month][e.id]?.[dStr];
           let base = 'O';
-          let cycleDay = 0; // 0..6
+          let cycleDay = 0;
 
           const isLeave = state.leaves.some(l => l.empId === e.id && l.status === 'Approved' && l.from <= dStr && dStr <= l.to);
           if (isLeave) {
@@ -791,10 +830,8 @@ function buildRotaMatrix(month) {
           });
 
           // STEP 1: Allot SIC duty (Role 3: M3, E3, N3) first
-          // Prioritize dedicated SIC (roles === '3')
           let sicCandidate = empsInShift.find(e => empRoles[e.id].length === 1 && empRoles[e.id][0] === '3');
           if (!sicCandidate) {
-              // Else pick multi-role employee who has '3'
               sicCandidate = empsInShift.find(e => empRoles[e.id].includes('3'));
           }
           if (sicCandidate) {
@@ -802,7 +839,7 @@ function buildRotaMatrix(month) {
               needed = needed.filter(x => x !== '3');
           }
 
-          // STEP 2: Allot Single-role PIC (e.g. employee having ONLY Role '2' or ONLY Role '1')
+          // STEP 2: Allot Single-role PIC (Role 2 or Role 1)
           empsInShift.forEach(e => {
               if (assignments[e.id]) return;
               let r = empRoles[e.id];
@@ -813,8 +850,6 @@ function buildRotaMatrix(month) {
           });
 
           // STEP 3: Allot Dual/Multi-role PICs following E1-E2-M1-M2-N1-N2-O sequence
-          // Odd cycle day (1=E, 3=M, 5=N) prefers Role '1'
-          // Even cycle day (2=E, 4=M, 6=N) prefers Role '2'
           let remainingEmps = empsInShift.filter(e => !assignments[e.id]);
 
           remainingEmps.forEach(e => {
@@ -822,13 +857,10 @@ function buildRotaMatrix(month) {
               let cycleDay = matrix[e.id][dStr].cycleDay;
               let preferredRole = (cycleDay % 2 === 1) ? '1' : '2';
 
-              // If preferred role is in needed and employee can do it:
               if (needed.includes(preferredRole) && r.includes(preferredRole)) {
                   assignments[e.id] = preferredRole;
                   needed = needed.filter(x => x !== preferredRole);
-              } 
-              // Otherwise if other PIC role is needed and employee can do it:
-              else {
+              } else {
                   let alternateRole = (preferredRole === '1') ? '2' : '1';
                   if (needed.includes(alternateRole) && r.includes(alternateRole)) {
                       assignments[e.id] = alternateRole;
@@ -837,17 +869,15 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // STEP 4: Fallback for any remaining unassigned or excess manpower
+          // STEP 4: Excess manpower fallback
           empsInShift.forEach(e => {
               if (!assignments[e.id]) {
                   let r = empRoles[e.id];
-                  // If still need something employee can do:
                   let match = r.find(x => needed.includes(x));
                   if (match) {
                       assignments[e.id] = match;
                       needed = needed.filter(x => x !== match);
                   } else {
-                      // Excess manpower: follow cycle day or default eligible
                       let cycleDay = matrix[e.id][dStr].cycleDay;
                       let defaultPIC = (cycleDay % 2 === 1) ? '1' : '2';
                       assignments[e.id] = r.includes(defaultPIC) ? defaultPIC : (r[0] || '1');
@@ -940,7 +970,7 @@ function applyCellOverride(val) {
 /* ==== ROTA FINALIZATION ==== */
 function finalizeRota() {
    const month = $('rotaMonth').value;
-   if(!confirm(`Finalize Rota for ${month}?`)) return;
+   if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot.`)) return;
    
    const { matrix, dates, activeEmps } = buildRotaMatrix(month);
    const snapshot = activeEmps.map(e => {
@@ -957,7 +987,7 @@ function finalizeRota() {
    state.finalizedRotas[month] = { snapshot: snapshot, dates: dates.map(d => d.toISOString()) };
    save(); log('Rota Finalized', month); scheduleSync();
    updateHistoryDropdown();
-   alert(`Rota for ${month} finalized successfully!`);
+   alert(`Rota for ${month} finalized successfully! All Extra Duties & Leaves for this month are now locked to this snapshot.`);
 }
 
 function generateHistoryRota() {
@@ -1047,7 +1077,7 @@ function renderHolidays(){
   </tr>`).join('') : `<tr><td colspan="3" class="empty">No holidays defined.</td></tr>`;
 }
 
-/* ==== AUTO EXTRA DUTIES ENGINE ==== */
+/* ==== AUTO EXTRA DUTIES ENGINE (FETCHED PRIMARY FROM FINALIZED ROTA) ==== */
 function getAutoExtraDuties(monthF) {
    let results = [];
    const processMatrix = (matrix, dates, activeEmps, isFinalized) => {
@@ -1055,7 +1085,7 @@ function getAutoExtraDuties(monthF) {
            dates.forEach(d => {
                const dStr = d.toISOString().slice(0, 10);
                if(monthF && !dStr.startsWith(monthF)) return;
-               const sc = matrix[e.id][dStr];
+               const sc = matrix[e.id]?.[dStr];
                if(!sc || sc.full === 'O' || sc.full === 'L') return;
                
                let types = [];
@@ -1072,7 +1102,7 @@ function getAutoExtraDuties(monthF) {
                        empId: e.id, date: dStr,
                        type: types.join(', '),
                        details: sc.full,
-                       remarks: isFinalized ? 'Auto (Finalized Rota)' : 'Auto (Active Rota)',
+                       remarks: isFinalized ? 'Official (Finalized Snapshot)' : 'Live (Active Rota)',
                        isAuto: true
                    });
                }
@@ -1080,12 +1110,12 @@ function getAutoExtraDuties(monthF) {
        });
    };
    
-   const { matrix: activeM, dates: activeD, activeEmps: activeE } = buildRotaMatrix($('rotaMonth').value);
-   processMatrix(activeM, activeD, activeE, false);
-   
+   const processedMonths = new Set();
+
+   // 1. Process Finalized Snapshots first (Official Source of Truth)
    Object.keys(state.finalizedRotas).forEach(m => {
        if(monthF && m !== monthF) return;
-       if(m === $('rotaMonth').value) return;
+       processedMonths.add(m);
        
        const snap = state.finalizedRotas[m];
        const dates = snap.dates.map(ds => new Date(ds));
@@ -1103,6 +1133,15 @@ function getAutoExtraDuties(monthF) {
        });
        processMatrix(matrix, dates, emps, true);
    });
+
+   // 2. Process Active Rota ONLY for months not yet finalized
+   const currentRotaM = $('rotaMonth')?.value || '2026-08';
+   if(!processedMonths.has(currentRotaM)) {
+       if(!monthF || monthF === currentRotaM) {
+           const { matrix: activeM, dates: activeD, activeEmps: activeE } = buildRotaMatrix(currentRotaM);
+           processMatrix(activeM, activeD, activeE, false);
+       }
+   }
    
    return results;
 }
@@ -1344,42 +1383,77 @@ function downloadCSV(type) {
 }
 
 
-/* ==== DASHBOARD & ANALYTICS ==== */
+/* ==== DASHBOARD & ANALYTICS (TODAY'S ALL SHIFTS DEPLOYMENT) ==== */
 function renderHistory(){$('historyBody').innerHTML=state.history.map(h=>`<tr><td style="white-space:nowrap">${new Date(h.time).toLocaleString('en-IN')}</td><td style="text-align:left"><b>${esc(h.action)}</b></td><td style="text-align:left">${esc(h.details)}</td></tr>`).join('')||`<tr><td colspan="3" class="empty">No history yet.</td></tr>`}
 function clearHistory(){if(confirm('Clear audit history?')){state.history=[];save();renderHistory();scheduleSync();}}
 
 function renderDashboard(){
- $('statEmp').textContent=state.employees.filter(e=>e.active!==false).length;
- const d=new Date(); const counts={M:0,E:0,N:0,O:0,L:0};
+ $('statEmp').textContent = state.employees.filter(e => e.active !== false).length;
+ const d = new Date();
  const dStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().slice(0, 10);
  
- state.employees.filter(e=>e.active!==false).forEach(e=>{
-   if(activeMatrix[e.id] && activeMatrix[e.id][dStr]) {
-       const base = activeMatrix[e.id][dStr].base;
-       if(counts[base] !== undefined) counts[base]++;
+ const counts = { M: 0, E: 0, N: 0, O: 0, L: 0 };
+ const shiftGroups = { M: [], E: [], N: [] };
+
+ state.employees.filter(e => e.active !== false).forEach(e => {
+   if (activeMatrix[e.id] && activeMatrix[e.id][dStr]) {
+       const sc = activeMatrix[e.id][dStr];
+       const base = sc.base;
+       if (counts[base] !== undefined) counts[base]++;
+       if (['M', 'E', 'N'].includes(base)) {
+           shiftGroups[base].push({ emp: e, full: sc.full });
+       }
    }
  });
  
- const current=new Date().getHours();let s=current>=6&&current<14?'M':current>=14&&current<22?'E':'N';
- $('statShift').textContent = {M:'Morning',E:'Evening',N:'Night'}[s];
- $('dashShiftName').textContent = {M:'Morning',E:'Evening',N:'Night'}[s];
- $('statShiftSub').textContent=`M ${counts.M} · E ${counts.E} · N ${counts.N} · O ${counts.O} · L ${counts.L}`;
+ $('statShift').textContent = `M (${counts.M}) · E (${counts.E}) · N (${counts.N})`;
+ $('statShiftSub').textContent = `Off Today: ${counts.O} | Leaves: ${counts.L}`;
  
- const leavesTodayList = state.leaves.filter(l=>l.status==='Approved'&&l.from<=dStr&&dStr<=l.to).map(l => state.employees.find(e=>e.id===l.empId)?.name).filter(Boolean);
- $('statLeave').textContent=leavesTodayList.length;
+ // On Leave Today
+ const leavesTodayList = state.leaves.filter(l => l.status === 'Approved' && l.from <= dStr && dStr <= l.to).map(l => state.employees.find(e => e.id === l.empId)?.name).filter(Boolean);
+ $('statLeave').textContent = leavesTodayList.length;
  $('todayLeavesList').innerHTML = leavesTodayList.length ? leavesTodayList.map(name => `<div class="dash-item"><b>${name}</b><span class="tag approved">On Leave</span></div>`).join('') : '<div class="small">No employees on leave today.</div>';
  
+ // Extra Duty Today
  const allED = [...state.extraDuties, ...getAutoExtraDuties()];
  const edTodayList = allED.filter(ed => ed.date === dStr);
- $('statExtra').textContent=edTodayList.length;
+ $('statExtra').textContent = edTodayList.length;
  $('todayExtraList').innerHTML = edTodayList.length ? edTodayList.map(ed => {
-     const empName = state.employees.find(e=>e.id===ed.empId)?.name || 'Unknown';
+     const empName = state.employees.find(e => e.id === ed.empId)?.name || 'Unknown';
      return `<div class="dash-item"><b>${empName}</b><span class="tag approved">${ed.type}</span></div>`
  }).join('') : '<div class="small">No extra duties scheduled today.</div>';
 
- const arr=state.employees.filter(e=>e.active!==false).map(e=>({e,sc:activeMatrix[e.id]?.[dStr]})).filter(x=>x.sc && x.sc.base===s);
- $('todayDeployment').innerHTML=arr.length?`<table><thead><tr><th>Role</th><th>Employee Name</th><th>Shift Duty</th></tr></thead><tbody>${arr.map(x=>`<tr><td><b style="color:var(--muted)">${esc(x.sc.full.replace(/[^0-9]/g,''))}</b></td><td style="font-weight:600">${esc(x.e.name)}</td><td><span class="tag" style="background:${state.colors[`${s}_bg`]};color:${state.colors[`${s}_txt`]}">${x.sc.full}</span></td></tr>`).join('')}</tbody></table>`:`<div class="empty">No manpower assigned to ${s} shift today.</div>`;
+ // Today's Shifts Comprehensive Deployment View (Morning, Evening, Night)
+ const shiftNames = { M: '🌅 Morning Shift (06:00 - 14:00)', E: '🌇 Evening Shift (14:00 - 22:00)', N: '🌙 Night Shift (22:00 - 06:00)' };
  
+ let deploymentHtml = '';
+ ['M', 'E', 'N'].forEach(sh => {
+    const list = shiftGroups[sh];
+    deploymentHtml += `
+      <div class="shift-block">
+        <div class="shift-block-head">
+           <span>${shiftNames[sh]}</span>
+           <span class="tag" style="background:${state.colors[`${sh}_bg`]};color:${state.colors[`${sh}_txt`]}">${list.length} Personnel</span>
+        </div>
+        ${list.length ? `
+           <table>
+             <thead><tr><th>Role Code</th><th>Employee Name</th><th>Shift Duty</th></tr></thead>
+             <tbody>
+               ${list.map(item => `
+                  <tr>
+                    <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
+                    <td style="font-weight:600">${esc(item.emp.name)}</td>
+                    <td><span class="tag" style="background:${state.colors[`${sh}_bg`]};color:${state.colors[`${sh}_txt`]};border:1px solid ${state.colors[`${sh}_txt`]}40">${item.full}</span></td>
+                  </tr>
+               `).join('')}
+             </tbody>
+           </table>
+        ` : `<div class="small" style="color:var(--muted)">No manpower assigned to this shift today.</div>`}
+      </div>
+    `;
+ });
+ 
+ $('todayDeployment').innerHTML = deploymentHtml;
  renderCharts();
 }
 
@@ -1393,7 +1467,7 @@ function renderCharts() {
    const edData = [];
    const allED = [...state.extraDuties, ...getAutoExtraDuties()];
    
-   state.employees.filter(e=>e.active!==false).forEach(emp => {
+   state.employees.filter(e => e.active !== false).forEach(emp => {
        labels.push(emp.name);
        let leaveCount = 0;
        state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => leaveCount += l.days);

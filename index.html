@@ -30,11 +30,36 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 /* Compact Full-Screen Rota Grid Styles */
 .rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
-.rota-table th, .rota-table td { padding: 4px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; }
+.rota-table th, .rota-table td { padding: 3px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; overflow: hidden; }
 .rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 125px; min-width: 120px; max-width: 130px; padding: 4px 6px; font-weight: 700; border-right: 2px solid #cbd5e1; }
 .rota-table th:first-child { background: #f1f5f9; }
-.shift-cell { padding: 3px 1px; cursor: pointer; transition: 0.15s; } .shift-cell:hover { background: #e2e8f0; }
-.shift-cell .tag { width: 100%; max-width: 32px; padding: 2px 1px; font-size: 10.5px; font-weight: 800; border-radius: 4px; display: inline-block; }
+.shift-cell { padding: 2px 1px; cursor: pointer; transition: 0.15s; } .shift-cell:hover { background: #e2e8f0; }
+
+/* Shift Badges with Auto-Scaling for Double Duties */
+.shift-cell .tag { 
+  width: 100%; 
+  max-width: 36px; 
+  padding: 2px 1px; 
+  font-size: 10.5px; 
+  font-weight: 800; 
+  border-radius: 4px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Double Duty Shift Scaling */
+.shift-cell .tag.double-shift {
+  font-size: 8px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.5px !important;
+  padding: 3px 0 !important;
+  border-width: 1.5px !important;
+}
 
 .summary-col-head { width: 62px; min-width: 58px; font-size: 10px; padding: 2px 1px; line-height: 1.1; }
 .summary-cell { width: 62px; min-width: 58px; font-weight: 800; font-size: 11.5px; text-align: center; }
@@ -192,7 +217,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
         <h3 style="color:#1e293b;">3. Shift Editing & Social Share</h3>
         <p>
-          • <b>Shift Editing:</b> Click on any cell in the Rota table to open the Shift Assignment Modal (Quick Buttons & Custom Double Duty input).<br>
+          • <b>Shift Editing:</b> Click on any cell in the Rota table to open the Shift Assignment Modal.<br>
           • <b>Social Share:</b> Active aur Finalized Rota ko WhatsApp aur Telegram par direct share kiya ja sakta hai.
         </p>
       </div>
@@ -480,7 +505,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
-<!-- Simplified Edit Shift Modal (Quick Buttons + Custom Double Duty Input) -->
+<!-- Edit Shift Assignment Modal (Quick Buttons & Custom Double Duty Input) -->
 <div class="modal" id="editCellModal">
   <div class="modal-card" style="width:360px">
     <div class="modal-head"><b>Edit Shift Assignment</b><button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button></div>
@@ -1117,7 +1142,7 @@ function changeSummaryScope(newScope) {
   generateHistoryRota();
 }
 
-/* ==== ROTA TABLE RENDER (CLEAN BADGES WITH MODAL CLICK) ==== */
+/* ==== ROTA TABLE RENDER (RESTORED CLEAN BADGES & DOUBLE DUTY AUTO-FIT) ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
@@ -1148,10 +1173,11 @@ function renderRotaTable(monthValue){
         const dStr = toLocalISO(d);
         const sc = matrix[e.id][dStr];
         const style = getStyleForCode(sc.full);
+        const isDouble = sc.full.includes('+') || sc.full.length > 2;
         const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
         
         return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}',false,${rIdx},${cIdx})">
-           <span class="tag" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
+           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
         </td>`;
       }).join('') +
       `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
@@ -1168,7 +1194,7 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (CLICK POPUP HANDLER) ==== */
+/* ==== CELL EDIT MODAL (QUICK BUTTONS & CUSTOM DOUBLE DUTY) ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
@@ -1251,8 +1277,9 @@ function generateHistoryRota() {
        <td style="text-align:left;font-weight:700">${esc(row.name)}</td>
        ${row.shifts.map((sh, cIdx) => {
           const dStr = toLocalISO(dates[cIdx]);
+          const isDouble = sh.full.includes('+') || sh.full.length > 2;
           return `<td class="shift-cell" onclick="openEditCell('${month}', '${row.empId}', '${dStr}', '${sh.full}', true, ${rIdx}, ${cIdx})">
-             <span class="tag" style="background:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${sh.full}</span>
+             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${sh.full}</span>
           </td>`;
        }).join('')}
        <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>

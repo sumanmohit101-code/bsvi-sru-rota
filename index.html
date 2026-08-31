@@ -130,18 +130,15 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
-      <div class="panel-head"><h2>📖 System Guide & User Authentication</h2></div>
+      <div class="panel-head"><h2>📖 System Guide & User Roles</h2></div>
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
-        <h3 style="color:#1e293b; margin-top:0;">🔐 Multi-User Authentication & PIN Recovery</h3>
-        <p>• <b>Admin (Default PIN: 1234):</b> Full access to edit all rotas, approve/reject leaves, add employees, and reset any employee's PIN.<br>
-           • <b>Employees (Default PIN: 0000):</b> Can login to their individual profile. They can apply for leave in their own name and can <b>only edit or delete their own leave entries</b>.<br>
-           • <b>Forgot PIN?:</b> Admin can reset employee PINs anytime from <b>1. Employee Data</b> or in the Google Sheet. If Admin PIN is forgotten, it is stored in the <b>Settings</b> sheet in Google Sheets.</p>
+        <h3 style="color:#1e293b; margin-top:0;">🔐 Multi-User Permissions</h3>
+        <p>• <b>Admin (Default PIN: 1234):</b> Full access to edit Employee Master, reset employee PINs, and approve/reject all leave requests.<br>
+           • <b>Employees (Default PIN: 0000):</b> Can login to their individual profile. They can apply for leave in their own name and can <b>only edit or delete their own leave entries</b>. Other pages (Rota, Holidays, Extra Duty) are open for team collaboration.<br>
+           • <b>Employee Data Security:</b> Employee PINs and Master settings are strictly visible only to the Admin.</p>
         
         <h3 style="color:#1e293b;">1. Smart Auto-Generation (Greedy Assigner)</h3>
         <p>Uses the pattern (e.g., <b>EEMMNNO</b>) and dynamically balances multi-role employees to ensure roles <b>M1, M2, M3</b> are all covered.</p>
-        
-        <h3 style="color:#1e293b;">2. Automated Extra Duties & Overtime</h3>
-        <p>Double shifts (`M1+E2`) or duties on weekly off/holidays are <b>automatically detected</b> in Section 5.</p>
       </div>
     </div>
   </section>
@@ -153,21 +150,18 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <h2>Employee Master Data</h2>
         <div class="toolbar">
           <input id="empDataSearch" placeholder="Search Emp ID / name">
-          <button class="btn primary" onclick="openEmployee()">+ Add Employee</button>
+          <button class="btn primary" id="addEmpBtn" style="display:none;" onclick="openEmployee()">+ Add Employee</button>
           <button class="btn" onclick="sortBySeniority()">Sort by Seniority</button>
         </div>
       </div>
       <div class="panel-body">
-        <div class="notice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Admin can view and change any employee's PIN directly from the table below.
+        <div class="notice" id="empDataNotice">
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Employee data modification is restricted to Admin.
         </div>
       </div>
       <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th>
-            <th>Roles (1, 2, 3)</th><th>OFF DAY</th><th>Login PIN</th><th>Actions</th>
-          </tr></thead>
+        <table id="empMasterTable">
+          <thead id="empDataHead"></thead>
           <tbody id="empDataBody"></tbody>
         </table>
       </div>
@@ -237,7 +231,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Multi-User Note:</b> Non-admin users can only apply for their own leave and edit/delete entries submitted by themselves.
+          ℹ️ <b>Multi-User Access:</b> Employees can only apply for their own leave and edit/delete entries created by themselves. Admin can approve and manage all entries.
         </div>
       </div>
       <div class="table-wrap">
@@ -510,6 +504,7 @@ function performLogin() {
   localStorage.setItem('sru_current_user', JSON.stringify(currentUser));
   $('loginModal').classList.remove('show');
   updateUserUI();
+  renderEmployeeData();
   renderLeaves();
 }
 
@@ -517,13 +512,17 @@ function logoutUser() {
   currentUser = null;
   localStorage.removeItem('sru_current_user');
   updateUserUI();
+  renderEmployeeData();
   renderLeaves();
 }
 
 function updateUserUI() {
   const changeBtn = $('changePinBtn');
+  const addEmpBtn = $('addEmpBtn');
+  const isAdmin = currentUser && currentUser.type === 'ADMIN';
+
   if (currentUser) {
-    $('loggedInUserName').textContent = currentUser.type === 'ADMIN' ? '👑 Admin' : `👤 ${currentUser.name}`;
+    $('loggedInUserName').textContent = isAdmin ? '👑 Admin' : `👤 ${currentUser.name}`;
     $('loginBtn').textContent = 'Logout';
     $('loginBtn').onclick = logoutUser;
     if (changeBtn) changeBtn.style.display = 'inline-block';
@@ -532,6 +531,10 @@ function updateUserUI() {
     $('loginBtn').textContent = 'Login';
     $('loginBtn').onclick = openLoginModal;
     if (changeBtn) changeBtn.style.display = 'none';
+  }
+
+  if (addEmpBtn) {
+    addEmpBtn.style.display = isAdmin ? 'inline-block' : 'none';
   }
 }
 
@@ -645,9 +648,9 @@ function saveSettings() {
   generateRota(); $('colorPanel').style.display = 'none'; scheduleSync();
 }
 
-/* ==== EMPLOYEE MANAGEMENT ==== */
+/* ==== EMPLOYEE MASTER (ADMIN ONLY EDIT & VIEW PIN) ==== */
 function openEmployee(id=null){
- if(currentUser && currentUser.type !== 'ADMIN') return alert('Only Admin can add or edit employees.');
+ if(!currentUser || currentUser.type !== 'ADMIN') return alert('Access Denied: Only Admin can add or edit employee master data.');
  const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',pin:'0000',active:true,offset:0 };
  $('modalTitle').textContent=id?'Edit Employee':'Add Employee';
  $('modalBody').innerHTML=`<div class="form-grid">
@@ -683,21 +686,44 @@ function renderEmployeeData(){
  const arr=state.employees.filter(e=>(e.name+' '+e.code).toLowerCase().includes(q)).sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
  const isAdmin = currentUser && currentUser.type === 'ADMIN';
 
- $('empDataBody').innerHTML=arr.length?arr.map((e,i)=>`<tr>
-   <td>${i+1}</td><td>${esc(e.code)}</td><td style="text-align:left;font-weight:600">${esc(e.name)}</td><td><b>${e.seniority||''}</b></td>
-   <td><input value="${esc(e.roles||'')}" ${isAdmin?'':'disabled'} style="width:100px;text-align:center" onchange="quickRole('${e.id}',this.value)" placeholder="1,3"></td>
-   <td><select ${isAdmin?'':'disabled'} onchange="quickOff('${e.id}',this.value)">
-      <option value="">Not defined</option>${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${e.weeklyOff===d?'selected':''}>${d}</option>`).join('')}
-   </select></td>
-   <td><input value="${esc(e.pin||'0000')}" ${isAdmin?'':'disabled'} style="width:70px;text-align:center" onchange="quickPin('${e.id}',this.value)" title="Admin can change PIN here"></td>
-   <td>
-      ${isAdmin ? `<button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button>` : `<span class="small" style="color:var(--muted)">Admin Only</span>`}
-   </td>
- </tr>`).join(''):`<tr><td colspan="8" class="empty">No employees yet.</td></tr>`;
+ // Dynamic Head based on role
+ if (isAdmin) {
+   $('empDataHead').innerHTML = `<tr>
+     <th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th>
+     <th>Roles (1, 2, 3)</th><th>OFF DAY</th><th>Login PIN</th><th>Actions</th>
+   </tr>`;
+ } else {
+   $('empDataHead').innerHTML = `<tr>
+     <th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th>
+     <th>Roles (1, 2, 3)</th><th>OFF DAY</th>
+   </tr>`;
+ }
+
+ $('empDataBody').innerHTML = arr.length ? arr.map((e,i)=>{
+   if (isAdmin) {
+     return `<tr>
+       <td>${i+1}</td><td>${esc(e.code)}</td><td style="text-align:left;font-weight:600">${esc(e.name)}</td><td><b>${e.seniority||''}</b></td>
+       <td><input value="${esc(e.roles||'')}" style="width:100px;text-align:center" onchange="quickRole('${e.id}',this.value)" placeholder="1,3"></td>
+       <td><select onchange="quickOff('${e.id}',this.value)">
+          <option value="">Not defined</option>${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${e.weeklyOff===d?'selected':''}>${d}</option>`).join('')}
+       </select></td>
+       <td><input value="${esc(e.pin||'0000')}" style="width:70px;text-align:center;font-weight:bold;color:#b91c1c;" onchange="quickPin('${e.id}',this.value)"></td>
+       <td><button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button></td>
+     </tr>`;
+   } else {
+     // Non-Admin: No PIN Column, No Action Buttons, View-Only Text
+     return `<tr>
+       <td>${i+1}</td><td>${esc(e.code)}</td><td style="text-align:left;font-weight:600">${esc(e.name)}</td><td><b>${e.seniority||''}</b></td>
+       <td><span class="tag" style="background:#eef4ff;color:#1d4ed8;">${esc(e.roles||'—')}</span></td>
+       <td><b>${esc(e.weeklyOff||'Not defined')}</b></td>
+     </tr>`;
+   }
+ }).join('') : `<tr><td colspan="${isAdmin?8:6}" class="empty">No employees found.</td></tr>`;
 }
-function quickRole(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.roles=normalizeRoles(v); save(); scheduleSync();}
-function quickOff(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.weeklyOff=v; save(); scheduleSync();}
-function quickPin(id,v){const e=state.employees.find(x=>x.id===id); if(!e)return; e.pin=v.trim()||'0000'; save(); log('PIN reset by Admin', e.name); scheduleSync();}
+
+function quickRole(id,v){if(!currentUser||currentUser.type!=='ADMIN')return; const e=state.employees.find(x=>x.id===id); if(!e)return; e.roles=normalizeRoles(v); save(); scheduleSync();}
+function quickOff(id,v){if(!currentUser||currentUser.type!=='ADMIN')return; const e=state.employees.find(x=>x.id===id); if(!e)return; e.weeklyOff=v; save(); scheduleSync();}
+function quickPin(id,v){if(!currentUser||currentUser.type!=='ADMIN')return; const e=state.employees.find(x=>x.id===id); if(!e)return; e.pin=v.trim()||'0000'; save(); log('PIN reset by Admin', e.name); scheduleSync();}
 function sortBySeniority(){state.employees.sort((a,b)=>(a.seniority||9999)-(b.seniority||9999)); save(); renderEmployeeData();}
 function removeEmployee(id){
  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete employees.');
@@ -707,7 +733,7 @@ function removeEmployee(id){
 $('empDataSearch').oninput=renderEmployeeData;
 
 
-/* ==== SMART ROTA ENGINE ==== */
+/* ==== SMART ROTA ENGINE (OPEN FOR TEAM) ==== */
 function dateRange(month){
  const [y,m]=month.split('-').map(Number),end=new Date(y,m,0),a=[];
  for(let d=1;d<=end.getDate();d++)a.push(new Date(y,m-1,d));
@@ -826,12 +852,8 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL ==== */
+/* ==== CELL EDIT MODAL (OPEN FOR ALL) ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
-  if(!currentUser || currentUser.type !== 'ADMIN') {
-    alert('Only Admin / Supervisor can override shift duties directly in the Rota.');
-    return;
-  }
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
   $('editCellModal').classList.add('show');
@@ -860,11 +882,8 @@ function applyCellOverride(val) {
   $('editCellModal').classList.remove('show');
 }
 
-/* ==== ROTA FINALIZATION ==== */
+/* ==== ROTA FINALIZATION (OPEN FOR TEAM) ==== */
 function finalizeRota() {
-   if(!currentUser || currentUser.type !== 'ADMIN') {
-     return alert('Permission Denied! Only Admin can finalize rota.');
-   }
    const month = $('rotaMonth').value;
    if(!confirm(`Finalize Rota for ${month}?`)) return;
    
@@ -908,7 +927,6 @@ function generateHistoryRota() {
 $('historyMonthSelect').onchange = generateHistoryRota;
 
 function deleteFinalizedRota() {
-  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete finalized rota.');
   const month = $('historyMonthSelect').value;
   if(!month || !state.finalizedRotas[month]) return alert('Select a finalized rota first.');
   if(confirm(`Permanently delete snapshot for ${month}?`)) {
@@ -946,9 +964,8 @@ function renderCoverage(dates, activeEmps, matrix){
   document.querySelector('#rota .panel').after(panel);
 }
 
-/* ==== HOLIDAYS ==== */
+/* ==== HOLIDAYS (OPEN FOR ALL) ==== */
 function openHoliday(idx=null){
-  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can add/edit holidays.');
   const h=idx!==null?state.holidays[idx]:{date:'',name:''};
   $('modalTitle').textContent=idx!==null?'Edit Holiday':'Add Holiday';
   $('modalBody').innerHTML=`<div class="form-grid" style="grid-template-columns:1fr 1fr;">
@@ -964,7 +981,6 @@ function openHoliday(idx=null){
   $('modal').classList.add('show');
 }
 function removeHoliday(idx){
-  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete holidays.');
   if(confirm('Delete holiday?')){ state.holidays.splice(idx,1); save(); renderHolidays(); scheduleSync(); }
 }
 function renderHolidays(){
@@ -1036,7 +1052,7 @@ function getAutoExtraDuties(monthF) {
    return results;
 }
 
-/* ==== EXTRA DUTY REGISTER ==== */
+/* ==== EXTRA DUTY REGISTER (OPEN FOR ALL) ==== */
 function openExtraDuty(id=null){
   const ed = id ? state.extraDuties.find(x=>x.id===id) : {id:'ED'+Date.now(), empId:state.employees[0]?.id||'', date:'', type:'Double Duty', details:'', remarks:''};
   $('modalTitle').textContent=id?'Edit Extra Duty':'Log Extra Duty';
@@ -1350,7 +1366,7 @@ function renderCharts() {
    });
 }
 
-/* ==== BACKEND SYNC (TWO-WAY) ==== */
+/* ==== BACKEND SYNC ==== */
 let syncTimer=null;
 function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncAll(),1500);}
 

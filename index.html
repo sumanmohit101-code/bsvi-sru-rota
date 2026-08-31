@@ -49,13 +49,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   padding:5px 12px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid #c7d2fe;
 }
 
-.shift-block {
-  background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px;
-}
-.shift-block-head {
-  font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 10px; display: flex; justify-content: space-between; border-bottom: 1px dashed var(--line); padding-bottom: 6px;
-}
-
 @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
 @media(max-width:1000px){.sidebar{width:210px}.main{margin-left:210px;width:calc(100% - 210px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:14px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:130px}}
@@ -108,15 +101,26 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
     
     <div class="dash-grid">
-       <!-- Left Side: Today's Full Shift Deployment -->
+       <!-- Left Side: Today's Unified Compact Deployment Table -->
        <div style="display:flex; flex-direction:column; gap:18px;">
           <div class="panel" style="margin-bottom:0;">
              <div class="panel-head">
                <h2>Today's Shift Deployment (Morning, Evening & Night)</h2>
                <button class="btn" onclick="showPage('rota')">Open Active Rota</button>
              </div>
-             <div class="panel-body">
-                <div id="todayDeployment"></div>
+             <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:170px;">Shift Timing</th>
+                      <th>Role</th>
+                      <th style="text-align:left">Employee Name</th>
+                      <th>Duty Code</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="todayDeploymentBody"></tbody>
+                </table>
              </div>
           </div>
           
@@ -326,7 +330,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. NEW: Finalized Leave Register (Extracted from Rota History) -->
+  <!-- 6. Finalized Leave Register (Extracted from Rota History) -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -406,7 +410,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="field">
         <label>PIN / Password</label>
-        <input type="password" id="loginPin" placeholder="Admin: 1234 | Emp: 0000">
+        <input type="password" id="loginPin" placeholder="Enter PIN">
       </div>
       <div class="small" style="margin-top:8px; color:var(--muted);">
         Default Admin PIN is <b>1234</b>. Default Employee PIN is <b>0000</b>.
@@ -529,6 +533,36 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function formatDateDisplay(d){ if(!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-'); }
 function closeModal(){$('modal').classList.remove('show');}
 
+/* ==== MULTI-PC CLOUD SYNC ON STARTUP ==== */
+async function fetchCloudData() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    if (data && data.ok && data.payload) {
+      const p = data.payload;
+      if (p.adminPin) state.adminPin = String(p.adminPin);
+      if (p.employees && p.employees.length) {
+        p.employees.forEach(cloudEmp => {
+           const local = state.employees.find(e => e.id === cloudEmp.id || e.code === cloudEmp.code);
+           if (local) {
+              local.pin = cloudEmp.pin || local.pin || '0000';
+              local.roles = cloudEmp.roles || local.roles;
+              local.weeklyOff = cloudEmp.weeklyOff || local.weeklyOff;
+           } else {
+              state.employees.push(cloudEmp);
+           }
+        });
+      }
+      save();
+      updateUserUI();
+      renderEmployeeData();
+      renderDashboard();
+    }
+  } catch(e) {
+    console.log("Offline mode or cloud fetch error", e);
+  }
+}
+
 /* ==== USER AUTHENTICATION & CHANGE PIN ==== */
 function openLoginModal() {
   const selectGroup = $('loginEmpOptions');
@@ -552,7 +586,7 @@ function performLogin() {
     const emp = state.employees.find(e => e.id === selectedVal);
     if (!emp) return alert('Employee not found!');
     const validPin = emp.pin || '0000';
-    if (pin === validPin || pin === currentAdminPin) {
+    if (pin === validPin) {
       currentUser = { type: 'EMP', name: emp.name, id: emp.id, code: emp.code };
     } else {
       return alert(`Invalid PIN for ${emp.name}!`);
@@ -620,7 +654,7 @@ function submitChangePin() {
     if (oldP !== currentAdminPin) return alert('Incorrect Old Admin PIN!');
     state.adminPin = newP;
     save(); log('Admin PIN Changed', 'Admin password updated.'); scheduleSync();
-    alert('✓ Admin PIN changed successfully!');
+    alert('✓ Admin PIN changed successfully & saved to cloud!');
   } else {
     const emp = state.employees.find(e => e.id === currentUser.id);
     if (!emp) return alert('Employee record not found.');
@@ -1016,7 +1050,6 @@ function finalizeRota() {
       return row;
    });
    
-   // Clean YYYY-MM-DD Date strings
    state.finalizedRotas[month] = { snapshot: snapshot, dates: dates.map(d => toLocalISO(d)) };
    save(); log('Rota Finalized', month); scheduleSync();
    updateHistoryDropdown();
@@ -1464,7 +1497,7 @@ function downloadCSV(type) {
 }
 
 
-/* ==== DASHBOARD & ANALYTICS (REAL-TIME LINKED TO ROTA HISTORY & ACTIVE MATRIX) ==== */
+/* ==== DASHBOARD & ANALYTICS (UNIFIED CLEAN TABLE & ROBUST DATA LINK) ==== */
 function renderHistory(){$('historyBody').innerHTML=state.history.map(h=>`<tr><td style="white-space:nowrap">${new Date(h.time).toLocaleString('en-IN')}</td><td style="text-align:left"><b>${esc(h.action)}</b></td><td style="text-align:left">${esc(h.details)}</td></tr>`).join('')||`<tr><td colspan="3" class="empty">No history yet.</td></tr>`}
 function clearHistory(){if(confirm('Clear audit history?')){state.history=[];save();renderHistory();scheduleSync();}}
 
@@ -1530,37 +1563,43 @@ function renderDashboard(){
      return `<div class="dash-item"><b>${empName}</b><span class="tag approved">${ed.type}</span></div>`
  }).join('') : '<div class="small">No extra duties scheduled today.</div>';
 
- // Today's Shifts Comprehensive Deployment View (Morning, Evening, Night)
- const shiftNames = { M: '🌅 Morning Shift (06:00 - 14:00)', E: '🌇 Evening Shift (14:00 - 22:00)', N: '🌙 Night Shift (22:00 - 06:00)' };
- 
- let deploymentHtml = '';
- ['M', 'E', 'N'].forEach(sh => {
-    const list = shiftGroups[sh];
-    deploymentHtml += `
-      <div class="shift-block">
-        <div class="shift-block-head">
-           <span>${shiftNames[sh]}</span>
-           <span class="tag" style="background:${state.colors[`${sh}_bg`]};color:${state.colors[`${sh}_txt`]}">${list.length} Personnel</span>
-        </div>
-        ${list.length ? `
-           <table>
-             <thead><tr><th>Role Code</th><th>Employee Name</th><th>Shift Duty</th></tr></thead>
-             <tbody>
-               ${list.map(item => `
-                  <tr>
-                    <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
-                    <td style="font-weight:600">${esc(item.emp.name)}</td>
-                    <td><span class="tag" style="background:${state.colors[`${sh}_bg`]};color:${state.colors[`${sh}_txt`]};border:1px solid ${state.colors[`${sh}_txt`]}40">${item.full}</span></td>
-                  </tr>
-               `).join('')}
-             </tbody>
-           </table>
-        ` : `<div class="small" style="color:var(--muted)">No manpower assigned to this shift today.</div>`}
-      </div>
-    `;
+ // Unified Optimized Single Table for Today's Deployment
+ const shiftMeta = [
+   { key: 'M', label: '🌅 Morning (06:00 - 14:00)', bg: state.colors.M_bg, txt: state.colors.M_txt },
+   { key: 'E', label: '🌇 Evening (14:00 - 22:00)', bg: state.colors.E_bg, txt: state.colors.E_txt },
+   { key: 'N', label: '🌙 Night (22:00 - 06:00)', bg: state.colors.N_bg, txt: state.colors.N_txt }
+ ];
+
+ let tableHtml = '';
+ let totalActiveRendered = 0;
+
+ shiftMeta.forEach(sm => {
+    const list = shiftGroups[sm.key];
+    totalActiveRendered += list.length;
+    if(list.length) {
+       list.forEach((item, idx) => {
+          const shiftCol = idx === 0 ? `<td rowspan="${list.length}" style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line); color:#1e293b;"><span class="tag" style="background:${sm.bg};color:${sm.txt};margin-bottom:4px;">${sm.key}</span><br>${sm.label}</td>` : '';
+          tableHtml += `
+            <tr>
+              ${shiftCol}
+              <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
+              <td style="font-weight:600">${esc(item.emp.name)}</td>
+              <td><span class="tag" style="background:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${item.full}</span></td>
+              <td><span class="tag approved">On Duty</span></td>
+            </tr>
+          `;
+       });
+    } else {
+       tableHtml += `
+         <tr>
+           <td style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line);"><span class="tag" style="background:${sm.bg};color:${sm.txt};">${sm.key}</span> ${sm.label}</td>
+           <td colspan="4" class="small" style="color:var(--muted); text-align:center;">No manpower assigned to this shift today.</td>
+         </tr>
+       `;
+    }
  });
- 
- $('todayDeployment').innerHTML = deploymentHtml;
+
+ $('todayDeploymentBody').innerHTML = tableHtml || `<tr><td colspan="5" class="empty">No manpower assigned today.</td></tr>`;
  renderCharts();
 }
 
@@ -1618,7 +1657,7 @@ function renderCharts() {
                ticks: { precision: 0, stepSize: 1 } 
              },
              x: {
-               ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 11 } }
+               ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 10 } }
              }
            },
            plugins: { legend: { position: 'bottom' } }
@@ -1723,6 +1762,7 @@ generateRota(false);
 renderDashboard();
 updateHistoryDropdown();
 updateUserUI();
+fetchCloudData(); // Auto sync with Google Sheets on startup
 </script>
 </body>
 </html>

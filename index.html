@@ -130,15 +130,15 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
-      <div class="panel-head"><h2>📖 System Guide & User Roles</h2></div>
+      <div class="panel-head"><h2>📖 System Guide & Smart Rota Rules</h2></div>
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
-        <h3 style="color:#1e293b; margin-top:0;">🔐 Multi-User Permissions</h3>
-        <p>• <b>Admin (Default PIN: 1234):</b> Full access to edit Employee Master, reset employee PINs, and approve/reject all leave requests.<br>
-           • <b>Employees (Default PIN: 0000):</b> Can login to their individual profile. They can apply for leave in their own name and can <b>only edit or delete their own leave entries</b>. Other pages (Rota, Holidays, Extra Duty) are open for team collaboration.<br>
-           • <b>Employee Data Security:</b> Employee PINs and Master settings are strictly visible only to the Admin.</p>
-        
-        <h3 style="color:#1e293b;">1. Smart Auto-Generation (Greedy Assigner)</h3>
-        <p>Uses the pattern (e.g., <b>EEMMNNO</b>) and dynamically balances multi-role employees to ensure roles <b>M1, M2, M3</b> are all covered.</p>
+        <h3 style="color:#1e293b; margin-top:0;">⚡ Smart Rota & Auto-Role Allocation Rules</h3>
+        <p>
+          1. <b>Minimum 3 Persons per Shift:</b> Har shift (M, E, N) me <b>Role 1 (BSVI SRU PIC)</b>, <b>Role 2 (OLD SRU PIC)</b>, aur <b>Role 3 (SIC)</b> cover hote hain.<br>
+          2. <b>Dynamic Role Balancing:</b> Multi-role employees (e.g. `3,2,1` ya `1,2`) un slots me dynamically place hote hain jahan role missing ho.<br>
+          3. <b>Weekly OFF Day:</b> Agar kisi employee ka OFF DAY (e.g. Tuesday) define kiya gaya hai, to use har Tuesday ko automatic <b>`O` (OFF)</b> milega.<br>
+          4. <b>Excess Manpower:</b> Extra employees ko unke eligible roles ke according shift di jaati hai.
+        </p>
       </div>
     </div>
   </section>
@@ -156,7 +156,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice" id="empDataNotice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Employee data modification is restricted to Admin.
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Use comma for multiple roles (e.g. 1,3 or 3,2,1).
         </div>
       </div>
       <div class="table-wrap">
@@ -551,44 +551,26 @@ function submitChangePin() {
   const newP = $('newPin').value.trim();
   const confP = $('confirmPin').value.trim();
 
-  if (!oldP || !newP || !confP) {
-    return alert('Please fill all fields.');
-  }
-
-  if (newP !== confP) {
-    return alert('New PIN and Confirm PIN do not match!');
-  }
-
-  if (newP.length < 4) {
-    return alert('PIN must be at least 4 digits/characters.');
-  }
+  if (!oldP || !newP || !confP) return alert('Please fill all fields.');
+  if (newP !== confP) return alert('New PIN and Confirm PIN do not match!');
+  if (newP.length < 4) return alert('PIN must be at least 4 digits/characters.');
 
   if (currentUser.type === 'ADMIN') {
     const currentAdminPin = state.adminPin || '1234';
-    if (oldP !== currentAdminPin) {
-      return alert('Incorrect Old Admin PIN!');
-    }
+    if (oldP !== currentAdminPin) return alert('Incorrect Old Admin PIN!');
     state.adminPin = newP;
-    save();
-    log('Admin PIN Changed', 'Admin password updated.');
-    scheduleSync();
+    save(); log('Admin PIN Changed', 'Admin password updated.'); scheduleSync();
     alert('✓ Admin PIN changed successfully!');
   } else {
     const emp = state.employees.find(e => e.id === currentUser.id);
     if (!emp) return alert('Employee record not found.');
-    
     const validPin = emp.pin || '0000';
-    if (oldP !== validPin) {
-      return alert('Incorrect Old PIN!');
-    }
+    if (oldP !== validPin) return alert('Incorrect Old PIN!');
     emp.pin = newP;
-    save();
-    log('PIN Changed', `PIN updated for ${emp.name}`);
-    renderEmployeeData();
-    scheduleSync();
+    save(); log('PIN Changed', `PIN updated for ${emp.name}`);
+    renderEmployeeData(); scheduleSync();
     alert(`✓ PIN for ${emp.name} changed successfully!`);
   }
-
   $('changePinModal').classList.remove('show');
 }
 
@@ -648,7 +630,7 @@ function saveSettings() {
   generateRota(); $('colorPanel').style.display = 'none'; scheduleSync();
 }
 
-/* ==== EMPLOYEE MASTER (ADMIN ONLY EDIT & VIEW PIN) ==== */
+/* ==== EMPLOYEE MASTER (ADMIN ONLY EDIT & REAL-TIME ROTA UPDATE) ==== */
 function openEmployee(id=null){
  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Access Denied: Only Admin can add or edit employee master data.');
  const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',pin:'0000',active:true,offset:0 };
@@ -657,8 +639,8 @@ function openEmployee(id=null){
  <div class="field"><label>Emp ID</label><input id="f_code" value="${esc(e.code)}"></div>
  <div class="field"><label>Employee Name</label><input id="f_name" value="${esc(e.name)}"></div>
  <div class="field"><label>Seniority</label><input id="f_seniority" type="number" min="1" value="${e.seniority||1}"></div>
- <div class="field"><label>Roles</label><input id="f_roles" placeholder="e.g. 1,3" value="${esc(e.roles||'')}"></div>
- <div class="field"><label>OFF DAY (Opt)</label><select id="f_off">
+ <div class="field"><label>Roles (1=BSVI, 2=OLD, 3=SIC)</label><input id="f_roles" placeholder="e.g. 1,3" value="${esc(e.roles||'')}"></div>
+ <div class="field"><label>OFF DAY (Weekly OFF)</label><select id="f_off">
    <option value="">Not defined</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option>
    <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
  </select></div>
@@ -675,8 +657,9 @@ function openEmployee(id=null){
    e.active=$('f_active').value==='true';
    if(!e.code||!e.name)return alert('Emp ID and Employee Name are required.');
    if(!id)state.employees.push(e);
-   save();log(id?'Employee updated':'Employee added',`${e.code} - ${e.name}`);scheduleSync();
-   closeModal();renderEmployeeData();
+   save(); log(id?'Employee updated':'Employee added',`${e.code} - ${e.name}`); scheduleSync();
+   generateRota(false); renderDashboard();
+   closeModal(); renderEmployeeData();
  };
  $('modal').classList.add('show');
 }
@@ -686,7 +669,6 @@ function renderEmployeeData(){
  const arr=state.employees.filter(e=>(e.name+' '+e.code).toLowerCase().includes(q)).sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
  const isAdmin = currentUser && currentUser.type === 'ADMIN';
 
- // Dynamic Head based on role
  if (isAdmin) {
    $('empDataHead').innerHTML = `<tr>
      <th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th>
@@ -711,7 +693,6 @@ function renderEmployeeData(){
        <td><button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button></td>
      </tr>`;
    } else {
-     // Non-Admin: No PIN Column, No Action Buttons, View-Only Text
      return `<tr>
        <td>${i+1}</td><td>${esc(e.code)}</td><td style="text-align:left;font-weight:600">${esc(e.name)}</td><td><b>${e.seniority||''}</b></td>
        <td><span class="tag" style="background:#eef4ff;color:#1d4ed8;">${esc(e.roles||'—')}</span></td>
@@ -721,19 +702,40 @@ function renderEmployeeData(){
  }).join('') : `<tr><td colspan="${isAdmin?8:6}" class="empty">No employees found.</td></tr>`;
 }
 
-function quickRole(id,v){if(!currentUser||currentUser.type!=='ADMIN')return; const e=state.employees.find(x=>x.id===id); if(!e)return; e.roles=normalizeRoles(v); save(); scheduleSync();}
-function quickOff(id,v){if(!currentUser||currentUser.type!=='ADMIN')return; const e=state.employees.find(x=>x.id===id); if(!e)return; e.weeklyOff=v; save(); scheduleSync();}
-function quickPin(id,v){if(!currentUser||currentUser.type!=='ADMIN')return; const e=state.employees.find(x=>x.id===id); if(!e)return; e.pin=v.trim()||'0000'; save(); log('PIN reset by Admin', e.name); scheduleSync();}
-function sortBySeniority(){state.employees.sort((a,b)=>(a.seniority||9999)-(b.seniority||9999)); save(); renderEmployeeData();}
+function quickRole(id,v){
+  if(!currentUser||currentUser.type!=='ADMIN')return;
+  const e=state.employees.find(x=>x.id===id); if(!e)return;
+  e.roles=normalizeRoles(v);
+  save(); scheduleSync();
+  generateRota(false); renderDashboard(); // Real-time recalculation
+}
+function quickOff(id,v){
+  if(!currentUser||currentUser.type!=='ADMIN')return;
+  const e=state.employees.find(x=>x.id===id); if(!e)return;
+  e.weeklyOff=v;
+  save(); scheduleSync();
+  generateRota(false); renderDashboard(); // Real-time recalculation
+}
+function quickPin(id,v){
+  if(!currentUser||currentUser.type!=='ADMIN')return;
+  const e=state.employees.find(x=>x.id===id); if(!e)return;
+  e.pin=v.trim()||'0000';
+  save(); log('PIN reset by Admin', e.name); scheduleSync();
+}
+function sortBySeniority(){
+  state.employees.sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
+  save(); generateRota(false); renderEmployeeData();
+}
 function removeEmployee(id){
  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Only Admin can delete employees.');
- if(!confirm('Delete this employee?'))return; state.employees=state.employees.filter(x=>x.id!==id);
- save();scheduleSync(); renderEmployeeData();
+ if(!confirm('Delete this employee?'))return;
+ state.employees=state.employees.filter(x=>x.id!==id);
+ save(); scheduleSync(); generateRota(false); renderEmployeeData();
 }
 $('empDataSearch').oninput=renderEmployeeData;
 
 
-/* ==== SMART ROTA ENGINE (OPEN FOR TEAM) ==== */
+/* ==== SMART ROTA ENGINE (OPTIMAL ROLE ASSIGNMENT & WEEKLY OFF) ==== */
 function dateRange(month){
  const [y,m]=month.split('-').map(Number),end=new Date(y,m,0),a=[];
  for(let d=1;d<=end.getDate();d++)a.push(new Date(y,m-1,d));
@@ -748,62 +750,86 @@ function buildRotaMatrix(month) {
   const activeEmps = state.employees.filter(e => e.active !== false).sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
   if(!state.overrides[month]) state.overrides[month] = {};
 
+  // 1. Calculate Base Shifts (incorporating continuous pattern + Approved Leaves + Weekly OFF)
   activeEmps.forEach(e => {
       matrix[e.id] = {};
       dates.forEach(d => {
           const dStr = d.toISOString().slice(0, 10);
           const override = state.overrides[month][e.id]?.[dStr];
           let base = 'O';
+
           const isLeave = state.leaves.some(l => l.empId === e.id && l.status === 'Approved' && l.from <= dStr && dStr <= l.to);
-          if (isLeave) { base = 'L'; } 
-          else {
-              const baseDate = new Date(2026, 8, 1);
-              const diff = Math.floor((d - baseDate) / 86400000);
-              const p = state.pattern || 'EEMMNNO';
-              const idx = ((diff + (e.offset||0)) % p.length + p.length) % p.length;
-              base = p[idx] || 'O';
+          if (isLeave) {
+              base = 'L';
+          } else {
+              const dayName = d.toLocaleDateString('en-US', {weekday:'long'});
+              // Weekly OFF override
+              if (e.weeklyOff && e.weeklyOff.toLowerCase() === dayName.toLowerCase()) {
+                  base = 'O';
+              } else {
+                  const baseDate = new Date(2026, 8, 1);
+                  const diff = Math.floor((d - baseDate) / 86400000);
+                  const p = state.pattern || 'EEMMNNO';
+                  const idx = ((diff + (e.offset||0)) % p.length + p.length) % p.length;
+                  base = p[idx] || 'O';
+              }
           }
           matrix[e.id][dStr] = { base, full: base, override };
       });
   });
 
+  // 2. SMART MULTI-ROLE SOLVER for Roles 1 (BSVI), 2 (OLD), 3 (SIC)
   dates.forEach(d => {
       const dStr = d.toISOString().slice(0, 10);
-      const prevD = new Date(d); prevD.setDate(d.getDate() - 1);
-      const prevDStr = prevD.toISOString().slice(0, 10);
 
       ['M', 'E', 'N'].forEach(sh => {
           let empsInShift = activeEmps.filter(e => matrix[e.id][dStr].base === sh && !matrix[e.id][dStr].override);
-          let neededRoles = ['1', '2', '3']; 
-          let assignments = {};
+          if(empsInShift.length === 0) return;
 
+          let empRoles = {};
           empsInShift.forEach(e => {
-              const roles = normalizeRoles(e.roles).split(',').filter(Boolean);
-              if(roles.length === 1) {
-                  assignments[e.id] = roles[0];
-                  neededRoles = neededRoles.filter(r => r !== roles[0]);
-              }
+              empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          empsInShift.forEach(e => {
-              if (assignments[e.id]) return; 
-              const roles = normalizeRoles(e.roles).split(',').filter(Boolean);
-              let chosen = null;
-              for(let r of roles) {
-                  if(neededRoles.includes(r)) { chosen = r; neededRoles = neededRoles.filter(nr => nr !== r); break; }
-              }
-              if(!chosen) {
-                  if (roles.includes('1') && roles.includes('2')) {
-                      const prevBase = matrix[e.id][prevDStr]?.base;
-                      chosen = (prevBase === sh) ? '2' : '1'; 
-                  } else { chosen = roles[0] || ''; }
-              }
-              assignments[e.id] = chosen;
+          // Sort by flexibility (single-role employees first, then dual, then tri-role)
+          let sortedEmps = [...empsInShift].sort((a, b) => {
+              let lenA = empRoles[a.id].length || 99;
+              let lenB = empRoles[b.id].length || 99;
+              if (lenA !== lenB) return lenA - lenB;
+              return (a.seniority || 9999) - (b.seniority || 9999);
           });
 
-          empsInShift.forEach(e => { matrix[e.id][dStr].full = sh + (assignments[e.id] || ''); });
+          // Recursive Bipartite Matcher to guarantee coverage of roles [1, 2, 3]
+          function solveShiftRoles(idx, remainingRoles, currentMatch) {
+              if (remainingRoles.length === 0 || idx >= sortedEmps.length) {
+                  return currentMatch;
+              }
+              let emp = sortedEmps[idx];
+              let eligible = empRoles[emp.id].filter(r => remainingRoles.includes(r));
+
+              for (let r of eligible) {
+                  let nextRoles = remainingRoles.filter(x => x !== r);
+                  let res = solveShiftRoles(idx + 1, nextRoles, { ...currentMatch, [emp.id]: r });
+                  if (Object.keys(res).length === 3 || nextRoles.length === 0) return res;
+              }
+              return solveShiftRoles(idx + 1, remainingRoles, currentMatch);
+          }
+
+          let matchedRoles = solveShiftRoles(0, ['1', '2', '3'], {});
+
+          // Assign matched roles & handle excess employees
+          empsInShift.forEach(e => {
+              let assignedRole = matchedRoles[e.id];
+              if (!assignedRole) {
+                  // Excess manpower assignment
+                  let allowed = empRoles[e.id];
+                  assignedRole = allowed.length > 0 ? allowed[0] : '1';
+              }
+              matrix[e.id][dStr].full = sh + assignedRole;
+          });
       });
 
+      // 3. Apply Manual Cell Overrides
       activeEmps.forEach(e => {
           if (matrix[e.id][dStr].override) {
               const ov = matrix[e.id][dStr].override.toUpperCase();
@@ -812,6 +838,7 @@ function buildRotaMatrix(month) {
           }
       });
   });
+
   return { matrix, dates, activeEmps };
 }
 
@@ -852,7 +879,7 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (OPEN FOR ALL) ==== */
+/* ==== CELL EDIT MODAL (OPEN FOR TEAM) ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
@@ -882,7 +909,7 @@ function applyCellOverride(val) {
   $('editCellModal').classList.remove('show');
 }
 
-/* ==== ROTA FINALIZATION (OPEN FOR TEAM) ==== */
+/* ==== ROTA FINALIZATION ==== */
 function finalizeRota() {
    const month = $('rotaMonth').value;
    if(!confirm(`Finalize Rota for ${month}?`)) return;
@@ -956,7 +983,7 @@ function renderCoverage(dates, activeEmps, matrix){
   });
   const gaps=checks.reduce((n,x)=>n+x.issues.length,0);
   panel.innerHTML=`<div class="panel-head"><h2>Manpower Coverage Check</h2><span class="tag ${gaps?'rejected':'approved'}">${gaps?'⚠ '+gaps+' gaps':'✓ Full coverage'}</span></div>
-  <div class="panel-body"><div class="small">Ensures roles 1, 2, and 3 are covered for M, E, and N.</div>
+  <div class="panel-body"><div class="small">Ensures roles 1 (BSVI), 2 (OLD), and 3 (SIC) are fully covered for M, E, and N.</div>
   <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Date</th><th>Morning</th><th>Evening</th><th>Night</th></tr></thead><tbody>`+
   checks.map(x=>`<tr><td>${x.d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',weekday:'short'})}</td>`+
     ['M','E','N'].map(sh=>{const miss=x.issues.filter(v=>v.startsWith(sh));return `<td>${miss.length?'<span class="tag rejected">Missing '+esc(miss.join(', '))+'</span>':'<span class="tag approved">OK</span>'}</td>`}).join('')+
@@ -964,7 +991,7 @@ function renderCoverage(dates, activeEmps, matrix){
   document.querySelector('#rota .panel').after(panel);
 }
 
-/* ==== HOLIDAYS (OPEN FOR ALL) ==== */
+/* ==== HOLIDAYS ==== */
 function openHoliday(idx=null){
   const h=idx!==null?state.holidays[idx]:{date:'',name:''};
   $('modalTitle').textContent=idx!==null?'Edit Holiday':'Add Holiday';
@@ -1007,7 +1034,7 @@ function getAutoExtraDuties(monthF) {
                if(sc.full.includes('+')) types.push('Double Duty');
                const isHol = state.holidays.find(h => h.date === dStr);
                if(isHol) types.push(`Holiday Duty (${isHol.name})`);
-               if(e.weeklyOff && e.weeklyOff === d.toLocaleDateString('en-US',{weekday:'long'})) {
+               if(e.weeklyOff && e.weeklyOff.toLowerCase() === d.toLocaleDateString('en-US',{weekday:'long'}).toLowerCase()) {
                    types.push('Off Day Duty');
                }
                
@@ -1052,7 +1079,7 @@ function getAutoExtraDuties(monthF) {
    return results;
 }
 
-/* ==== EXTRA DUTY REGISTER (OPEN FOR ALL) ==== */
+/* ==== EXTRA DUTY REGISTER ==== */
 function openExtraDuty(id=null){
   const ed = id ? state.extraDuties.find(x=>x.id===id) : {id:'ED'+Date.now(), empId:state.employees[0]?.id||'', date:'', type:'Double Duty', details:'', remarks:''};
   $('modalTitle').textContent=id?'Edit Extra Duty':'Log Extra Duty';
@@ -1199,9 +1226,7 @@ function removeLeave(id){
   const l = state.leaves.find(x => x.id === id);
   if (!l) return;
 
-  if (!currentUser) {
-    return alert('Please login first to delete.');
-  }
+  if (!currentUser) return alert('Please login first to delete.');
   if (currentUser.type !== 'ADMIN' && currentUser.id !== l.empId) {
     return alert('Access Denied! You are not authorized to delete another employee\'s leave.');
   }

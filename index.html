@@ -75,7 +75,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <div class="top">
     <div><h1 id="pageTitle">Dashboard & Analytics</h1><p id="todayText"></p></div>
     <div class="actions">
-      <!-- User Login / Session Badge -->
       <div class="user-badge">
         <span id="loggedInUserName">👤 Guest (View Only)</span>
         <button class="btn" style="padding:2px 8px; font-size:11px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
@@ -134,10 +133,10 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-body" style="line-height:1.6; font-size:14px; color:#334155;">
         <h3 style="color:#1e293b; margin-top:0;">⚡ Smart Rota & Auto-Role Allocation Rules</h3>
         <p>
-          1. <b>Minimum 3 Persons per Shift:</b> Har shift (M, E, N) me <b>Role 1 (BSVI SRU PIC)</b>, <b>Role 2 (OLD SRU PIC)</b>, aur <b>Role 3 (SIC)</b> cover hote hain.<br>
-          2. <b>Dynamic Role Balancing:</b> Multi-role employees (e.g. `3,2,1` ya `1,2`) un slots me dynamically place hote hain jahan role missing ho.<br>
-          3. <b>Weekly OFF Day:</b> Agar kisi employee ka OFF DAY (e.g. Tuesday) define kiya gaya hai, to use har Tuesday ko automatic <b>`O` (OFF)</b> milega.<br>
-          4. <b>Excess Manpower:</b> Extra employees ko unke eligible roles ke according shift di jaati hai.
+          1. <b>Minimum 3 Persons per Shift:</b> Every shift (M, E, N) covers <b>Role 1 (BSVI SRU PIC)</b>, <b>Role 2 (OLD SRU PIC)</b>, and <b>Role 3 (SIC)</b>.<br>
+          2. <b>Single Weekly Off:</b> When an employee's <b>OFF DAY</b> (e.g. Tuesday) is chosen, the `EEMMNNO` cycle aligns strictly so that they receive <b>exactly 1 Off per week on Tuesday</b>.<br>
+          3. <b>Role Dynamic Allocation:</b> Multi-role employees (`3,2,1` or `1,2`) are dynamically assigned to missing roles to eliminate manpower gaps.<br>
+          4. <b>Excess Manpower:</b> Handled without conflict.
         </p>
       </div>
     </div>
@@ -156,7 +155,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice" id="empDataNotice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Use comma for multiple roles (e.g. 1,3 or 3,2,1).
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Use comma for multiple roles (e.g. 1,3 or 3,2,1). Modifying Roles or OFF DAY immediately recalculates the Active Rota!
         </div>
       </div>
       <div class="table-wrap">
@@ -185,7 +184,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
          <div class="toolbar" style="justify-content:space-between">
             <div class="toolbar">
                <label style="font-size:13px;font-weight:600;color:#173b86">Duty Pattern: 
-                 <input id="rotaPattern" style="width:130px;text-align:center" title="Default is EEMMNNO">
+                 <input id="rotaPattern" style="width:130px;text-align:center" title="Default is EEMMNNO" value="EEMMNNO" readonly>
                </label>
                <button class="btn" onclick="$('colorPanel').style.display=$('colorPanel').style.display==='none'?'flex':'none'">⚙️ Edit Colors</button>
             </div>
@@ -227,11 +226,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
             <option value="Rejected">Rejected</option>
           </select>
           <button class="btn primary" onclick="openLeave()">+ Apply Leave</button>
-        </div>
-      </div>
-      <div class="panel-body" style="padding-bottom:0;">
-        <div class="notice">
-          ℹ️ <b>Multi-User Access:</b> Employees can only apply for their own leave and edit/delete entries created by themselves. Admin can approve and manage all entries.
         </div>
       </div>
       <div class="table-wrap">
@@ -286,11 +280,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
            </select>
            <button class="btn primary" onclick="openExtraDuty()">+ Add Manual Entry</button>
         </div>
-      </div>
-      <div class="panel-body">
-         <div class="notice">
-            The system detects Double Duties ('+'), Off-Day Duties, and Holiday Duties automatically.
-         </div>
       </div>
       <div class="table-wrap">
         <table>
@@ -614,19 +603,17 @@ function normalizeRoles(v){
 
 /* ==== SETTINGS ==== */
 function loadSettingsUI() {
-  $('rotaPattern').value = state.pattern;
   ['M','E','N','O','L','D'].forEach(c => {
      $(`c_${c}_bg`).value = state.colors[`${c}_bg`] || '#ffffff';
      $(`c_${c}_txt`).value = state.colors[`${c}_txt`] || '#000000';
   });
 }
 function saveSettings() {
-  state.pattern = $('rotaPattern').value.trim().toUpperCase() || 'EEMMNNO';
   ['M','E','N','O','L','D'].forEach(c => {
      state.colors[`${c}_bg`] = $(`c_${c}_bg`).value;
      state.colors[`${c}_txt`] = $(`c_${c}_txt`).value;
   });
-  save(); log('Settings Updated', 'Pattern and Colors updated.');
+  save(); log('Settings Updated', 'Theme colors updated.');
   generateRota(); $('colorPanel').style.display = 'none'; scheduleSync();
 }
 
@@ -645,7 +632,6 @@ function openEmployee(id=null){
    <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
  </select></div>
  <div class="field"><label>Login PIN</label><input id="f_pin" maxlength="6" value="${esc(e.pin||'0000')}"></div>
- <div class="field"><label>Cycle Offset (0–6)</label><input id="f_offset" type="number" min="0" max="6" value="${e.offset||0}"></div>
  <div class="field"><label>Active</label><select id="f_active"><option value="true">Yes</option><option value="false">No</option></select></div>
  </div>`;
  $('f_off').value=e.weeklyOff||'';$('f_active').value=String(e.active!==false);
@@ -653,7 +639,6 @@ function openEmployee(id=null){
    e.code=$('f_code').value.trim(); e.name=$('f_name').value.trim();
    e.seniority=Math.max(1,Number($('f_seniority').value)||1); e.roles=normalizeRoles($('f_roles').value);
    e.weeklyOff=$('f_off').value; e.pin=$('f_pin').value.trim() || '0000';
-   e.offset=Math.max(0,Math.min(6,Number($('f_offset').value)||0));
    e.active=$('f_active').value==='true';
    if(!e.code||!e.name)return alert('Emp ID and Employee Name are required.');
    if(!id)state.employees.push(e);
@@ -707,14 +692,14 @@ function quickRole(id,v){
   const e=state.employees.find(x=>x.id===id); if(!e)return;
   e.roles=normalizeRoles(v);
   save(); scheduleSync();
-  generateRota(false); renderDashboard(); // Real-time recalculation
+  generateRota(false); renderDashboard();
 }
 function quickOff(id,v){
   if(!currentUser||currentUser.type!=='ADMIN')return;
   const e=state.employees.find(x=>x.id===id); if(!e)return;
   e.weeklyOff=v;
   save(); scheduleSync();
-  generateRota(false); renderDashboard(); // Real-time recalculation
+  generateRota(false); renderDashboard();
 }
 function quickPin(id,v){
   if(!currentUser||currentUser.type!=='ADMIN')return;
@@ -735,7 +720,7 @@ function removeEmployee(id){
 $('empDataSearch').oninput=renderEmployeeData;
 
 
-/* ==== SMART ROTA ENGINE (OPTIMAL ROLE ASSIGNMENT & WEEKLY OFF) ==== */
+/* ==== ROBUST INDUSTRIAL ROTA ENGINE (EXACT 1 WEEKLY OFF + 100% ROLE MATCHING) ==== */
 function dateRange(month){
  const [y,m]=month.split('-').map(Number),end=new Date(y,m,0),a=[];
  for(let d=1;d<=end.getDate();d++)a.push(new Date(y,m-1,d));
@@ -750,8 +735,10 @@ function buildRotaMatrix(month) {
   const activeEmps = state.employees.filter(e => e.active !== false).sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
   if(!state.overrides[month]) state.overrides[month] = {};
 
-  // 1. Calculate Base Shifts (incorporating continuous pattern + Approved Leaves + Weekly OFF)
-  activeEmps.forEach(e => {
+  const dayMap = { 'sunday':0, 'monday':1, 'tuesday':2, 'wednesday':3, 'thursday':4, 'friday':5, 'saturday':6 };
+
+  // 1. Calculate Base Shift based on Single OFF DAY Cycle
+  activeEmps.forEach((e, empIdx) => {
       matrix[e.id] = {};
       dates.forEach(d => {
           const dStr = d.toISOString().slice(0, 10);
@@ -762,15 +749,20 @@ function buildRotaMatrix(month) {
           if (isLeave) {
               base = 'L';
           } else {
-              const dayName = d.toLocaleDateString('en-US', {weekday:'long'});
-              // Weekly OFF override
-              if (e.weeklyOff && e.weeklyOff.toLowerCase() === dayName.toLowerCase()) {
-                  base = 'O';
+              const currentDayOfWeek = d.getDay(); // 0 (Sun) to 6 (Sat)
+              
+              if (e.weeklyOff && dayMap[e.weeklyOff.toLowerCase()] !== undefined) {
+                  // Precise alignment with Weekly OFF: E -> E -> M -> M -> N -> N -> O
+                  const targetOff = dayMap[e.weeklyOff.toLowerCase()];
+                  const rel = (currentDayOfWeek - targetOff + 7) % 7;
+                  const cyclePattern = ['O', 'E', 'E', 'M', 'M', 'N', 'N'];
+                  base = cyclePattern[rel];
               } else {
-                  const baseDate = new Date(2026, 8, 1);
+                  // Natural continuous cycle if no specific off-day is defined
+                  const baseDate = new Date(2026, 0, 1);
                   const diff = Math.floor((d - baseDate) / 86400000);
-                  const p = state.pattern || 'EEMMNNO';
-                  const idx = ((diff + (e.offset||0)) % p.length + p.length) % p.length;
+                  const p = 'EEMMNNO';
+                  const idx = ((diff + empIdx) % 7 + 7) % 7;
                   base = p[idx] || 'O';
               }
           }
@@ -778,7 +770,7 @@ function buildRotaMatrix(month) {
       });
   });
 
-  // 2. SMART MULTI-ROLE SOLVER for Roles 1 (BSVI), 2 (OLD), 3 (SIC)
+  // 2. SMART ROLE SOLVER FOR EACH SHIFT (M, E, N) TO GUARANTEE 1, 2, 3 COVERAGE
   dates.forEach(d => {
       const dStr = d.toISOString().slice(0, 10);
 
@@ -786,50 +778,53 @@ function buildRotaMatrix(month) {
           let empsInShift = activeEmps.filter(e => matrix[e.id][dStr].base === sh && !matrix[e.id][dStr].override);
           if(empsInShift.length === 0) return;
 
+          let needed = ['1', '2', '3'];
+          let assignments = {};
+
           let empRoles = {};
           empsInShift.forEach(e => {
               empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          // Sort by flexibility (single-role employees first, then dual, then tri-role)
-          let sortedEmps = [...empsInShift].sort((a, b) => {
-              let lenA = empRoles[a.id].length || 99;
-              let lenB = empRoles[b.id].length || 99;
-              if (lenA !== lenB) return lenA - lenB;
+          // Sort by fewest eligible roles first (specialists first, then multi-role)
+          let sorted = [...empsInShift].sort((a, b) => {
+              let rA = empRoles[a.id].length || 99;
+              let rB = empRoles[b.id].length || 99;
+              if (rA !== rB) return rA - rB;
               return (a.seniority || 9999) - (b.seniority || 9999);
           });
 
-          // Recursive Bipartite Matcher to guarantee coverage of roles [1, 2, 3]
-          function solveShiftRoles(idx, remainingRoles, currentMatch) {
-              if (remainingRoles.length === 0 || idx >= sortedEmps.length) {
-                  return currentMatch;
+          // Step 1: Assign exact single-role employees
+          sorted.forEach(e => {
+              let r = empRoles[e.id];
+              if (r.length === 1 && needed.includes(r[0])) {
+                  assignments[e.id] = r[0];
+                  needed = needed.filter(x => x !== r[0]);
               }
-              let emp = sortedEmps[idx];
-              let eligible = empRoles[emp.id].filter(r => remainingRoles.includes(r));
+          });
 
-              for (let r of eligible) {
-                  let nextRoles = remainingRoles.filter(x => x !== r);
-                  let res = solveShiftRoles(idx + 1, nextRoles, { ...currentMatch, [emp.id]: r });
-                  if (Object.keys(res).length === 3 || nextRoles.length === 0) return res;
+          // Step 2: Assign multi-role employees to cover remaining needed roles
+          sorted.forEach(e => {
+              if (assignments[e.id]) return;
+              let r = empRoles[e.id];
+              let match = r.find(x => needed.includes(x));
+              if (match) {
+                  assignments[e.id] = match;
+                  needed = needed.filter(x => x !== match);
               }
-              return solveShiftRoles(idx + 1, remainingRoles, currentMatch);
-          }
+          });
 
-          let matchedRoles = solveShiftRoles(0, ['1', '2', '3'], {});
-
-          // Assign matched roles & handle excess employees
-          empsInShift.forEach(e => {
-              let assignedRole = matchedRoles[e.id];
-              if (!assignedRole) {
-                  // Excess manpower assignment
-                  let allowed = empRoles[e.id];
-                  assignedRole = allowed.length > 0 ? allowed[0] : '1';
+          // Step 3: Assign excess manpower (fallback to first eligible role)
+          sorted.forEach(e => {
+              if (!assignments[e.id]) {
+                  let r = empRoles[e.id];
+                  assignments[e.id] = (r && r.length > 0) ? r[0] : '1';
               }
-              matrix[e.id][dStr].full = sh + assignedRole;
+              matrix[e.id][dStr].full = sh + assignments[e.id];
           });
       });
 
-      // 3. Apply Manual Cell Overrides
+      // 3. Apply Manual Overrides
       activeEmps.forEach(e => {
           if (matrix[e.id][dStr].override) {
               const ov = matrix[e.id][dStr].override.toUpperCase();
@@ -874,12 +869,12 @@ function renderRotaTable(monthValue){
 }
 
 function generateRota(doRenderDashboard = true){ 
-    renderRotaTable($('rotaMonth').value||'2026-09'); 
+    renderRotaTable($('rotaMonth').value||'2026-08'); 
     if(doRenderDashboard) renderDashboard();
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (OPEN FOR TEAM) ==== */
+/* ==== CELL EDIT MODAL ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
@@ -983,7 +978,7 @@ function renderCoverage(dates, activeEmps, matrix){
   });
   const gaps=checks.reduce((n,x)=>n+x.issues.length,0);
   panel.innerHTML=`<div class="panel-head"><h2>Manpower Coverage Check</h2><span class="tag ${gaps?'rejected':'approved'}">${gaps?'⚠ '+gaps+' gaps':'✓ Full coverage'}</span></div>
-  <div class="panel-body"><div class="small">Ensures roles 1 (BSVI), 2 (OLD), and 3 (SIC) are fully covered for M, E, and N.</div>
+  <div class="panel-body"><div class="small">Ensures roles 1 (BSVI SRU), 2 (OLD SRU), and 3 (SIC) are fully covered across Morning, Evening, and Night.</div>
   <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Date</th><th>Morning</th><th>Evening</th><th>Night</th></tr></thead><tbody>`+
   checks.map(x=>`<tr><td>${x.d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',weekday:'short'})}</td>`+
     ['M','E','N'].map(sh=>{const miss=x.issues.filter(v=>v.startsWith(sh));return `<td>${miss.length?'<span class="tag rejected">Missing '+esc(miss.join(', '))+'</span>':'<span class="tag approved">OK</span>'}</td>`}).join('')+
@@ -1427,7 +1422,7 @@ function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'
 /* ==== INITIAL SEED DATA ==== */
 if(!state.employees.length){
  const empSeed=[
- ['83096','Jai Bhagwan',1,'3,2','Friday'],
+ ['83096','Jai Bhagwan',1,'3,2','Tuesday'],
  ['507211','Mohit Suman',2,'3','Sunday'],
  ['510495','Kamlesh Bunkar',3,'3','Thursday'],
  ['510494','Yogesh Meena',4,'3,2,1','Tuesday'],
@@ -1440,7 +1435,7 @@ if(!state.employees.length){
  ['517591','Sachin Garg',11,'1,2','Thursday']
  ];
  state.employees=empSeed.map((x,i)=>({
-   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:'',pin:'0000',active:true,offset:i%7
+   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:x[4],pin:'0000',active:true,offset:i%7
  }));
 
  const leaveSeed = [

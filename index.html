@@ -52,17 +52,29 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   text-align: center;
 }
 
-/* High-Contrast Double Duty Badge (Bold & Visible) */
+/* Double Duty 2-Tier Stacked Layout (100% Readable & Non-Overflow) */
 .shift-cell .tag.double-shift {
-  font-size: 8.5px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 1px 0 !important;
+  height: 24px !important;
+  line-height: 1.05 !important;
+  border-radius: 4px !important;
+  border-width: 1.5px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.shift-cell .tag.double-shift .d-top {
+  font-size: 9px !important;
   font-weight: 900 !important;
-  line-height: 1.1 !important;
-  letter-spacing: -0.4px !important;
-  padding: 2.5px 0 !important;
-  background: #14532d !important;
-  color: #ffffff !important;
-  border: 1px solid #052e16 !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  letter-spacing: -0.2px;
+}
+.shift-cell .tag.double-shift .d-bot {
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.2px;
+  opacity: 0.95;
 }
 
 .summary-col-head { width: 62px; min-width: 58px; font-size: 10px; padding: 2px 1px; line-height: 1.1; }
@@ -145,7 +157,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
     
     <div class="dash-grid">
-       <!-- Left Side: Today's Unified Compact Deployment Table -->
+       <!-- Left Side: Today's Deployment Table -->
        <div style="display:flex; flex-direction:column; gap:16px;">
           <div class="panel" style="margin-bottom:0;">
              <div class="panel-head">
@@ -290,7 +302,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Conflict Warning System:</b> Agar same dates par <b>4 ya usse zyada employees ki leave >2 days overlap</b> karti hai, to entry automatically red highlight ho jayegi.
+          ℹ️ <b>Conflict Policy:</b> Pehle apply karne wale 3 employees normal rahenge. Same period par <b>4th person se shuru hone wali overlapping leaves (>2 days)</b> caution mark ho jayengi.
         </div>
       </div>
       <div class="table-wrap">
@@ -372,7 +384,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
-        <h2>Leave Record & Holiday Tracker</h2>
+        <h2>Leave Record & Festival Tracker</h2>
         <div class="toolbar">
            <select id="flViewType" onchange="toggleFlViewInputs()" style="min-width:90px;">
              <option value="MONTH" selected>By Month</option>
@@ -389,11 +401,18 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-body" style="padding-bottom:0;">
          <div class="sub-tabs">
             <button class="sub-tab-btn active" id="tabAllLeavesBtn" onclick="switchLeaveRecordTab('all')">📋 All Finalized Leaves</button>
-            <button class="sub-tab-btn" id="tabHolidayLeavesBtn" onclick="switchLeaveRecordTab('holiday')">🎉 Holiday Leaves Tracker</button>
+            <button class="sub-tab-btn" id="tabHolidayLeavesBtn" onclick="switchLeaveRecordTab('holiday')">🎉 Festival / Holiday Leaves Tracker (Multi-Year)</button>
          </div>
          <div id="holidayFilterBar" style="display:none; margin-bottom:12px;" class="toolbar">
-            <label style="font-size:12px; font-weight:700;">Filter by Festival/Holiday:</label>
+            <label style="font-size:12px; font-weight:700;">Select Festival / Holiday:</label>
             <select id="holidayPickerSelect" onchange="renderHolidayLeaves()" style="min-width:160px;"></select>
+            <label style="font-size:12px; font-weight:700; margin-left:8px;">Year:</label>
+            <select id="holidayYearPicker" onchange="renderHolidayLeaves()" style="min-width:110px;">
+               <option value="ALL">All Years (History)</option>
+               <option value="2026" selected>2026</option>
+               <option value="2025">2025</option>
+               <option value="2024">2024</option>
+            </select>
          </div>
       </div>
 
@@ -406,10 +425,10 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <tbody id="finalizedLeaveBody"></tbody>
         </table>
 
-        <!-- View 2: Holiday Leaves Tracker -->
+        <!-- View 2: Multi-Year Holiday Leaves Tracker -->
         <table id="holidayLeavesTrackerTable" style="display:none;">
           <thead><tr>
-            <th>Sr. No.</th><th>Holiday Name</th><th>Holiday Date</th><th style="text-align:left">Employee on Leave</th><th>Duty Status</th><th>Source</th>
+            <th>Sr. No.</th><th>Year</th><th>Festival / Holiday Name</th><th>Holiday Date</th><th style="text-align:left">Employee on Leave</th><th>Status</th><th>Source</th>
           </tr></thead>
           <tbody id="holidayLeavesBody"></tbody>
         </table>
@@ -417,7 +436,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 7. Dedicated Manpower Analytics Page -->
+  <!-- 7. Dedicated Manpower Analytics Hub -->
   <section id="analyticsHub" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -441,7 +460,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
             <div class="card"><div class="label">Top Overtime Staff</div><div class="value" id="hubStatTopOT" style="font-size:18px; line-height:1.2; margin-top:8px;">—</div><div class="sub">Highest Extra Shift</div></div>
             <div class="card"><div class="label">Top Leave Staff</div><div class="value" id="hubStatTopLeave" style="font-size:18px; line-height:1.2; margin-top:8px;">—</div><div class="sub">Highest Leave Days</div></div>
          </div>
-         <div style="position:relative; height:420px; width:100%; margin-bottom:20px;">
+         <div style="position:relative; height:400px; width:100%; margin-bottom:20px;">
             <canvas id="hubAnalyticsChart"></canvas>
          </div>
          <div class="table-wrap">
@@ -549,11 +568,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
-<!-- Draggable / Auto-Move Edit Shift Assignment Modal -->
+<!-- Draggable Edit Shift Modal -->
 <div class="modal" id="editCellModal" style="background:transparent;">
   <div class="modal-card" id="draggableEditCard" style="width:360px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border:1px solid #cbd5e1;">
     <div class="modal-head" id="dragHandle" style="cursor:move; background:#f1f5f9; user-select:none;">
-      <b>Edit Shift Assignment <span class="small" style="display:inline; font-weight:normal;">(Drag to move)</span></b>
+      <b>Edit Shift Assignment <span class="small" style="display:inline; font-weight:normal;">(Drag anywhere)</span></b>
       <button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button>
     </div>
     <div class="modal-body">
@@ -661,7 +680,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&l
 function formatDateDisplay(d){ if(!d) return ''; const dt = new Date(d); return dt.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}).replace(/ /g,'-'); }
 function closeModal(){$('modal').classList.remove('show');}
 
-/* ==== MAKE MODAL DRAGGABLE ==== */
+/* ==== DRAGGABLE MODAL HELPER ==== */
 function makeElementDraggable(el, handle) {
   let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
   handle.onmousedown = dragMouseDown;
@@ -694,7 +713,7 @@ function makeElementDraggable(el, handle) {
   }
 }
 
-/* ==== MULTI-PC CLOUD SYNC ON STARTUP ==== */
+/* ==== MULTI-PC CLOUD SYNC ==== */
 async function fetchCloudData() {
   try {
     const res = await fetch(API_URL);
@@ -724,7 +743,7 @@ async function fetchCloudData() {
   }
 }
 
-/* ==== MANDATORY LOGIN GATE & AUTHENTICATION ==== */
+/* ==== LOGIN GATE & AUTHENTICATION ==== */
 function openLoginModal(isForced = false) {
   const selectGroup = $('loginEmpOptions');
   selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
@@ -894,8 +913,9 @@ function normalizeRoles(v){
   return [...new Set(valid)].join(',');
 }
 
-/* ==== SETTINGS ==== */
+/* ==== SETTINGS (EDIT COLORS NOW APPLIES LIVE) ==== */
 function loadSettingsUI() {
+  $('rotaPattern').value = state.pattern;
   ['M','E','N','O','L','D'].forEach(c => {
      $(`c_${c}_bg`).value = state.colors[`${c}_bg`] || '#ffffff';
      $(`c_${c}_txt`).value = state.colors[`${c}_txt`] || '#000000';
@@ -1076,7 +1096,7 @@ function buildRotaMatrix(month) {
               empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          // STEP 1: Allot SIC duty (Role 3) first
+          // STEP 1: SIC duty (Role 3) first
           let sicCandidate = empsInShift.find(e => empRoles[e.id].length === 1 && empRoles[e.id][0] === '3');
           if (!sicCandidate) {
               sicCandidate = empsInShift.find(e => empRoles[e.id].includes('3'));
@@ -1086,7 +1106,7 @@ function buildRotaMatrix(month) {
               needed = needed.filter(x => x !== '3');
           }
 
-          // STEP 2: Allot Single-role PIC
+          // STEP 2: Single-role PIC
           empsInShift.forEach(e => {
               if (assignments[e.id]) return;
               let r = empRoles[e.id];
@@ -1096,7 +1116,7 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // STEP 3: Allot Dual/Multi-role PICs
+          // STEP 3: Dual/Multi-role PICs
           let remainingEmps = empsInShift.filter(e => !assignments[e.id]);
 
           remainingEmps.forEach(e => {
@@ -1134,6 +1154,7 @@ function buildRotaMatrix(month) {
           });
       });
 
+      // Apply Manual Overrides
       activeEmps.forEach(e => {
           if (matrix[e.id][dStr].override) {
               const ov = matrix[e.id][dStr].override.toUpperCase();
@@ -1148,7 +1169,9 @@ function buildRotaMatrix(month) {
 
 function getStyleForCode(fullCode) {
   if(!fullCode) return {bg:'#fff', txt:'#000'};
-  if(fullCode.includes('+')) return { bg: state.colors.D_bg, txt: state.colors.D_txt };
+  if(fullCode.includes('+')) {
+    return { bg: state.colors.D_bg || '#14532d', txt: state.colors.D_txt || '#ffffff' };
+  }
   const base = fullCode.replace(/[0-9]/g, '');
   return { bg: state.colors[`${base}_bg`] || '#f1f5f9', txt: state.colors[`${base}_txt`] || '#000' };
 }
@@ -1222,7 +1245,7 @@ function changeSummaryScope(newScope) {
   generateHistoryRota();
 }
 
-/* ==== ROTA TABLE RENDER ==== */
+/* ==== ROTA TABLE RENDER (WITH 2-TIER CLEAN DOUBLE DUTY BADGES) ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
@@ -1253,11 +1276,17 @@ function renderRotaTable(monthValue){
         const dStr = toLocalISO(d);
         const sc = matrix[e.id][dStr];
         const style = getStyleForCode(sc.full);
-        const isDouble = sc.full.includes('+') || sc.full.length > 2;
+        const isDouble = sc.full.includes('+');
         const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
         
+        let badgeContent = sc.full;
+        if (isDouble) {
+          const parts = sc.full.split('+');
+          badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
+        }
+
         return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}',false,${rIdx},${cIdx})">
-           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background:${style.bg};color:${style.txt};${bStyle}">${sc.full}</span>
+           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${style.bg}; color:${style.txt}; ${bStyle}">${badgeContent}</span>
         </td>`;
       }).join('') +
       `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
@@ -1365,9 +1394,15 @@ function generateHistoryRota() {
        <td style="text-align:left;font-weight:700">${esc(row.name)}</td>
        ${row.shifts.map((sh, cIdx) => {
           const dStr = toLocalISO(dates[cIdx]);
-          const isDouble = sh.full.includes('+') || sh.full.length > 2;
+          const isDouble = sh.full.includes('+');
+          let badgeContent = sh.full;
+          if (isDouble) {
+            const parts = sh.full.split('+');
+            badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
+          }
+
           return `<td class="shift-cell" onclick="openEditCell('${month}', '${row.empId}', '${dStr}', '${sh.full}', true, ${rIdx}, ${cIdx})">
-             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${sh.full}</span>
+             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${badgeContent}</span>
           </td>`;
        }).join('')}
        <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>
@@ -1451,13 +1486,13 @@ function openShareModal(type) {
 
 function shareViaWhatsApp() {
   const text = getRotaShareText(currentShareType);
-  const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text) [4];
+  const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
   window.open(url, '_blank');
 }
 
 function shareViaTelegram() {
   const text = getRotaShareText(currentShareType);
-  const url = 'https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(text) [1];
+  const url = 'https://t.me/share/url?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent(text);
   window.open(url, '_blank');
 }
 
@@ -1566,7 +1601,7 @@ function getAutoExtraDuties(monthF) {
    return results;
 }
 
-/* ==== 5. OVERTIME RECORD (WITH ALL / YEAR / MONTH SCOPE) ==== */
+/* ==== 5. OVERTIME RECORD ==== */
 function toggleOtViewInputs() {
   const type = $('otViewType').value;
   if (type === 'ALL') {
@@ -1642,7 +1677,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== 3. LEAVE REGISTER (WITH CONFLICT TRACKING) ==== */
+/* ==== 3. LEAVE REGISTER (CAUTION ON 4TH+ PERSON ONLY) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1650,16 +1685,18 @@ function sortLeave(key) {
   renderLeaves();
 }
 
-// Conflict detector: 4+ employees overlapping for >2 days
+// Conflict detector: 1st, 2nd, 3rd applicants are NOT highlighted. Only 4th+ applicant is marked!
 function getConflictedLeaveIds() {
-  const activeLeaves = state.leaves.filter(l => l.status === 'Approved' || l.status === 'Pending');
-  const dateCounts = {};
+  const activeLeaves = state.leaves.filter(l => l.status === 'Approved' || l.status === 'Pending')
+    .slice().sort((a, b) => a.applyDate.localeCompare(b.applyDate) || a.id.localeCompare(b.id));
 
+  const dateApplicants = {}; // date -> array of leave IDs in order of application
   activeLeaves.forEach(l => {
     const d1 = new Date(l.from); const d2 = new Date(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
       const ds = toLocalISO(dt);
-      dateCounts[ds] = (dateCounts[ds] || 0) + 1;
+      if (!dateApplicants[ds]) dateApplicants[ds] = [];
+      dateApplicants[ds].push(l.id);
     }
   });
 
@@ -1670,7 +1707,8 @@ function getConflictedLeaveIds() {
     const d1 = new Date(l.from); const d2 = new Date(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
       const ds = toLocalISO(dt);
-      if (dateCounts[ds] >= 4) {
+      const appIndex = dateApplicants[ds].indexOf(l.id); // 0=1st, 1=2nd, 2=3rd, 3=4th+
+      if (appIndex >= 3) { // 4th person or later on this day
         consecutiveConflict++;
         if (consecutiveConflict > maxConsecutive) maxConsecutive = consecutiveConflict;
       } else {
@@ -1829,7 +1867,7 @@ function renderLeaves(){
       <td>${formatDateDisplay(l.applyDate)}</td>
       <td style="text-align:left;font-weight:600">
         ${esc(e.name || 'Unknown')}
-        ${isConflict ? '<span class="tag rejected" style="font-size:9.5px; margin-left:4px;" title="4+ staff on leave overlapping >2 days">⚠️ High Conflict (4+ Staff)</span>' : ''}
+        ${isConflict ? '<span class="tag rejected" style="font-size:9.5px; margin-left:4px;" title="4th+ employee on overlapping leave >2 days">⚠️ 4th+ Staff Overlap Caution</span>' : ''}
       </td>
       <td>${formatDateDisplay(l.from)}</td>
       <td>${formatDateDisplay(l.to)}</td>
@@ -1843,7 +1881,7 @@ function renderLeaves(){
 $('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves; $('leaveStatusFilter').onchange=renderLeaves;
 
 
-/* ==== 6. LEAVE RECORD & HOLIDAY LEAVES TRACKER ==== */
+/* ==== 6. LEAVE RECORD & MULTI-YEAR FESTIVAL TRACKER ==== */
 function toggleFlViewInputs() {
   const type = $('flViewType').value;
   if (type === 'ALL') {
@@ -1922,20 +1960,25 @@ function renderFinalizedLeaves(){
 
 function populateHolidayPicker() {
   const sel = $('holidayPickerSelect');
-  sel.innerHTML = '<option value="">All Festivals / Holidays</option>' + 
-    state.holidays.map(h => `<option value="${h.date}">${h.name} (${formatDateDisplay(h.date)})</option>`).join('');
+  const distinctHolidays = [...new Set(state.holidays.map(h => h.name))];
+  sel.innerHTML = '<option value="">All Festivals / Holidays (All Years)</option>' + 
+    distinctHolidays.map(name => `<option value="${name}">${name}</option>`).join('');
 }
 
 function renderHolidayLeaves() {
-  const selectedHolidayDate = $('holidayPickerSelect')?.value;
+  const selectedHolidayName = $('holidayPickerSelect')?.value;
+  const selectedYear = $('holidayYearPicker')?.value || 'ALL';
   const q = ($('flSearch')?.value || '').toLowerCase();
   let results = [];
 
   state.holidays.forEach(h => {
-     if (selectedHolidayDate && h.date !== selectedHolidayDate) return;
+     if (selectedHolidayName && h.name.toLowerCase() !== selectedHolidayName.toLowerCase()) return;
+     if (selectedYear !== 'ALL' && !h.date.startsWith(selectedYear)) return;
 
-     // Check in Finalized Rotas
+     const hYear = h.date.slice(0, 4);
      const hMonth = h.date.slice(0, 7);
+
+     // 1. Check in Finalized Rotas
      if (state.finalizedRotas[hMonth]) {
         const snap = state.finalizedRotas[hMonth];
         const dayIdx = snap.dates.findIndex(ds => toLocalISO(ds) === h.date);
@@ -1943,6 +1986,7 @@ function renderHolidayLeaves() {
            snap.snapshot.forEach(row => {
               if (row.shifts[dayIdx] && row.shifts[dayIdx].full === 'L') {
                  results.push({
+                    year: hYear,
                     holidayName: h.name,
                     date: h.date,
                     empName: row.name,
@@ -1952,10 +1996,11 @@ function renderHolidayLeaves() {
            });
         }
      } else {
-        // Check in Active leaves
+        // 2. Check in Active Leave Applications
         state.leaves.filter(l => l.status === 'Approved' && l.from <= h.date && h.date <= l.to).forEach(l => {
            const e = state.employees.find(x => x.id === l.empId);
            results.push({
+              year: hYear,
               holidayName: h.name,
               date: h.date,
               empName: e ? e.name : 'Unknown',
@@ -1968,18 +2013,19 @@ function renderHolidayLeaves() {
   if (q) {
      results = results.filter(r => r.empName.toLowerCase().includes(q) || r.holidayName.toLowerCase().includes(q));
   }
-  results.sort((a,b) => a.date.localeCompare(b.date));
+  results.sort((a,b) => b.date.localeCompare(a.date));
 
   $('holidayLeavesBody').innerHTML = results.length ? results.map((r, i) => `
      <tr style="background:#fff7ed;">
        <td>${i+1}</td>
+       <td><b>${r.year}</b></td>
        <td><b style="color:#b45309;">${esc(r.holidayName)}</b></td>
        <td>${formatDateDisplay(r.date)}</td>
        <td style="text-align:left;font-weight:700;">${esc(r.empName)}</td>
        <td><span class="tag rejected" style="font-weight:800;">Holiday Leave</span></td>
        <td><span class="small" style="color:var(--muted);">${r.source}</span></td>
      </tr>
-  `) : `<tr><td colspan="6" class="empty">No employees took leave on selected holiday(s).</td></tr>`;
+  `) : `<tr><td colspan="7" class="empty">No employees took leave on selected holiday/festival in ${selectedYear==='ALL'?'any year':selectedYear}.</td></tr>`;
 }
 
 if($('flMonthFilter')) $('flMonthFilter').onchange = renderFinalizedLeaves;
@@ -1997,7 +2043,7 @@ function toggleHubViewInputs() {
 function populateHubEmpFilter() {
   const sel = $('hubEmpFilter');
   if(!sel) return;
-  sel.innerHTML = '<option value="">All Employees (Team)</option>' + 
+  sel.innerHTML = '<option value="">All Employees (Team Comparison)</option>' + 
     state.employees.map(e => `<option value="${e.id}">${e.name}</option>`).join('');
 }
 
@@ -2036,7 +2082,6 @@ function renderHubAnalytics() {
      let leaveCount = 0;
      const countedDates = new Set();
 
-     // Count from Finalized Snapshots
      Object.keys(state.finalizedRotas).forEach(m => {
         if (viewType === 'MONTH' && m !== monthF) return;
         if (viewType === 'YEAR' && !m.startsWith(String(yearF))) return;
@@ -2054,7 +2099,6 @@ function renderHubAnalytics() {
         }
      });
 
-     // Count from Active Leaves
      state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => {
         const d1 = new Date(l.from); const d2 = new Date(l.to);
         for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
@@ -2215,13 +2259,19 @@ function renderDashboard(){
     if(list.length) {
        list.forEach((item, idx) => {
           const shiftCol = idx === 0 ? `<td rowspan="${list.length}" style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line); color:#1e293b;"><span class="tag" style="background:${sm.bg};color:${sm.txt};margin-bottom:4px;">${sm.key}</span><br>${sm.label}</td>` : '';
-          const isDouble = item.full.includes('+') || item.full.length > 2;
+          const isDouble = item.full.includes('+');
+          let badgeContent = item.full;
+          if (isDouble) {
+            const parts = item.full.split('+');
+            badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
+          }
+
           tableHtml += `
             <tr>
               ${shiftCol}
               <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
               <td style="font-weight:600">${esc(item.emp.name)}</td>
-              <td><span class="tag ${isDouble ? 'double-shift' : ''}" style="background:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${item.full}</span></td>
+              <td><span class="tag ${isDouble?'double-shift':''}" style="background-color:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${badgeContent}</span></td>
               <td><span class="tag approved">On Duty</span></td>
             </tr>
           `;

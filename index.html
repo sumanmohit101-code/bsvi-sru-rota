@@ -51,7 +51,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   text-align: center;
 }
 
-/* Double Duty Shift Scaling */
+/* Double Duty Shift Scaling (No Overflow) */
 .shift-cell .tag.double-shift {
   font-size: 8px !important;
   font-weight: 900 !important;
@@ -1858,7 +1858,7 @@ function renderDashboard(){
               ${shiftCol}
               <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
               <td style="font-weight:600">${esc(item.emp.name)}</td>
-              <td><span class="tag" style="background:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${item.full}</span></td>
+              <td><span class="tag ${item.full.includes('+')||item.full.length>2?'double-shift':''}" style="background:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${item.full}</span></td>
               <td><span class="tag approved">On Duty</span></td>
             </tr>
           `;
@@ -1974,25 +1974,10 @@ function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncAll
 async function syncAll(){
   const status=$('syncStatus'); status.textContent='Syncing…';status.className='sync';
   try{
-    const flatRotaHistory = [];
-    Object.keys(state.finalizedRotas).forEach(month => {
-        const snap = state.finalizedRotas[month];
-        snap.snapshot.forEach(empRow => {
-            empRow.shifts.forEach((sh, cIdx) => {
-                flatRotaHistory.push({
-                   month: month,
-                   date: toLocalISO(snap.dates[cIdx]),
-                   employee: empRow.name,
-                   shift: sh.full
-                });
-            });
-        });
-    });
-
     const payload={
         employees:state.employees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
         history:state.history, adminPin:state.adminPin, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
-        flatRotaHistory: flatRotaHistory, colors:state.colors, overrides:state.overrides
+        colors:state.colors, overrides:state.overrides
     };
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'syncAll',payload})});
     status.textContent='✓ Synced · '+new Date().toLocaleTimeString('en-IN');status.className='sync ok';

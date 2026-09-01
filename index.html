@@ -12,101 +12,87 @@ html
 :root{--bg:#f4f7fb;--card:#fff;--text:#18212f;--muted:#6b7280;--line:#e5e7eb;--primary:#1f5eff;--primary2:#1748c7;--green:#0f9d58;--amber:#d97706;--red:#dc2626;--nav:#101828}
 *{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
 button,input,select{font:inherit} button{cursor:pointer;border:0}
-.app{display:flex;min-height:100vh}.sidebar{width:240px;background:var(--nav);color:#fff;padding:18px 12px;position:fixed;inset:0 auto 0 0;overflow-y:auto; z-index:100;}
-.brand{font-weight:800;font-size:17px;padding:6px 8px 18px}.brand small{display:block;color:#98a2b3;font-weight:500;margin-top:4px}
-.nav button{display:block;width:100%;text-align:left;background:transparent;color:#cbd5e1;padding:9px 10px;border-radius:8px;margin:3px 0;transition:0.2s;font-size:12.5px;}.nav button.active,.nav button:hover{background:#1d2939;color:#fff}
-.main{margin-left:240px;width:calc(100% - 240px);padding:18px;max-width:1850px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.top h1{margin:0;font-size:23px}.top p{margin:4px 0 0;color:var(--muted)}
-.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn{padding:7px 11px;border-radius:6px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:600;transition:0.1s;}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:var(--primary2)}.btn.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.btn:active{transform:scale(0.97)}
-.page{display:none; animation:fadeIn 0.3s ease;}.page.active{display:block} @keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px;box-shadow:0 2px 4px rgba(0,0,0,0.02)}.label{color:var(--muted);font-size:12.5px;font-weight:600;}.value{font-size:25px;font-weight:800;margin-top:4px}.sub{font-size:11.5px;color:var(--muted);margin-top:4px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03)}.panel-head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;background:#f8fafc;}.panel-head h2{font-size:15px;margin:0;color:#1e293b;}.panel-body{padding:15px}
-.toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select,input,select{border:1px solid #d0d5dd;border-radius:6px;padding:6px 8px;background:#fff;min-width:110px;font-size:12px}
-.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;}th,td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;white-space:nowrap;font-size:12px}th{background:#f1f5f9;color:#475467;font-size:11.5px;position:sticky;top:0;z-index:1}
+.app{display:flex;min-height:100vh}.sidebar{width:210px;background:var(--nav);color:#fff;padding:16px 10px;position:fixed;inset:0 auto 0 0;overflow-y:auto; z-index:100;}
+.brand{font-weight:800;font-size:16px;padding:6px 6px 16px}.brand small{display:block;color:#98a2b3;font-weight:500;margin-top:3px;font-size:11px;}
+.nav button{display:block;width:100%;text-align:left;background:transparent;color:#cbd5e1;padding:8px 10px;border-radius:7px;margin:2px 0;transition:0.2s;font-size:12px;}.nav button.active,.nav button:hover{background:#1d2939;color:#fff}
+.main{margin-left:210px;width:calc(100% - 210px);padding:16px;max-width:1920px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.top h1{margin:0;font-size:22px}.top p{margin:3px 0 0;color:var(--muted);font-size:12px;}
+.actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.btn{padding:6px 10px;border-radius:6px;background:#fff;border:1px solid var(--line);font-size:11.5px;font-weight:600;transition:0.1s;}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.primary:hover{background:var(--primary2)}.btn.danger{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.btn:active{transform:scale(0.97)}
+.page{display:none; animation:fadeIn 0.25s ease;}.page.active{display:block} @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:13px;box-shadow:0 2px 4px rgba(0,0,0,0.02)}.label{color:var(--muted);font-size:12px;font-weight:600;}.value{font-size:23px;font-weight:800;margin-top:3px}.sub{font-size:11px;color:var(--muted);margin-top:3px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:11px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.03)}.panel-head{padding:11px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;background:#f8fafc;}.panel-head h2{font-size:14.5px;margin:0;color:#1e293b;}.panel-body{padding:14px}
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select,input,select{border:1px solid #d0d5dd;border-radius:5px;padding:5px 7px;background:#fff;min-width:100px;font-size:11.5px}
+.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;}th,td{border-bottom:1px solid var(--line);padding:7px 5px;text-align:left;white-space:nowrap;font-size:11.5px}th{background:#f1f5f9;color:#475467;font-size:11px;position:sticky;top:0;z-index:1}
 .sortable{cursor:pointer; user-select:none;} .sortable:hover{background:#eef4ff; color:#1748c7;}
 
-.tag{display:inline-flex;align-items:center;justify-content:center;border-radius:5px;padding:3px 5px;font-size:11px;font-weight:700}
+.tag{display:inline-flex;align-items:center;justify-content:center;border-radius:4px;padding:2px 4px;font-size:10.5px;font-weight:700}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 .conflict-row{background:#fff1f2 !important;}
 
 /* Screen-Fit Compact Rota Grid Styles */
 .rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
 .rota-table th, .rota-table td { padding: 3px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; overflow: hidden; }
-.rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 125px; min-width: 120px; max-width: 130px; padding: 4px 6px; font-weight: 700; border-right: 2px solid #cbd5e1; }
+.rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 108px; min-width: 105px; max-width: 110px; padding: 3px 5px; font-weight: 700; border-right: 2px solid #cbd5e1; text-overflow: ellipsis; overflow: hidden; }
 .rota-table th:first-child { background: #f1f5f9; }
 .shift-cell { padding: 2px 1px; cursor: pointer; transition: 0.15s; } .shift-cell:hover { background: #e2e8f0; }
 
 .shift-cell .tag { 
   width: 100%; 
-  max-width: 36px; 
-  padding: 2px 1px; 
-  font-size: 10.5px; 
+  max-width: 38px; 
+  height: 22px;
+  padding: 1px 1px; 
+  font-size: 10px; 
   font-weight: 800; 
   border-radius: 4px; 
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
   box-sizing: border-box;
   text-align: center;
+  line-height: 1;
 }
 
-/* Double Duty 2-Tier Stacked Layout (100% Readable & Non-Overflow) */
+/* Double Duty Badge Optimization (Clean Single Line Fit) */
 .shift-cell .tag.double-shift {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 1px 0 !important;
-  height: 24px !important;
-  line-height: 1.05 !important;
-  border-radius: 4px !important;
-  border-width: 1.5px !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-}
-.shift-cell .tag.double-shift .d-top {
-  font-size: 9px !important;
+  font-size: 8.5px !important;
   font-weight: 900 !important;
-  letter-spacing: -0.2px;
-}
-.shift-cell .tag.double-shift .d-bot {
-  font-size: 8px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.2px;
-  opacity: 0.95;
+  letter-spacing: -0.4px !important;
+  padding: 1px 0 !important;
+  border-width: 1.5px !important;
 }
 
-.summary-col-head { width: 62px; min-width: 58px; font-size: 10px; padding: 2px 1px; line-height: 1.1; }
-.summary-cell { width: 62px; min-width: 58px; font-weight: 800; font-size: 11.5px; text-align: center; }
+.summary-col-head { width: 48px; min-width: 46px; font-size: 9.5px; padding: 2px 1px; line-height: 1.1; }
+.summary-cell { width: 48px; min-width: 46px; font-weight: 800; font-size: 11px; text-align: center; }
 
-.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.field label{display:block;font-size:11.5px;color:#667085;margin-bottom:4px;font-weight:600}.field input,.field select{width:100%}
-.notice{background:#eef4ff;border:1px solid #c7d7fe;color:#173b86;padding:10px;border-radius:8px;font-size:12px;line-height:1.4}
-.empty{padding:25px;text-align:center;color:var(--muted)}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:1000}.modal.show{display:flex}.modal-card{background:#fff;border-radius:12px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 10px 25px rgba(0,0,0,0.2)}.modal-head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.modal-body{padding:16px}.modal-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
-.small{font-size:10.5px;color:var(--muted);display:block;margin-top:2px}.sync{font-size:11.5px;font-weight:600}.sync.ok{color:var(--green)}.sync.bad{color:var(--red)}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.field label{display:block;font-size:11px;color:#667085;margin-bottom:3px;font-weight:600}.field input,.field select{width:100%}
+.notice{background:#eef4ff;border:1px solid #c7d7fe;color:#173b86;padding:9px;border-radius:7px;font-size:11.5px;line-height:1.4}
+.empty{padding:20px;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:12px;z-index:1000}.modal.show{display:flex}.modal-card{background:#fff;border-radius:10px;width:min(720px,100%);max-height:90vh;overflow:auto;box-shadow:0 10px 25px rgba(0,0,0,0.2)}.modal-head{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.modal-body{padding:15px}.modal-foot{padding:10px 15px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:7px}
+.small{font-size:10px;color:var(--muted);display:block;margin-top:2px}.sync{font-size:11px;font-weight:600}.sync.ok{color:var(--green)}.sync.bad{color:var(--red)}
 
-.color-config{display:flex;flex-direction:column;gap:4px;padding:6px;background:#f9fafb;border:1px solid var(--line);border-radius:6px;width:130px;}
-.color-config input{width:100%;height:26px;padding:2px;cursor:pointer}
-.quick-btn{padding:6px 8px; border-radius:6px; border:1px solid var(--line); background:#f8fafc; font-weight:bold; cursor:pointer; font-size:11.5px;} .quick-btn:hover{background:#e2e8f0;}
+.color-config{display:flex;flex-direction:column;gap:3px;padding:5px;background:#f9fafb;border:1px solid var(--line);border-radius:5px;width:120px;}
+.color-config input{width:100%;height:24px;padding:2px;cursor:pointer}
+.quick-btn{padding:5px 7px; border-radius:5px; border:1px solid var(--line); background:#f8fafc; font-weight:bold; cursor:pointer; font-size:11px;} .quick-btn:hover{background:#e2e8f0;}
 
 /* Dashboard Grids */
-.dash-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start;}
-.dash-list{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
-.dash-item{display:flex; justify-content:space-between; padding:8px 10px; background:#f8fafc; border-radius:8px; border:1px solid var(--line); font-size:12px;}
+.dash-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:14px; align-items:start;}
+.dash-list{display:flex; flex-direction:column; gap:7px; margin-top:7px;}
+.dash-item{display:flex; justify-content:space-between; padding:7px 9px; background:#f8fafc; border-radius:7px; border:1px solid var(--line); font-size:11.5px;}
 
 .user-badge {
-  display:flex; align-items:center; gap:6px; background:#e0e7ff; color:#3730a3;
-  padding:4px 10px; border-radius:20px; font-size:11.5px; font-weight:700; border:1px solid #c7d2fe;
+  display:flex; align-items:center; gap:5px; background:#e0e7ff; color:#3730a3;
+  padding:3px 9px; border-radius:18px; font-size:11px; font-weight:700; border:1px solid #c7d2fe;
 }
 
-.sub-tabs { display: flex; gap: 8px; border-bottom: 2px solid var(--line); margin-bottom: 12px; }
-.sub-tab-btn { background: none; border: none; padding: 8px 14px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.sub-tabs { display: flex; gap: 7px; border-bottom: 2px solid var(--line); margin-bottom: 10px; }
+.sub-tab-btn { background: none; border: none; padding: 7px 12px; font-size: 12px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
 .sub-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
 @media(max-width:1100px){.dash-grid{grid-template-columns:1fr;}}
-@media(max-width:1000px){.sidebar{width:200px}.main{margin-left:200px;width:calc(100% - 200px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:12px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:120px}}
+@media(max-width:1000px){.sidebar{width:180px}.main{margin-left:180px;width:calc(100% - 180px)}.cards{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.sidebar{position:static;width:100%;height:auto}.app{display:block}.main{margin:0;width:100%;padding:10px}.cards,.form-grid{grid-template-columns:1fr}.nav{display:flex;overflow:auto}.nav button{min-width:110px}}
 </style>
 </head>
 <body>
@@ -124,7 +110,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     <button data-page="analyticsHub">7. Manpower Analytics</button>
     <button data-page="rotaHistory">8. Rota History</button>
     <button data-page="history">9. Audit Logs</button>
-    <button data-page="guide" style="margin-top:15px; border-top:1px solid #334155; border-radius:0;">📖 System Guide</button>
+    <button data-page="guide" style="margin-top:14px; border-top:1px solid #334155; border-radius:0;">📖 System Guide</button>
   </div>
 </aside>
 
@@ -134,10 +120,10 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     <div class="actions">
       <div class="user-badge">
         <span id="loggedInUserName">👤 Guest (View Only)</span>
-        <button class="btn" style="padding:2px 6px; font-size:10.5px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
-        <button class="btn" style="padding:2px 6px; font-size:10.5px;" id="loginBtn" onclick="openLoginModal(false)">Login</button>
+        <button class="btn" style="padding:2px 5px; font-size:10px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
+        <button class="btn" style="padding:2px 5px; font-size:10px;" id="loginBtn" onclick="openLoginModal(false)">Login</button>
       </div>
-      <div id="syncStatus" class="sync" style="align-self:center;margin-right:8px;"></div>
+      <div id="syncStatus" class="sync" style="align-self:center;margin-right:6px;"></div>
       <button class="btn" onclick="exportData()">Export JSON</button>
       <button class="btn primary" onclick="syncAll()">↥ Sync to Database</button>
     </div>
@@ -149,7 +135,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="card"><div class="label">Total Employees</div><div class="value" id="statEmp">0</div><div class="sub">Active Manpower</div></div>
       <div class="card">
         <div class="label">Today's Shifts</div>
-        <div class="value" id="statShift" style="font-size:18px; line-height:1.2; margin-top:8px;">M · E · N</div>
+        <div class="value" id="statShift" style="font-size:17px; line-height:1.2; margin-top:6px;">M · E · N</div>
         <div class="sub" id="statShiftSub">Deployment Live</div>
       </div>
       <div class="card"><div class="label">On Leave Today</div><div class="value" id="statLeave">0</div><div class="sub" style="color:var(--red)">Approved leaves</div></div>
@@ -158,7 +144,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     
     <div class="dash-grid">
        <!-- Left Side: Today's Deployment Table -->
-       <div style="display:flex; flex-direction:column; gap:16px;">
+       <div style="display:flex; flex-direction:column; gap:14px;">
           <div class="panel" style="margin-bottom:0;">
              <div class="panel-head">
                <h2>Today's Shift Deployment (Morning, Evening & Night)</h2>
@@ -168,7 +154,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
                 <table>
                   <thead>
                     <tr>
-                      <th style="width:160px;">Shift Timing</th>
+                      <th style="width:150px;">Shift Timing</th>
                       <th>Role</th>
                       <th style="text-align:left">Employee Name</th>
                       <th>Duty Code</th>
@@ -180,7 +166,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
              </div>
           </div>
           
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
              <div class="panel" style="margin-bottom:0;">
                 <div class="panel-head" style="background:#fff1f2"><h2 style="color:#be123c">🌴 On Leave Today</h2></div>
                 <div class="panel-body" id="todayLeavesList"></div>
@@ -192,17 +178,17 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
        </div>
        
-       <!-- Right Side: Analytics Preview Chart -->
+       <!-- Right Side: Analytics Quick View Chart -->
        <div class="panel" style="margin-bottom:0;">
           <div class="panel-head">
              <h2>Manpower Analytics (Quick View)</h2>
              <button class="btn" onclick="showPage('analyticsHub')">Full Analytics Hub ↗</button>
           </div>
           <div class="panel-body">
-             <div class="notice" style="margin-bottom:12px;">
+             <div class="notice" style="margin-bottom:10px;">
                 Current Month Comparison (Approved Leaves vs. Overtime Duties).
              </div>
-             <div style="position:relative; height:360px; width:100%;">
+             <div style="position:relative; height:350px; width:100%;">
                 <canvas id="dashAnalyticsChart"></canvas>
              </div>
           </div>
@@ -235,13 +221,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 2. Active Rota -->
+  <!-- 2. Active Rota (Screen Fit Optimized) -->
   <section id="rota" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Active Rota Generator</h2>
         <div class="toolbar">
-          <label style="font-size:12px;font-weight:600">Month <input type="month" id="rotaMonth"></label>
+          <label style="font-size:11.5px;font-weight:600">Month <input type="month" id="rotaMonth"></label>
           <button class="btn primary" onclick="generateRota()">↻ Refresh</button>
           <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366;" onclick="openShareModal('active')">📤 Share Rota</button>
           <button class="btn" onclick="downloadPDF('rotaContainer', 'Rota')">Download PDF</button>
@@ -249,18 +235,18 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         </div>
       </div>
       
-      <div class="panel-body" style="border-bottom:1px solid var(--line); padding:10px 14px;">
+      <div class="panel-body" style="border-bottom:1px solid var(--line); padding:9px 12px;">
          <div class="toolbar" style="justify-content:space-between">
             <div class="toolbar">
-               <label style="font-size:12px;font-weight:600;color:#173b86">Duty Pattern: 
-                 <input id="rotaPattern" style="width:110px;text-align:center" title="Default is EEMMNNO" value="EEMMNNO" readonly>
+               <label style="font-size:11.5px;font-weight:600;color:#173b86">Duty Pattern: 
+                 <input id="rotaPattern" style="width:105px;text-align:center" title="Default is EEMMNNO" value="EEMMNNO" readonly>
                </label>
                <button class="btn" onclick="$('colorPanel').style.display=$('colorPanel').style.display==='none'?'flex':'none'">⚙️ Edit Colors</button>
             </div>
             <button class="btn primary" style="background:#0f9d58;border-color:#0f9d58" onclick="finalizeRota()">✓ Finalize Rota</button>
          </div>
          
-         <div id="colorPanel" style="display:none; gap:10px; flex-wrap:wrap; margin-top:10px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:8px;">
+         <div id="colorPanel" style="display:none; gap:8px; flex-wrap:wrap; margin-top:8px; padding:10px; background:#fff; border:1px solid var(--line); border-radius:7px;">
             <div class="color-config"><b>M (Morning)</b> <label class="small">Bg <input type="color" id="c_M_bg"></label><label class="small">Txt <input type="color" id="c_M_txt"></label></div>
             <div class="color-config"><b>E (Evening)</b> <label class="small">Bg <input type="color" id="c_E_bg"></label><label class="small">Txt <input type="color" id="c_E_txt"></label></div>
             <div class="color-config"><b>N (Night)</b> <label class="small">Bg <input type="color" id="c_N_bg"></label><label class="small">Txt <input type="color" id="c_N_txt"></label></div>
@@ -271,8 +257,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
          </div>
       </div>
 
-      <div class="table-wrap" id="rotaContainer" style="padding:6px; background:#fff;">
-        <div style="font-size:11px;color:#173b86;margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+      <div class="table-wrap" id="rotaContainer" style="padding:4px; background:#fff;">
+        <div style="font-size:10.5px;color:#173b86;margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
            <span><b>Tip:</b> Click on any shift cell to edit duty or assign double shift (Popup is draggable).</span>
            <span style="font-weight:700; color:#475467;">Summary View: <span id="activeScopeLabel">Month</span></span>
         </div>
@@ -302,7 +288,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Conflict Policy:</b> Pehle apply karne wale 3 employees normal rahenge. Same period par <b>4th person se shuru hone wali overlapping leaves (>2 days)</b> caution mark ho jayengi.
+          ℹ️ <b>Leave Conflict Policy:</b> The first 3 applicants on any given date remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b>.
         </div>
       </div>
       <div class="table-wrap">
@@ -348,13 +334,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-head">
         <h2>Overtime Record (Auto + Manual)</h2>
         <div class="toolbar">
-           <select id="otViewType" onchange="toggleOtViewInputs()" style="min-width:90px;">
+           <select id="otViewType" onchange="toggleOtViewInputs()" style="min-width:85px;">
              <option value="MONTH" selected>By Month</option>
              <option value="YEAR">By Year</option>
              <option value="ALL">All Time</option>
            </select>
            <input type="month" id="edMonthFilter" title="Filter by month">
-           <input type="number" id="edYearFilter" min="2020" max="2035" value="2026" style="width:85px; display:none;" onchange="renderExtraDuties()" title="Select Year">
+           <input type="number" id="edYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderExtraDuties()" title="Select Year">
            <select id="edTypeFilter">
              <option value="">All Types</option>
              <option value="Double Duty">Double Duty</option>
@@ -380,19 +366,19 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Leave Record (With Holiday Leaves Tracker) -->
+  <!-- 6. Leave Record (With Multi-Year Festival Tracker) -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Leave Record & Festival Tracker</h2>
         <div class="toolbar">
-           <select id="flViewType" onchange="toggleFlViewInputs()" style="min-width:90px;">
+           <select id="flViewType" onchange="toggleFlViewInputs()" style="min-width:85px;">
              <option value="MONTH" selected>By Month</option>
              <option value="YEAR">By Year</option>
              <option value="ALL">All Time</option>
            </select>
-           <select id="flMonthFilter" style="min-width:130px;"></select>
-           <input type="number" id="flYearFilter" min="2020" max="2035" value="2026" style="width:85px; display:none;" onchange="renderFinalizedLeaves()" title="Select Year">
+           <select id="flMonthFilter" style="min-width:120px;"></select>
+           <input type="number" id="flYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderFinalizedLeaves()" title="Select Year">
            <input id="flSearch" placeholder="Search Employee...">
            <button class="btn primary" onclick="renderFinalizedLeaves()">Refresh</button>
         </div>
@@ -401,18 +387,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-body" style="padding-bottom:0;">
          <div class="sub-tabs">
             <button class="sub-tab-btn active" id="tabAllLeavesBtn" onclick="switchLeaveRecordTab('all')">📋 All Finalized Leaves</button>
-            <button class="sub-tab-btn" id="tabHolidayLeavesBtn" onclick="switchLeaveRecordTab('holiday')">🎉 Festival / Holiday Leaves Tracker (Multi-Year)</button>
+            <button class="sub-tab-btn" id="tabHolidayLeavesBtn" onclick="switchLeaveRecordTab('holiday')">🎉 Festival / Holiday Leaves Tracker (All Years)</button>
          </div>
-         <div id="holidayFilterBar" style="display:none; margin-bottom:12px;" class="toolbar">
-            <label style="font-size:12px; font-weight:700;">Select Festival / Holiday:</label>
-            <select id="holidayPickerSelect" onchange="renderHolidayLeaves()" style="min-width:160px;"></select>
-            <label style="font-size:12px; font-weight:700; margin-left:8px;">Year:</label>
-            <select id="holidayYearPicker" onchange="renderHolidayLeaves()" style="min-width:110px;">
-               <option value="ALL">All Years (History)</option>
-               <option value="2026" selected>2026</option>
-               <option value="2025">2025</option>
-               <option value="2024">2024</option>
-            </select>
+         <div id="holidayFilterBar" style="display:none; margin-bottom:10px;" class="toolbar">
+            <label style="font-size:11.5px; font-weight:700;">Filter Festival:</label>
+            <select id="holidayPickerSelect" onchange="renderHolidayLeaves()" style="min-width:150px;"></select>
+            <label style="font-size:11.5px; font-weight:700; margin-left:6px;">Year:</label>
+            <select id="holidayYearPicker" onchange="renderHolidayLeaves()" style="min-width:120px;"></select>
          </div>
       </div>
 
@@ -442,25 +423,25 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-head">
         <h2>📊 Manpower Analytics Hub</h2>
         <div class="toolbar">
-          <select id="hubViewType" onchange="toggleHubViewInputs()" style="min-width:95px;">
+          <select id="hubViewType" onchange="toggleHubViewInputs()" style="min-width:90px;">
             <option value="MONTH">By Month</option>
             <option value="YEAR">By Year</option>
             <option value="ALL" selected>All Time</option>
           </select>
-          <input type="month" id="hubMonthFilter" value="2026-08" style="width:125px; display:none;" onchange="renderHubAnalytics()">
-          <input type="number" id="hubYearFilter" min="2020" max="2035" value="2026" style="width:85px; display:none;" onchange="renderHubAnalytics()">
-          <select id="hubEmpFilter" onchange="renderHubAnalytics()" style="min-width:140px;"></select>
+          <input type="month" id="hubMonthFilter" value="2026-08" style="width:120px; display:none;" onchange="renderHubAnalytics()">
+          <input type="number" id="hubYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderHubAnalytics()">
+          <select id="hubEmpFilter" onchange="renderHubAnalytics()" style="min-width:130px;"></select>
           <button class="btn primary" onclick="renderHubAnalytics()">Refresh</button>
         </div>
       </div>
       <div class="panel-body">
-         <div class="cards" style="margin-bottom:18px;">
+         <div class="cards" style="margin-bottom:16px;">
             <div class="card"><div class="label">Total Approved Leaves</div><div class="value" id="hubStatLeave" style="color:var(--red);">0</div><div class="sub">Total Leave Days</div></div>
             <div class="card"><div class="label">Total Overtime Duties</div><div class="value" id="hubStatOT" style="color:var(--green);">0</div><div class="sub">Double/Holiday/Off</div></div>
-            <div class="card"><div class="label">Top Overtime Staff</div><div class="value" id="hubStatTopOT" style="font-size:18px; line-height:1.2; margin-top:8px;">—</div><div class="sub">Highest Extra Shift</div></div>
-            <div class="card"><div class="label">Top Leave Staff</div><div class="value" id="hubStatTopLeave" style="font-size:18px; line-height:1.2; margin-top:8px;">—</div><div class="sub">Highest Leave Days</div></div>
+            <div class="card"><div class="label">Top Overtime Staff</div><div class="value" id="hubStatTopOT" style="font-size:16px; line-height:1.2; margin-top:6px;">—</div><div class="sub">Highest Extra Shifts</div></div>
+            <div class="card"><div class="label">Top Leave Staff</div><div class="value" id="hubStatTopLeave" style="font-size:16px; line-height:1.2; margin-top:6px;">—</div><div class="sub">Highest Leave Days</div></div>
          </div>
-         <div style="position:relative; height:400px; width:100%; margin-bottom:20px;">
+         <div style="position:relative; height:380px; width:100%; margin-bottom:18px;">
             <canvas id="hubAnalyticsChart"></canvas>
          </div>
          <div class="table-wrap">
@@ -479,8 +460,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-head">
         <h2>Rota History (Finalized Rotas)</h2>
         <div class="toolbar">
-          <label style="font-size:12px;font-weight:600">Select Month 
-             <select id="historyMonthSelect" style="min-width:130px; margin-left:4px;"></select>
+          <label style="font-size:11.5px;font-weight:600">Select Month 
+             <select id="historyMonthSelect" style="min-width:120px; margin-left:4px;"></select>
           </label>
           <button class="btn primary" onclick="generateHistoryRota()">View History</button>
           <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366;" onclick="openShareModal('history')">📤 Share Rota</button>
@@ -489,7 +470,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <button class="btn" onclick="downloadCSV('history')">Download CSV</button>
         </div>
       </div>
-      <div class="table-wrap" id="historyContainer" style="padding:6px; background:#fff;">
+      <div class="table-wrap" id="historyContainer" style="padding:4px; background:#fff;">
         <table class="rota-table" id="histTableData">
           <thead id="histRotaHead"></thead><tbody id="histRotaBody"></tbody>
         </table>
@@ -504,6 +485,48 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
+  <!-- System Guide (Full English Restored) -->
+  <section id="guide" class="page">
+    <div class="panel">
+      <div class="panel-head"><h2>📖 System Guide & Operating Rules</h2></div>
+      <div class="panel-body" style="line-height:1.6; font-size:13.5px; color:#334155;">
+        <h3 style="color:#1e293b; margin-top:0;">1. Shift Rotation & Single Weekly Off System</h3>
+        <p>
+          • <b>Continuous Shift Pattern:</b> Follows the 7-day cyclical sequence <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b> (2 Evening, 2 Morning, 2 Night, 1 Off).<br>
+          • <b>Weekly Off Synchronization:</b> When an employee's <b>OFF DAY</b> (e.g. <i>Tuesday</i>) is assigned in Master Data, their 7-day shift cycle locks directly onto that day so that they strictly receive <b>exactly 1 Off per week</b>.
+        </p>
+
+        <h3 style="color:#1e293b;">2. Smart Role Balancing & Coverage Guarantee</h3>
+        <p>
+          Every shift requires 3 core operational roles (Role 1: BSVI SRU PIC, Role 2: OLD SRU PIC, Role 3: SIC):
+        </p>
+        <ul style="padding-left:20px; margin-top:4px;">
+          <li><b>Priority 1 (SIC Allotment):</b> Dedicated SIC staff (Role 3: `M3, E3, N3`) are assigned first.</li>
+          <li><b>Priority 2 (Single-Role PIC):</b> Dedicated single-role PICs (e.g. Role `2` only) receive their designated station.</li>
+          <li><b>Priority 3 (Dual-Role Sequence):</b> Multi-role employees follow the sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> (1st day: `1`, 2nd day: `2`). If a single-role `2` is present, the dual-role employee automatically shifts to `1` to eliminate station gaps.</li>
+        </ul>
+
+        <h3 style="color:#1e293b;">3. Leave Conflict Caution Policy</h3>
+        <p>
+          • The first 3 staff members who apply for leave on any date are valid.<br>
+          • When overlapping leave applications exceed <b>2 consecutive days</b> with <b>4 or more staff on leave</b> simultaneously, the <b>4th applicant onward</b> is flagged with a warning badge: <b>`⚠️ 4th+ Staff Overlap Caution`</b>.
+        </p>
+
+        <h3 style="color:#1e293b;">4. Multi-Year Festival & Holiday Leave Tracking</h3>
+        <p>
+          • The system tracks festival and holiday leaves across <b>All Recorded Years</b> (e.g. Diwali in 2024, 2025, 2026).<br>
+          • Historical records are linked to permanent <b>Finalized Rota Snapshots</b>.
+        </p>
+
+        <h3 style="color:#1e293b;">5. Multi-User Access & PIN Security</h3>
+        <p>
+          • <b>Admin (Default PIN: 1234):</b> Full administrative access to edit Master Data, configure Rota rules, approve leaves, and reset staff PINs.<br>
+          • <b>Employees (Default PIN: 0000):</b> Individual access to apply for leave, manage their own leave requests, and view rosters.
+        </p>
+      </div>
+    </div>
+  </section>
+
 </main>
 </div>
 
@@ -512,13 +535,13 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 <!-- Mandatory Login Gate Modal -->
 <div class="modal" id="loginModal">
-  <div class="modal-card" style="width:360px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
+  <div class="modal-card" style="width:350px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
     <div class="modal-head" style="background:#f8fafc;">
-      <b style="font-size:14.5px; color:#1e293b;">🔐 System Authentication</b>
+      <b style="font-size:14px; color:#1e293b;">🔐 System Authentication</b>
       <button class="btn" id="loginCloseX" onclick="closeLoginModal()">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field" style="margin-bottom:10px;">
+      <div class="field" style="margin-bottom:9px;">
         <label>Select User / Role</label>
         <select id="loginUserSelect">
           <option value="ADMIN">👑 Admin / Supervisor</option>
@@ -529,7 +552,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <label>PIN / Password</label>
         <input type="password" id="loginPin" placeholder="Enter PIN" onkeydown="if(event.key==='Enter') performLogin()">
       </div>
-      <div class="small" style="margin-top:6px; color:var(--muted);">
+      <div class="small" style="margin-top:5px; color:var(--muted);">
         Default Admin PIN is <b>1234</b>. Default Employee PIN is <b>0000</b>.
       </div>
     </div>
@@ -542,17 +565,17 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 <!-- Change PIN Modal -->
 <div class="modal" id="changePinModal">
-  <div class="modal-card" style="width:350px;">
+  <div class="modal-card" style="width:340px;">
     <div class="modal-head">
       <b>Change PIN / Password</b>
       <button class="btn" onclick="$('changePinModal').classList.remove('show')">✕</button>
     </div>
     <div class="modal-body">
-      <div class="field" style="margin-bottom:10px;">
+      <div class="field" style="margin-bottom:9px;">
         <label>Current (Old) PIN</label>
         <input type="password" id="oldPin" placeholder="Enter current PIN">
       </div>
-      <div class="field" style="margin-bottom:10px;">
+      <div class="field" style="margin-bottom:9px;">
         <label>New PIN / Password</label>
         <input type="password" id="newPin" maxlength="8" placeholder="Enter new PIN">
       </div>
@@ -570,14 +593,14 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 <!-- Draggable Edit Shift Modal -->
 <div class="modal" id="editCellModal" style="background:transparent;">
-  <div class="modal-card" id="draggableEditCard" style="width:360px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border:1px solid #cbd5e1;">
+  <div class="modal-card" id="draggableEditCard" style="width:350px; box-shadow:0 10px 30px rgba(0,0,0,0.3); border:1px solid #cbd5e1;">
     <div class="modal-head" id="dragHandle" style="cursor:move; background:#f1f5f9; user-select:none;">
       <b>Edit Shift Assignment <span class="small" style="display:inline; font-weight:normal;">(Drag anywhere)</span></b>
       <button class="btn" onclick="$('editCellModal').classList.remove('show')">✕</button>
     </div>
     <div class="modal-body">
-       <label style="font-size:11.5px; color:#667085; font-weight:600; margin-bottom:6px; display:block;">Click Quick Shift</label>
-       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-bottom:14px;">
+       <label style="font-size:11px; color:#667085; font-weight:600; margin-bottom:5px; display:block;">Click Quick Shift</label>
+       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:5px; margin-bottom:12px;">
           <button class="quick-btn" onclick="applyCellOverride('M1')">M1</button>
           <button class="quick-btn" onclick="applyCellOverride('M2')">M2</button>
           <button class="quick-btn" onclick="applyCellOverride('M3')">M3</button>
@@ -608,21 +631,21 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 
 <!-- 📤 Share Rota Modal -->
 <div class="modal" id="shareModal">
-  <div class="modal-card" style="width:420px;">
+  <div class="modal-card" style="width:400px;">
     <div class="modal-head" style="background:#f8fafc;">
       <b>📤 Share Shift Rota</b>
       <button class="btn" onclick="$('shareModal').classList.remove('show')">✕</button>
     </div>
     <div class="modal-body">
-       <div style="margin-bottom:12px; font-size:13px; color:#334155;" id="sharePreviewSummary"></div>
-       <div style="display:flex; flex-direction:column; gap:8px;">
-          <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366; padding:10px; font-weight:700;" onclick="shareViaWhatsApp()">
+       <div style="margin-bottom:10px; font-size:12.5px; color:#334155;" id="sharePreviewSummary"></div>
+       <div style="display:flex; flex-direction:column; gap:7px;">
+          <button class="btn" style="background:#25D366; color:#fff; border-color:#25D366; padding:9px; font-weight:700;" onclick="shareViaWhatsApp()">
              💬 Share on WhatsApp
           </button>
-          <button class="btn" style="background:#0088cc; color:#fff; border-color:#0088cc; padding:10px; font-weight:700;" onclick="shareViaTelegram()">
+          <button class="btn" style="background:#0088cc; color:#fff; border-color:#0088cc; padding:9px; font-weight:700;" onclick="shareViaTelegram()">
              ✈️ Share on Telegram
           </button>
-          <button class="btn primary" style="padding:10px; font-weight:700;" onclick="copyShareText()">
+          <button class="btn primary" style="padding:9px; font-weight:700;" onclick="copyShareText()">
              📋 Copy Rota Summary & Link
           </button>
        </div>
@@ -743,7 +766,7 @@ async function fetchCloudData() {
   }
 }
 
-/* ==== LOGIN GATE & AUTHENTICATION ==== */
+/* ==== MANDATORY LOGIN GATE & AUTHENTICATION ==== */
 function openLoginModal(isForced = false) {
   const selectGroup = $('loginEmpOptions');
   selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
@@ -913,7 +936,7 @@ function normalizeRoles(v){
   return [...new Set(valid)].join(',');
 }
 
-/* ==== SETTINGS (EDIT COLORS NOW APPLIES LIVE) ==== */
+/* ==== SETTINGS ==== */
 function loadSettingsUI() {
   $('rotaPattern').value = state.pattern;
   ['M','E','N','O','L','D'].forEach(c => {
@@ -1096,7 +1119,7 @@ function buildRotaMatrix(month) {
               empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          // STEP 1: SIC duty (Role 3) first
+          // STEP 1: Allot SIC duty (Role 3) first
           let sicCandidate = empsInShift.find(e => empRoles[e.id].length === 1 && empRoles[e.id][0] === '3');
           if (!sicCandidate) {
               sicCandidate = empsInShift.find(e => empRoles[e.id].includes('3'));
@@ -1106,7 +1129,7 @@ function buildRotaMatrix(month) {
               needed = needed.filter(x => x !== '3');
           }
 
-          // STEP 2: Single-role PIC
+          // STEP 2: Allot Single-role PIC
           empsInShift.forEach(e => {
               if (assignments[e.id]) return;
               let r = empRoles[e.id];
@@ -1116,7 +1139,7 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // STEP 3: Dual/Multi-role PICs
+          // STEP 3: Allot Dual/Multi-role PICs
           let remainingEmps = empsInShift.filter(e => !assignments[e.id]);
 
           remainingEmps.forEach(e => {
@@ -1245,7 +1268,7 @@ function changeSummaryScope(newScope) {
   generateHistoryRota();
 }
 
-/* ==== ROTA TABLE RENDER (WITH 2-TIER CLEAN DOUBLE DUTY BADGES) ==== */
+/* ==== ROTA TABLE RENDER (WITH CLEAN BADGES & SCREEN FIT) ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
@@ -1253,10 +1276,10 @@ function renderRotaTable(monthValue){
   activeMatrix = matrix; 
   
   $('rotaHead').innerHTML = '<tr><th>Employee</th>' + 
-    dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9.5px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
+    dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
     `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">
        Leaves
-       <select onchange="changeSummaryScope(this.value)" style="font-size:9.5px; padding:1px 2px; min-width:50px; margin-top:2px; display:block; width:100%;">
+       <select onchange="changeSummaryScope(this.value)" style="font-size:9px; padding:1px; min-width:44px; margin-top:2px; display:block; width:100%;">
          <option value="MONTH" ${rotaSummaryScope==='MONTH'?'selected':''}>Month</option>
          <option value="YEAR" ${rotaSummaryScope==='YEAR'?'selected':''}>Year</option>
          <option value="ALL" ${rotaSummaryScope==='ALL'?'selected':''}>All</option>
@@ -1264,7 +1287,7 @@ function renderRotaTable(monthValue){
      </th>
      <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">
        Extra
-       <span style="font-size:9.5px; color:#166534; display:block; margin-top:4px; font-weight:700;">Duties</span>
+       <span style="font-size:9px; color:#166534; display:block; margin-top:3px; font-weight:700;">Duties</span>
      </th>
     </tr>`;
 
@@ -1279,14 +1302,8 @@ function renderRotaTable(monthValue){
         const isDouble = sc.full.includes('+');
         const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
         
-        let badgeContent = sc.full;
-        if (isDouble) {
-          const parts = sc.full.split('+');
-          badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
-        }
-
         return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}',false,${rIdx},${cIdx})">
-           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${style.bg}; color:${style.txt}; ${bStyle}">${badgeContent}</span>
+           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${style.bg}; color:${style.txt}; ${bStyle}">${sc.full}</span>
         </td>`;
       }).join('') +
       `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
@@ -1380,7 +1397,7 @@ function generateHistoryRota() {
   const dates = finalized.dates.map(ds => new Date(ds));
   
   $('histRotaHead').innerHTML = '<tr><th style="text-align:left">Employee</th>' + 
-    dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9.5px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
+    dates.map(d => `<th>${d.getDate()}<br><span class="small" style="font-size:9px;">${d.toLocaleDateString('en-US',{weekday:'short'})}</span></th>`).join('') +
     `<th class="summary-col-head" style="background:#fff1f2; color:#991b1b;">Leaves</th>
      <th class="summary-col-head" style="background:#f0fdf4; color:#166534;">Overtime</th>
     </tr>`;
@@ -1395,14 +1412,9 @@ function generateHistoryRota() {
        ${row.shifts.map((sh, cIdx) => {
           const dStr = toLocalISO(dates[cIdx]);
           const isDouble = sh.full.includes('+');
-          let badgeContent = sh.full;
-          if (isDouble) {
-            const parts = sh.full.split('+');
-            badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
-          }
 
           return `<td class="shift-cell" onclick="openEditCell('${month}', '${row.empId}', '${dStr}', '${sh.full}', true, ${rIdx}, ${cIdx})">
-             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${badgeContent}</span>
+             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${sh.full}</span>
           </td>`;
        }).join('')}
        <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>
@@ -1685,12 +1697,11 @@ function sortLeave(key) {
   renderLeaves();
 }
 
-// Conflict detector: 1st, 2nd, 3rd applicants are NOT highlighted. Only 4th+ applicant is marked!
 function getConflictedLeaveIds() {
   const activeLeaves = state.leaves.filter(l => l.status === 'Approved' || l.status === 'Pending')
     .slice().sort((a, b) => a.applyDate.localeCompare(b.applyDate) || a.id.localeCompare(b.id));
 
-  const dateApplicants = {}; // date -> array of leave IDs in order of application
+  const dateApplicants = {};
   activeLeaves.forEach(l => {
     const d1 = new Date(l.from); const d2 = new Date(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
@@ -1707,8 +1718,8 @@ function getConflictedLeaveIds() {
     const d1 = new Date(l.from); const d2 = new Date(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
       const ds = toLocalISO(dt);
-      const appIndex = dateApplicants[ds].indexOf(l.id); // 0=1st, 1=2nd, 2=3rd, 3=4th+
-      if (appIndex >= 3) { // 4th person or later on this day
+      const appIndex = dateApplicants[ds].indexOf(l.id);
+      if (appIndex >= 3) {
         consecutiveConflict++;
         if (consecutiveConflict > maxConsecutive) maxConsecutive = consecutiveConflict;
       } else {
@@ -1867,7 +1878,7 @@ function renderLeaves(){
       <td>${formatDateDisplay(l.applyDate)}</td>
       <td style="text-align:left;font-weight:600">
         ${esc(e.name || 'Unknown')}
-        ${isConflict ? '<span class="tag rejected" style="font-size:9.5px; margin-left:4px;" title="4th+ employee on overlapping leave >2 days">⚠️ 4th+ Staff Overlap Caution</span>' : ''}
+        ${isConflict ? '<span class="tag rejected" style="font-size:9px; margin-left:3px;" title="4th+ employee overlapping leave >2 days">⚠️ 4th+ Staff Overlap Caution</span>' : ''}
       </td>
       <td>${formatDateDisplay(l.from)}</td>
       <td>${formatDateDisplay(l.to)}</td>
@@ -1960,9 +1971,21 @@ function renderFinalizedLeaves(){
 
 function populateHolidayPicker() {
   const sel = $('holidayPickerSelect');
+  const ySel = $('holidayYearPicker');
+  
   const distinctHolidays = [...new Set(state.holidays.map(h => h.name))];
-  sel.innerHTML = '<option value="">All Festivals / Holidays (All Years)</option>' + 
+  sel.innerHTML = '<option value="">All Festivals / Holidays (All Recorded)</option>' + 
     distinctHolidays.map(name => `<option value="${name}">${name}</option>`).join('');
+
+  // Collect All Distinct Years available in data
+  const distinctYears = new Set();
+  state.holidays.forEach(h => distinctYears.add(h.date.slice(0,4)));
+  Object.keys(state.finalizedRotas).forEach(m => distinctYears.add(m.slice(0,4)));
+  state.leaves.forEach(l => { if(l.from) distinctYears.add(l.from.slice(0,4)); });
+
+  const sortedYears = [...distinctYears].sort().reverse();
+  ySel.innerHTML = '<option value="ALL">All Available Years</option>' + 
+    sortedYears.map(y => `<option value="${y}">${y}</option>`).join('');
 }
 
 function renderHolidayLeaves() {
@@ -2013,7 +2036,7 @@ function renderHolidayLeaves() {
   if (q) {
      results = results.filter(r => r.empName.toLowerCase().includes(q) || r.holidayName.toLowerCase().includes(q));
   }
-  results.sort((a,b) => b.date.localeCompare(a.date));
+  results.sort((a,b) => a.date.localeCompare(b.date));
 
   $('holidayLeavesBody').innerHTML = results.length ? results.map((r, i) => `
      <tr style="background:#fff7ed;">
@@ -2025,7 +2048,7 @@ function renderHolidayLeaves() {
        <td><span class="tag rejected" style="font-weight:800;">Holiday Leave</span></td>
        <td><span class="small" style="color:var(--muted);">${r.source}</span></td>
      </tr>
-  `) : `<tr><td colspan="7" class="empty">No employees took leave on selected holiday/festival in ${selectedYear==='ALL'?'any year':selectedYear}.</td></tr>`;
+  `) : `<tr><td colspan="7" class="empty">No employees took leave on selected festival/holiday in ${selectedYear==='ALL'?'any recorded year':selectedYear}.</td></tr>`;
 }
 
 if($('flMonthFilter')) $('flMonthFilter').onchange = renderFinalizedLeaves;
@@ -2156,7 +2179,7 @@ function renderHubAnalytics() {
         maintainAspectRatio: false,
         scales: { 
           y: { beginAtZero: true, ticks: { precision: 0, stepSize: 1 } },
-          x: { ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 11 } } }
+          x: { ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 10.5 } } }
         },
         plugins: { legend: { position: 'bottom' } }
      }
@@ -2168,7 +2191,7 @@ function renderHubAnalytics() {
 function downloadPDF(containerId, filenamePrefix){
   const element = document.getElementById(containerId);
   const month = containerId === 'historyContainer' ? $('historyMonthSelect').value : $('rotaMonth').value;
-  const opt = { margin:0.15, filename:`${filenamePrefix}_${month}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'a4',orientation:'landscape'} };
+  const opt = { margin:0.12, filename:`${filenamePrefix}_${month}.pdf`, image:{type:'jpeg',quality:0.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'in',format:'a4',orientation:'landscape'} };
   html2pdf().set(opt).from(element).save();
 }
 function downloadCSV(type) {
@@ -2258,20 +2281,15 @@ function renderDashboard(){
     const list = shiftGroups[sm.key];
     if(list.length) {
        list.forEach((item, idx) => {
-          const shiftCol = idx === 0 ? `<td rowspan="${list.length}" style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line); color:#1e293b;"><span class="tag" style="background:${sm.bg};color:${sm.txt};margin-bottom:4px;">${sm.key}</span><br>${sm.label}</td>` : '';
+          const shiftCol = idx === 0 ? `<td rowspan="${list.length}" style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line); color:#1e293b;"><span class="tag" style="background:${sm.bg};color:${sm.txt};margin-bottom:3px;">${sm.key}</span><br>${sm.label}</td>` : '';
           const isDouble = item.full.includes('+');
-          let badgeContent = item.full;
-          if (isDouble) {
-            const parts = item.full.split('+');
-            badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
-          }
 
           tableHtml += `
             <tr>
               ${shiftCol}
               <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
               <td style="font-weight:600">${esc(item.emp.name)}</td>
-              <td><span class="tag ${isDouble?'double-shift':''}" style="background-color:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${badgeContent}</span></td>
+              <td><span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${item.full}</span></td>
               <td><span class="tag approved">On Duty</span></td>
             </tr>
           `;
@@ -2335,7 +2353,7 @@ function renderDashQuickChart() {
            responsive: true, maintainAspectRatio: false,
            scales: { 
              y: { beginAtZero: true, ticks: { precision: 0, stepSize: 1 } },
-             x: { ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 10 } } }
+             x: { ticks: { autoSkip: false, maxRotation: 45, minRotation: 45, font: { size: 9.5 } } }
            },
            plugins: { legend: { position: 'bottom' } }
        }

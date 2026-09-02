@@ -54,13 +54,29 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   line-height: 1;
 }
 
-/* Double Duty Badge Optimization (Clean Single Line Fit) */
+/* Double Duty Badge Optimization */
 .shift-cell .tag.double-shift {
-  font-size: 8.5px !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
   padding: 1px 0 !important;
+  height: 24px !important;
+  line-height: 1.05 !important;
+  border-radius: 4px !important;
   border-width: 1.5px !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+.shift-cell .tag.double-shift .d-top {
+  font-size: 9px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.2px;
+}
+.shift-cell .tag.double-shift .d-bot {
+  font-size: 8px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.2px;
+  opacity: 0.95;
 }
 
 .summary-col-head { width: 48px; min-width: 46px; font-size: 9.5px; padding: 2px 1px; line-height: 1.1; }
@@ -221,7 +237,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 2. Active Rota (Screen Fit Optimized) -->
+  <!-- 2. Active Rota -->
   <section id="rota" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -288,7 +304,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Leave Conflict Policy:</b> The first 3 applicants on any given date remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b>.
+          ℹ️ <b>Leave Conflict Policy:</b> The first 3 applicants on normal dates remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b>. <b>Special Holiday Rule:</b> If the leave period encompasses a scheduled <b>Holiday</b>, conflict caution is triggered starting from the <b>3rd applicant onward</b>.
         </div>
       </div>
       <div class="table-wrap">
@@ -492,8 +508,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-body" style="line-height:1.6; font-size:13.5px; color:#334155;">
         <h3 style="color:#1e293b; margin-top:0;">1. Shift Rotation & Single Weekly Off System</h3>
         <p>
-          • <b>Continuous Shift Pattern:</b> Follows the 7-day cyclical sequence <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b> (2 Evening, 2 Morning, 2 Night, 1 Off).<br>
-          • <b>Weekly Off Synchronization:</b> When an employee's <b>OFF DAY</b> (e.g. <i>Tuesday</i>) is assigned in Master Data, their 7-day shift cycle locks directly onto that day so that they strictly receive <b>exactly 1 Off per week</b>.
+          • <b>Continuous Shift Pattern:</b> Follows the continuous 7-day cyclical sequence <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b> (2 Evening, 2 Morning, 2 Night, 1 Off).<br>
+          • <b>Weekly Off Synchronization:</b> When an employee's <b>OFF DAY</b> (e.g. <i>Tuesday</i>) is set in Master Data, their 7-day shift cycle aligns directly so that they strictly receive <b>exactly 1 Off per week</b>.
         </p>
 
         <h3 style="color:#1e293b;">2. Smart Role Balancing & Coverage Guarantee</h3>
@@ -506,10 +522,10 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <li><b>Priority 3 (Dual-Role Sequence):</b> Multi-role employees follow the sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> (1st day: `1`, 2nd day: `2`). If a single-role `2` is present, the dual-role employee automatically shifts to `1` to eliminate station gaps.</li>
         </ul>
 
-        <h3 style="color:#1e293b;">3. Leave Conflict Caution Policy</h3>
+        <h3 style="color:#1e293b;">3. Leave Conflict Policy</h3>
         <p>
-          • The first 3 staff members who apply for leave on any date are valid.<br>
-          • When overlapping leave applications exceed <b>2 consecutive days</b> with <b>4 or more staff on leave</b> simultaneously, the <b>4th applicant onward</b> is flagged with a warning badge: <b>`⚠️ 4th+ Staff Overlap Caution`</b>.
+          • <b>Standard Working Days:</b> The first 3 applicants on any date remain valid. When overlapping leave applications exceed <b>2 consecutive days</b> with <b>4 or more staff on leave</b> simultaneously, the <b>4th applicant onward</b> is flagged with: <b>`⚠️ 4th+ Staff Overlap Caution`</b>.<br>
+          • <b>Special Holiday Rule:</b> If a leave period covers a scheduled <b>Holiday / Festival</b>, stricter staffing limits apply and conflict caution is triggered starting from the <b>3rd applicant onward</b> (**`⚠️ 3rd+ Staff Holiday Overlap Caution`**).
         </p>
 
         <h3 style="color:#1e293b;">4. Multi-Year Festival & Holiday Leave Tracking</h3>
@@ -766,7 +782,7 @@ async function fetchCloudData() {
   }
 }
 
-/* ==== MANDATORY LOGIN GATE & AUTHENTICATION ==== */
+/* ==== LOGIN GATE & AUTHENTICATION ==== */
 function openLoginModal(isForced = false) {
   const selectGroup = $('loginEmpOptions');
   selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
@@ -919,6 +935,7 @@ function showPage(id){
   if(id==='history')renderHistory();
   if(id==='rotaHistory') { updateHistoryDropdown(); generateHistoryRota(); }
   if(id==='dashboard') { generateRota(false); renderDashboard(); }
+  if(id==='guide') { /* System Guide page */ }
 }
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
@@ -1119,7 +1136,7 @@ function buildRotaMatrix(month) {
               empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          // STEP 1: Allot SIC duty (Role 3) first
+          // STEP 1: SIC duty (Role 3) first
           let sicCandidate = empsInShift.find(e => empRoles[e.id].length === 1 && empRoles[e.id][0] === '3');
           if (!sicCandidate) {
               sicCandidate = empsInShift.find(e => empRoles[e.id].includes('3'));
@@ -1129,7 +1146,7 @@ function buildRotaMatrix(month) {
               needed = needed.filter(x => x !== '3');
           }
 
-          // STEP 2: Allot Single-role PIC
+          // STEP 2: Single-role PIC
           empsInShift.forEach(e => {
               if (assignments[e.id]) return;
               let r = empRoles[e.id];
@@ -1139,7 +1156,7 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // STEP 3: Allot Dual/Multi-role PICs
+          // STEP 3: Dual/Multi-role PICs
           let remainingEmps = empsInShift.filter(e => !assignments[e.id]);
 
           remainingEmps.forEach(e => {
@@ -1268,7 +1285,7 @@ function changeSummaryScope(newScope) {
   generateHistoryRota();
 }
 
-/* ==== ROTA TABLE RENDER (WITH CLEAN BADGES & SCREEN FIT) ==== */
+/* ==== ROTA TABLE RENDER ==== */
 let activeEditCell = null;
 
 function renderRotaTable(monthValue){
@@ -1302,8 +1319,14 @@ function renderRotaTable(monthValue){
         const isDouble = sc.full.includes('+');
         const bStyle = sc.override ? `border: 2px solid ${style.txt}` : `border:1px solid ${style.txt}40`;
         
+        let badgeContent = sc.full;
+        if (isDouble) {
+          const parts = sc.full.split('+');
+          badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
+        }
+
         return `<td class="shift-cell" onclick="openEditCell('${monthValue}','${e.id}','${dStr}','${sc.full}',false,${rIdx},${cIdx})">
-           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${style.bg}; color:${style.txt}; ${bStyle}">${sc.full}</span>
+           <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${style.bg}; color:${style.txt}; ${bStyle}">${badgeContent}</span>
         </td>`;
       }).join('') +
       `<td class="summary-cell" style="background:#fff1f2; color:#be123c;">${summary.leaves}</td>
@@ -1412,9 +1435,14 @@ function generateHistoryRota() {
        ${row.shifts.map((sh, cIdx) => {
           const dStr = toLocalISO(dates[cIdx]);
           const isDouble = sh.full.includes('+');
+          let badgeContent = sh.full;
+          if (isDouble) {
+            const parts = sh.full.split('+');
+            badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
+          }
 
           return `<td class="shift-cell" onclick="openEditCell('${month}', '${row.empId}', '${dStr}', '${sh.full}', true, ${rIdx}, ${cIdx})">
-             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${sh.full}</span>
+             <span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sh.bg}; color:${sh.txt}; border:1px solid ${sh.txt}40;">${badgeContent}</span>
           </td>`;
        }).join('')}
        <td class="summary-cell" style="background:#fff1f2; color:#be123c;">${leaveC}</td>
@@ -1689,7 +1717,7 @@ $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
 
-/* ==== 3. LEAVE REGISTER (CAUTION ON 4TH+ PERSON ONLY) ==== */
+/* ==== 3. LEAVE REGISTER (CAUTION ON 4TH+ PERSON & 3RD+ PERSON ON HOLIDAYS) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1701,7 +1729,9 @@ function getConflictedLeaveIds() {
   const activeLeaves = state.leaves.filter(l => l.status === 'Approved' || l.status === 'Pending')
     .slice().sort((a, b) => a.applyDate.localeCompare(b.applyDate) || a.id.localeCompare(b.id));
 
+  const holidayDates = new Set(state.holidays.map(h => h.date));
   const dateApplicants = {};
+
   activeLeaves.forEach(l => {
     const d1 = new Date(l.from); const d2 = new Date(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
@@ -1711,14 +1741,24 @@ function getConflictedLeaveIds() {
     }
   });
 
-  const conflictedIds = new Set();
+  const conflictedIds = new Map(); // id -> caution type
   activeLeaves.forEach(l => {
     let consecutiveConflict = 0;
     let maxConsecutive = 0;
+    let holidayConflict = false;
+
     const d1 = new Date(l.from); const d2 = new Date(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
       const ds = toLocalISO(dt);
       const appIndex = dateApplicants[ds].indexOf(l.id);
+      const isHoliday = holidayDates.has(ds);
+
+      // Holiday Rule: 3rd applicant onward (appIndex >= 2) gets caution
+      if (isHoliday && appIndex >= 2) {
+        holidayConflict = true;
+      }
+
+      // Normal Rule: 4th applicant onward (appIndex >= 3)
       if (appIndex >= 3) {
         consecutiveConflict++;
         if (consecutiveConflict > maxConsecutive) maxConsecutive = consecutiveConflict;
@@ -1726,8 +1766,11 @@ function getConflictedLeaveIds() {
         consecutiveConflict = 0;
       }
     }
-    if (maxConsecutive > 2) {
-      conflictedIds.add(l.id);
+
+    if (holidayConflict) {
+      conflictedIds.set(l.id, 'holiday');
+    } else if (maxConsecutive > 2) {
+      conflictedIds.set(l.id, 'normal');
     }
   });
 
@@ -1835,7 +1878,7 @@ function renderLeaves(){
   const q = ($('leaveSearch')?.value || '').toLowerCase();
   const monthF = ($('leaveMonthFilter')?.value);
   const statusF = ($('leaveStatusFilter')?.value);
-  const conflictedIds = getConflictedLeaveIds();
+  const conflictedMap = getConflictedLeaveIds();
  
   let displayList = state.leaves.filter(l => {
     const e = state.employees.find(x => x.id === l.empId);
@@ -1867,18 +1910,25 @@ function renderLeaves(){
   $('leaveBody').innerHTML = displayList.length ? displayList.map((l, i) => {
     const e = state.employees.find(x => x.id === l.empId) || {};
     const hasPermission = currentUser && (currentUser.type === 'ADMIN' || currentUser.id === l.empId);
-    const isConflict = conflictedIds.has(l.id);
+    const conflictType = conflictedMap.get(l.id);
+
+    let conflictBadge = '';
+    if (conflictType === 'holiday') {
+      conflictBadge = '<span class="tag rejected" style="font-size:9px; margin-left:3px; background:#fff1f2; color:#be123c; border:1px solid #fca5a5;" title="3rd+ employee applying for leave on scheduled holiday">⚠️ 3rd+ Staff Holiday Caution</span>';
+    } else if (conflictType === 'normal') {
+      conflictBadge = '<span class="tag rejected" style="font-size:9px; margin-left:3px;" title="4th+ employee overlapping leave >2 days">⚠️ 4th+ Staff Overlap Caution</span>';
+    }
 
     const actionButtons = hasPermission 
       ? `<button class="btn" onclick="openLeave('${l.id}')">Edit</button> <button class="btn danger" onclick="removeLeave('${l.id}')">Del</button>`
       : `<span class="small" style="color:var(--muted); font-weight:600;">🔒 Restricted</span>`;
 
-    return `<tr class="${isConflict ? 'conflict-row' : ''}">
+    return `<tr class="${conflictType ? 'conflict-row' : ''}">
       <td>${i + 1}</td>
       <td>${formatDateDisplay(l.applyDate)}</td>
       <td style="text-align:left;font-weight:600">
         ${esc(e.name || 'Unknown')}
-        ${isConflict ? '<span class="tag rejected" style="font-size:9px; margin-left:3px;" title="4th+ employee overlapping leave >2 days">⚠️ 4th+ Staff Overlap Caution</span>' : ''}
+        ${conflictBadge}
       </td>
       <td>${formatDateDisplay(l.from)}</td>
       <td>${formatDateDisplay(l.to)}</td>
@@ -1974,10 +2024,10 @@ function populateHolidayPicker() {
   const ySel = $('holidayYearPicker');
   
   const distinctHolidays = [...new Set(state.holidays.map(h => h.name))];
-  sel.innerHTML = '<option value="">All Festivals / Holidays (All Recorded)</option>' + 
+  sel.innerHTML = '<option value="">All Festivals / Holidays</option>' + 
     distinctHolidays.map(name => `<option value="${name}">${name}</option>`).join('');
 
-  // Collect All Distinct Years available in data
+  // Collect All Distinct Years available across all data
   const distinctYears = new Set();
   state.holidays.forEach(h => distinctYears.add(h.date.slice(0,4)));
   Object.keys(state.finalizedRotas).forEach(m => distinctYears.add(m.slice(0,4)));
@@ -2186,7 +2236,6 @@ function renderHubAnalytics() {
   });
 }
 
-
 /* ==== DOWNLOAD / PDF ==== */
 function downloadPDF(containerId, filenamePrefix){
   const element = document.getElementById(containerId);
@@ -2203,7 +2252,6 @@ function downloadCSV(type) {
   let url = URL.createObjectURL(blob); let a = document.createElement("a");
   a.href = url; a.download = `Rota_${month}.csv`; a.click();
 }
-
 
 /* ==== DASHBOARD QUICK ANALYTICS ==== */
 function renderHistory(){$('historyBody').innerHTML=state.history.map(h=>`<tr><td style="white-space:nowrap">${new Date(h.time).toLocaleString('en-IN')}</td><td style="text-align:left"><b>${esc(h.action)}</b></td><td style="text-align:left">${esc(h.details)}</td></tr>`).join('')||`<tr><td colspan="3" class="empty">No history yet.</td></tr>`}
@@ -2283,13 +2331,18 @@ function renderDashboard(){
        list.forEach((item, idx) => {
           const shiftCol = idx === 0 ? `<td rowspan="${list.length}" style="background:#f8fafc; font-weight:700; border-right:1px solid var(--line); color:#1e293b;"><span class="tag" style="background:${sm.bg};color:${sm.txt};margin-bottom:3px;">${sm.key}</span><br>${sm.label}</td>` : '';
           const isDouble = item.full.includes('+');
+          let badgeContent = item.full;
+          if (isDouble) {
+            const parts = item.full.split('+');
+            badgeContent = `<span class="d-top">${parts[0]}</span><span class="d-bot">+${parts[1]}</span>`;
+          }
 
           tableHtml += `
             <tr>
               ${shiftCol}
               <td><b style="color:var(--muted)">${esc(item.full.replace(/[^0-9]/g,''))}</b></td>
               <td style="font-weight:600">${esc(item.emp.name)}</td>
-              <td><span class="tag ${isDouble ? 'double-shift' : ''}" style="background-color:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${item.full}</span></td>
+              <td><span class="tag ${isDouble?'double-shift':''}" style="background-color:${sm.bg};color:${sm.txt};border:1px solid ${sm.txt}40">${badgeContent}</span></td>
               <td><span class="tag approved">On Duty</span></td>
             </tr>
           `;

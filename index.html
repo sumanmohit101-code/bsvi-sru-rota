@@ -159,7 +159,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
     
     <div class="dash-grid">
-       <!-- Left Side: Today's Deployment Table -->
        <div style="display:flex; flex-direction:column; gap:14px;">
           <div class="panel" style="margin-bottom:0;">
              <div class="panel-head">
@@ -194,7 +193,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
        </div>
        
-       <!-- Right Side: Analytics Quick View Chart -->
        <div class="panel" style="margin-bottom:0;">
           <div class="panel-head">
              <h2>Manpower Analytics (Quick View)</h2>
@@ -285,20 +283,21 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register (Without Status Column) -->
+  <!-- 3. Leave Register (ALL Leaves Default + Oldest Applicant First) -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Leave Register (Applications & Conflict Tracking)</h2>
         <div class="toolbar">
           <input id="leaveSearch" placeholder="Search Employee...">
-          <input type="month" id="leaveMonthFilter" title="Filter leaves by month">
+          <input type="month" id="leaveMonthFilter" title="Filter leaves by month (Optional)">
+          <button class="btn" onclick="$('leaveMonthFilter').value=''; renderLeaves();" title="View all recorded leaves">All Months</button>
           <button class="btn primary" onclick="openLeave()">+ Apply Leave</button>
         </div>
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Leave Conflict Policy:</b> Overlapping leaves of more than 2 days are monitored. If 4 or more staff are on leave simultaneously, conflict cautions are flagged automatically.
+          ℹ️ <b>Leave Order Policy:</b> Leaves are arranged in chronological order by <b>Apply Date</b> (Earliest applicant first). Overlapping leaves (>2 days with 4+ staff) are flagged automatically.
         </div>
       </div>
       <div class="table-wrap">
@@ -306,7 +305,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <thead>
             <tr>
               <th>S.No</th>
-              <th class="sortable" onclick="sortLeave('applyDate')">Apply Date ↕</th>
+              <th class="sortable" onclick="sortLeave('applyDate')">Apply Date <span id="sortIcon_applyDate">▲</span></th>
               <th class="sortable" onclick="sortLeave('emp')" style="text-align:left">Employee Name ↕</th>
               <th class="sortable" onclick="sortLeave('from')">Leave From ↕</th>
               <th class="sortable" onclick="sortLeave('to')">Leave To ↕</th>
@@ -510,12 +509,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <li><b>Priority 2 (Single-Role PIC):</b> Dedicated single-role PICs receive their designated station.</li>
           <li><b>Priority 3 (Dual-Role Sequence):</b> Multi-role employees follow the sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b>.</li>
         </ul>
-
-        <h3 style="color:#1e293b;">3. Multi-User Access & PIN Security</h3>
-        <p>
-          • <b>Admin (Default PIN: 1234):</b> Full administrative access to edit Master Data, finalize rota, and reset PINs.<br>
-          • <b>Employees (Default PIN: 0000):</b> Individual access to apply for leave and manage personal records.
-        </p>
       </div>
     </div>
   </section>
@@ -678,6 +671,9 @@ let rotaSummaryScope = 'MONTH';
 let activeLeaveTab = 'all';
 let isCloudLoaded = false;
 
+// DEFAULT SORT: Oldest apply date first (Ascending)
+let leaveSort = { key: 'applyDate', desc: false };
+
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
 
@@ -730,7 +726,7 @@ function makeElementDraggable(el, handle) {
   }
 }
 
-/* ==== MULTI-PC CLOUD SYNC (PERMANENT SHEET SYNC) ==== */
+/* ==== MULTI-PC CLOUD SYNC ==== */
 async function fetchCloudData() {
   const status = $('syncStatus');
   if(status) { status.textContent = 'Connecting...'; status.className = 'sync'; }
@@ -786,7 +782,7 @@ async function fetchCloudData() {
   }
 }
 
-/* ==== LOGIN GATE & AUTHENTICATION ==== */
+/* ==== AUTHENTICATION ==== */
 function openLoginModal(isForced = false) {
   const selectGroup = $('loginEmpOptions');
   selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
@@ -939,7 +935,6 @@ function showPage(id){
   if(id==='history')renderHistory();
   if(id==='rotaHistory') { updateHistoryDropdown(); generateHistoryRota(); }
   if(id==='dashboard') { generateRota(false); renderDashboard(); }
-  if(id==='guide') { }
 }
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
@@ -949,7 +944,9 @@ let currentY = new Date().getFullYear();
 let currentM = ('0' + (new Date().getMonth() + 1)).slice(-2);
 $('rotaMonth').value = `${currentY}-${currentM}`;
 $('edMonthFilter').value = `${currentY}-${currentM}`;
-$('leaveMonthFilter').value = `${currentY}-${currentM}`;
+
+// Leave register month filter is empty by default so all leaves are visible
+if ($('leaveMonthFilter')) $('leaveMonthFilter').value = '';
 
 function normalizeRoles(v){
   const a=String(v||'').split(',').map(x=>x.trim()).filter(Boolean);
@@ -1719,11 +1716,18 @@ function renderExtraDuties(){
 $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
-/* ==== 3. LEAVE REGISTER (WITHOUT STATUS COLUMN) ==== */
-let leaveSort = { key: 'applyDate', desc: true };
+/* ==== 3. LEAVE REGISTER (ALL MONTHS DEFAULT + OLDEST APPLICANT FIRST) ==== */
 function sortLeave(key) {
-  if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
-  else { leaveSort.key = key; leaveSort.desc = (key === 'applyDate' || key === 'from'); }
+  if (leaveSort.key === key) { 
+    leaveSort.desc = !leaveSort.desc; 
+  } else { 
+    leaveSort.key = key; 
+    leaveSort.desc = false; 
+  }
+  const icon = $('sortIcon_applyDate');
+  if (icon) {
+    icon.textContent = leaveSort.key === 'applyDate' ? (leaveSort.desc ? '▼' : '▲') : '↕';
+  }
   renderLeaves();
 }
 
@@ -1799,7 +1803,6 @@ function openLeave(id=null){
                      <input type="hidden" id="l_emp" value="${currentUser.id}">`;
   }
 
-  // STATUS DROPDOWN COMPLETELY REMOVED FROM APPLY MODAL
   $('modalBody').innerHTML = `<div class="form-grid">
     <div class="field"><label>Employee</label>${empSelectHtml}</div>
     <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
@@ -1816,7 +1819,7 @@ function openLeave(id=null){
     l.from = $('l_from').value;
     l.to = $('l_to').value;
     l.reason = $('l_reason').value.trim();
-    l.status = 'Approved'; // Automatically approved and live
+    l.status = 'Approved';
 
     if (!l.from || !l.to) return alert('Select dates.');
     if (l.to < l.from) return alert('To date cannot be before From date.');
@@ -1866,9 +1869,10 @@ function removeLeave(id){
 
 function renderLeaves(){
   const q = ($('leaveSearch')?.value || '').toLowerCase();
-  const monthF = ($('leaveMonthFilter')?.value);
+  const monthF = ($('leaveMonthFilter')?.value || '');
   const conflictedMap = getConflictedLeaveIds();
  
+  // If month filter is empty, ALL leaves are matched
   let displayList = state.leaves.filter(l => {
     const e = state.employees.find(x => x.id === l.empId);
     let matchQ = (e?.name + ' ' + e?.code).toLowerCase().includes(q);
@@ -1881,21 +1885,21 @@ function renderLeaves(){
     return matchQ && matchM;
   });
  
+  // Chronological sorting (Earliest Applicant first when desc is false)
   displayList.sort((a, b) => {
     let valA, valB;
     if (leaveSort.key === 'emp') {
       valA = (state.employees.find(x => x.id === a.empId)?.name || '').toLowerCase();
       valB = (state.employees.find(x => x.id === b.empId)?.name || '').toLowerCase();
     } else {
-      valA = a[leaveSort.key];
-      valB = b[leaveSort.key];
+      valA = a[leaveSort.key] || '';
+      valB = b[leaveSort.key] || '';
     }
     if (valA < valB) return leaveSort.desc ? 1 : -1;
     if (valA > valB) return leaveSort.desc ? -1 : 1;
-    return 0;
+    return (a.id || '').localeCompare(b.id || '');
   });
  
-  // STATUS COLUMN REMOVED FROM TABLE DISPLAY
   $('leaveBody').innerHTML = displayList.length ? displayList.map((l, i) => {
     const e = state.employees.find(x => x.id === l.empId) || {};
     const hasPermission = currentUser && (currentUser.type === 'ADMIN' || currentUser.id === l.empId);
@@ -1927,7 +1931,8 @@ function renderLeaves(){
     </tr>`;
   }).join('') : `<tr><td colspan="8" class="empty">No leave records match the filters.</td></tr>`;
 }
-$('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves;
+$('leaveSearch').oninput=renderLeaves; 
+if ($('leaveMonthFilter')) $('leaveMonthFilter').onchange=renderLeaves;
 
 /* ==== 6. LEAVE RECORD ==== */
 function toggleFlViewInputs() {
@@ -2399,7 +2404,7 @@ function renderDashQuickChart() {
 /* ==== BACKEND SYNC (WITH SAFEGUARD) ==== */
 let syncTimer=null;
 function scheduleSync(){
-  if(!isCloudLoaded) return; // Never overwrite sheet with stale local data
+  if(!isCloudLoaded) return;
   clearTimeout(syncTimer);
   syncTimer=setTimeout(()=>syncAll(),1500);
 }

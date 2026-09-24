@@ -30,7 +30,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 .conflict-row{background:#fff1f2 !important;}
 
-/* Compact Grid */
+/* Screen-Fit Compact Rota Grid Styles */
 .rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
 .rota-table th, .rota-table td { padding: 3px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; overflow: hidden; }
 .rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 108px; min-width: 105px; max-width: 110px; padding: 3px 5px; font-weight: 700; border-right: 2px solid #cbd5e1; text-overflow: ellipsis; overflow: hidden; }
@@ -54,6 +54,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   line-height: 1;
 }
 
+/* Double Duty Badge Optimization */
 .shift-cell .tag.double-shift {
   display: flex !important;
   flex-direction: column !important;
@@ -82,6 +83,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .color-config input{width:100%;height:24px;padding:2px;cursor:pointer}
 .quick-btn{padding:5px 7px; border-radius:5px; border:1px solid var(--line); background:#f8fafc; font-weight:bold; cursor:pointer; font-size:11px;} .quick-btn:hover{background:#e2e8f0;}
 
+/* Dashboard Grids */
 .dash-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:14px; align-items:start;}
 .dash-list{display:flex; flex-direction:column; gap:7px; margin-top:7px;}
 .dash-item{display:flex; justify-content:space-between; padding:7px 9px; background:#f8fafc; border-radius:7px; border:1px solid var(--line); font-size:11.5px;}
@@ -224,7 +226,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 2. Active Rota -->
+  <!-- 2. Active Rota (With Real-Time Dynamic Coverage Check & Sheet Sync) -->
   <section id="rota" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -272,7 +274,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register -->
+  <!-- 3. Leave Register (All Months Visible + Earliest Applicant First + Only Del Button) -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -363,7 +365,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Leave Record (Direct Register + Finalized Rota + Festival Tracker) -->
+  <!-- 6. Leave Record (3 Sub-Tabs: Direct Register + Finalized Rota + Festival Tracker) -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -374,9 +376,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
              <option value="MONTH">By Month</option>
              <option value="YEAR">By Year</option>
            </select>
-           <!-- Dropdown for Finalized Rota months -->
            <select id="flMonthFilter" style="min-width:120px; display:none;"></select>
-           <!-- Standard Month Picker for Direct Register -->
            <input type="month" id="flRegMonthFilter" style="min-width:120px; display:none;" onchange="renderActiveLeaveTab()">
            <input type="number" id="flYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderActiveLeaveTab()" title="Select Year">
            <input id="flSearch" placeholder="Search Employee...">
@@ -399,7 +399,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
 
       <div class="table-wrap">
-        <!-- View 1: Direct from Leave Register (Always accessible) -->
+        <!-- View 1: Direct from Leave Register -->
         <table id="registerLeavesTable">
           <thead><tr>
             <th>Sr. No.</th><th>Date</th><th style="text-align:left">Employee Name</th><th>Shift Code</th><th>Reason</th><th>Apply Date</th><th>Source</th>
@@ -407,7 +407,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <tbody id="registerLeaveBody"></tbody>
         </table>
 
-        <!-- View 2: All Finalized Leaves (From Finalized Rota snapshots) -->
+        <!-- View 2: All Finalized Leaves -->
         <table id="allFinalizedLeavesTable" style="display:none;">
           <thead><tr>
             <th>Sr. No.</th><th>Date</th><th style="text-align:left">Employee Name</th><th>Shift Code</th><th>Status</th><th>Source</th>
@@ -649,7 +649,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 </div>
 
 <script>
-const KEY='sru_rota_v9';
+const KEY='sru_rota_v10';
 const API_URL = 'https://script.google.com/macros/s/AKfycbwcKDNErrUyFudNKfgo-WYidaj907xDW5T6kLOmwP3NU3viVGOs0NMi-B7I3LGpvazCtg/exec';
 
 const defaultColors = {
@@ -678,7 +678,7 @@ if(!state.extraDuties) state.extraDuties = [];
 
 let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
 let rotaSummaryScope = 'MONTH';
-let activeLeaveTab = 'register'; // Default to direct register records
+let activeLeaveTab = 'register';
 let isCloudLoaded = false;
 let leaveSort = { key: 'applyDate', desc: false };
 
@@ -804,7 +804,7 @@ async function fetchCloudData() {
       if (p.pattern) state.pattern = String(p.pattern);
       if (p.colors && Object.keys(p.colors).length) state.colors = Object.assign({}, defaultColors, p.colors);
       if (p.finalizedRotas && Object.keys(p.finalizedRotas).length) state.finalizedRotas = p.finalizedRotas;
-      if (p.overrides && Object.keys(p.overrides).length) state.overrides = p.overrides;
+      if (p.overrides && typeof p.overrides === 'object') state.overrides = p.overrides;
 
       if (p.employees && p.employees.length > 0) {
         state.employees = p.employees;
@@ -1210,7 +1210,7 @@ function buildRotaMatrix(month) {
               empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          // Priority 1: SIC
+          // Priority 1: SIC (Role 3)
           let sicCandidate = empsInShift.find(e => empRoles[e.id].length === 1 && empRoles[e.id][0] === '3');
           if (!sicCandidate) {
               sicCandidate = empsInShift.find(e => empRoles[e.id].includes('3'));
@@ -1535,6 +1535,7 @@ function deleteFinalizedRota() {
   }
 }
 
+/* ==== REAL-TIME DYNAMIC COVERAGE CHECK (SINGLE & DOUBLE DUTY SUPPORT) ==== */
 function renderCoverage(dates, activeEmps, matrix){
   const old=document.getElementById('rotaCoverage'); if(old) old.remove();
   const panel=document.createElement('div'); panel.id='rotaCoverage'; panel.className='panel';
@@ -1542,10 +1543,17 @@ function renderCoverage(dates, activeEmps, matrix){
     const dStr = toLocalISO(d);
     const counts={M:[], E:[], N:[]};
     activeEmps.forEach(e=>{
-      const f = matrix[e.id][dStr].full;
-      const b = f.replace(/[0-9]/g, '');
-      const num = f.replace(/[^0-9]/g, '');
-      if (counts[b] && num) counts[b].push(num);
+      const f = (matrix[e.id]?.[dStr]?.full || '').toUpperCase();
+      // Handle both single shifts (M1) and double shifts (M3+N2, M2+E1)
+      const parts = f.split('+');
+      parts.forEach(part => {
+        part = part.trim();
+        const sh = part.charAt(0); // 'M', 'E', 'N'
+        const role = part.slice(1); // '1', '2', '3'
+        if (counts[sh] && ['1', '2', '3'].includes(role)) {
+          if (!counts[sh].includes(role)) counts[sh].push(role);
+        }
+      });
     });
     const issues=[]; 
     ['M','E','N'].forEach(sh=>{
@@ -1555,7 +1563,7 @@ function renderCoverage(dates, activeEmps, matrix){
   });
   const gaps=checks.reduce((n,x)=>n+x.issues.length,0);
   panel.innerHTML=`<div class="panel-head"><h2>Manpower Coverage Check</h2><span class="tag ${gaps?'rejected':'approved'}">${gaps?'⚠ '+gaps+' gaps':'✓ Full coverage'}</span></div>
-  <div class="panel-body"><div class="small">Ensures roles 1, 2, and 3 are covered across Morning, Evening, and Night.</div>
+  <div class="panel-body"><div class="small">Ensures roles 1, 2, and 3 are covered across Morning, Evening, and Night. Gaps update in real-time as you adjust duties.</div>
   <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Date</th><th>Morning</th><th>Evening</th><th>Night</th></tr></thead><tbody>`+
   checks.map(x=>`<tr><td>${x.d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',weekday:'short'})}</td>`+
     ['M','E','N'].map(sh=>{const miss=x.issues.filter(v=>v.startsWith(sh));return `<td>${miss.length?'<span class="tag rejected">Missing '+esc(miss.join(', '))+'</span>':'<span class="tag approved">OK</span>'}</td>`}).join('')+
@@ -2579,7 +2587,21 @@ function renderDashQuickChart() {
    });
 }
 
-/* ==== BACKEND SYNC (SAFEGUARDED) ==== */
+/* ==== ROTA ACTIVE GRID BUILDER (FOR GOOGLE SHEET SYNC) ==== */
+function getActiveRotaGrid(month) {
+  const { matrix, dates, activeEmps } = buildRotaMatrix(month);
+  const dateHeaders = dates.map(d => toLocalISO(d));
+  const rows = activeEmps.map(e => ({
+    code: e.code,
+    name: e.name,
+    seniority: e.seniority || '',
+    roles: e.roles || '',
+    shifts: dateHeaders.map(ds => matrix[e.id][ds].full)
+  }));
+  return { month, dates: dateHeaders, rows };
+}
+
+/* ==== BACKEND SYNC (SAFEGUARDED & SAVES REAL ADJUSTMENTS) ==== */
 let syncTimer=null;
 function scheduleSync(){
   if(!isCloudLoaded) return;
@@ -2591,10 +2613,14 @@ async function syncAll(){
   const status=$('syncStatus'); 
   if(status) { status.textContent='Syncing…'; status.className='sync'; }
   try{
+    const currentMonth = $('rotaMonth')?.value || '2026-09';
+    const activeRotaGrid = getActiveRotaGrid(currentMonth);
+
     const payload={
         employees:state.employees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
         history:state.history, adminPin:state.adminPin, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
-        colors:state.colors, overrides:state.overrides, rotaMonth: $('rotaMonth')?.value || '2026-08'
+        colors:state.colors, overrides:state.overrides, rotaMonth: currentMonth,
+        activeRotaGrid: activeRotaGrid
     };
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'syncAll',payload})});
     if(status) { status.textContent='✓ Synced · '+new Date().toLocaleTimeString('en-IN'); status.className='sync ok'; }

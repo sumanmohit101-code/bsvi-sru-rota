@@ -139,7 +139,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <button class="btn" style="padding:2px 5px; font-size:10px; display:none;" id="changePinBtn" onclick="openChangePinModal()">🔑 Change PIN</button>
         <button class="btn" style="padding:2px 5px; font-size:10px;" id="loginBtn" onclick="openLoginModal(false)">Login</button>
       </div>
-      <div id="syncStatus" class="sync" style="align-self:center;margin-right:6px;"></div>
+      <div id="syncStatus" class="sync" style="align-self:center;margin-right:6px;">Connecting...</div>
       <button class="btn" onclick="exportData()">Export JSON</button>
       <button class="btn primary" onclick="syncAll()">↥ Sync to Database</button>
     </div>
@@ -154,7 +154,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <div class="value" id="statShift" style="font-size:17px; line-height:1.2; margin-top:6px;">M · E · N</div>
         <div class="sub" id="statShiftSub">Deployment Live</div>
       </div>
-      <div class="card"><div class="label">On Leave Today</div><div class="value" id="statLeave">0</div><div class="sub" style="color:var(--red)">Approved leaves</div></div>
+      <div class="card"><div class="label">On Leave Today</div><div class="value" id="statLeave">0</div><div class="sub" style="color:var(--red)">Registered leaves</div></div>
       <div class="card"><div class="label">Overtime Duties Today</div><div class="value" id="statExtra">0</div><div class="sub" style="color:var(--green)">Double/Holiday/Off</div></div>
     </div>
     
@@ -202,7 +202,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           </div>
           <div class="panel-body">
              <div class="notice" style="margin-bottom:10px;">
-                Current Month Comparison (Approved Leaves vs. Overtime Duties).
+                Current Month Comparison (Leaves vs. Overtime Duties).
              </div>
              <div style="position:relative; height:350px; width:100%;">
                 <canvas id="dashAnalyticsChart"></canvas>
@@ -285,7 +285,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register -->
+  <!-- 3. Leave Register (Without Status Column) -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -293,18 +293,12 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <div class="toolbar">
           <input id="leaveSearch" placeholder="Search Employee...">
           <input type="month" id="leaveMonthFilter" title="Filter leaves by month">
-          <select id="leaveStatusFilter">
-            <option value="">All Statuses</option>
-            <option value="Approved">Approved</option>
-            <option value="Pending">Pending</option>
-            <option value="Rejected">Rejected</option>
-          </select>
           <button class="btn primary" onclick="openLeave()">+ Apply Leave</button>
         </div>
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Leave Conflict Policy:</b> The first 3 applicants on normal dates remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b>. <b>Special Holiday Rule:</b> If the leave period encompasses a scheduled <b>Holiday</b>, conflict caution is triggered starting from the <b>3rd applicant onward</b>.
+          ℹ️ <b>Leave Conflict Policy:</b> Overlapping leaves of more than 2 days are monitored. If 4 or more staff are on leave simultaneously, conflict cautions are flagged automatically.
         </div>
       </div>
       <div class="table-wrap">
@@ -318,7 +312,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
               <th class="sortable" onclick="sortLeave('to')">Leave To ↕</th>
               <th class="sortable" onclick="sortLeave('days')">Days ↕</th>
               <th>Reason</th>
-              <th class="sortable" onclick="sortLeave('status')">Status ↕</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -382,7 +375,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Leave Record (With Multi-Year Festival Tracker) -->
+  <!-- 6. Leave Record -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -414,7 +407,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
 
       <div class="table-wrap">
-        <!-- View 1: All Finalized Leaves -->
         <table id="allFinalizedLeavesTable">
           <thead><tr>
             <th>Sr. No.</th><th>Date</th><th style="text-align:left">Employee Name</th><th>Shift Code</th><th>Status</th><th>Source</th>
@@ -422,7 +414,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
           <tbody id="finalizedLeaveBody"></tbody>
         </table>
 
-        <!-- View 2: Multi-Year Holiday Leaves Tracker -->
         <table id="holidayLeavesTrackerTable" style="display:none;">
           <thead><tr>
             <th>Sr. No.</th><th>Year</th><th>Festival / Holiday Name</th><th>Holiday Date</th><th style="text-align:left">Employee on Leave</th><th>Status</th><th>Source</th>
@@ -433,7 +424,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 7. Dedicated Manpower Analytics Hub -->
+  <!-- 7. Analytics Hub -->
   <section id="analyticsHub" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -452,7 +443,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
          <div class="cards" style="margin-bottom:16px;">
-            <div class="card"><div class="label">Total Approved Leaves</div><div class="value" id="hubStatLeave" style="color:var(--red);">0</div><div class="sub">Total Leave Days</div></div>
+            <div class="card"><div class="label">Total Leaves</div><div class="value" id="hubStatLeave" style="color:var(--red);">0</div><div class="sub">Total Leave Days</div></div>
             <div class="card"><div class="label">Total Overtime Duties</div><div class="value" id="hubStatOT" style="color:var(--green);">0</div><div class="sub">Double/Holiday/Off</div></div>
             <div class="card"><div class="label">Top Overtime Staff</div><div class="value" id="hubStatTopOT" style="font-size:16px; line-height:1.2; margin-top:6px;">—</div><div class="sub">Highest Extra Shifts</div></div>
             <div class="card"><div class="label">Top Leave Staff</div><div class="value" id="hubStatTopLeave" style="font-size:16px; line-height:1.2; margin-top:6px;">—</div><div class="sub">Highest Leave Days</div></div>
@@ -462,7 +453,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
          </div>
          <div class="table-wrap">
             <table>
-              <thead><tr><th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th><th>Total Approved Leaves</th><th>Total Overtime Duties</th></tr></thead>
+              <thead><tr><th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th><th>Total Leaves</th><th>Total Overtime Duties</th></tr></thead>
               <tbody id="hubBreakdownBody"></tbody>
             </table>
          </div>
@@ -501,7 +492,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- System Guide (Full English Restored) -->
+  <!-- System Guide -->
   <section id="guide" class="page">
     <div class="panel">
       <div class="panel-head"><h2>📖 System Guide & Operating Rules</h2></div>
@@ -509,35 +500,21 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <h3 style="color:#1e293b; margin-top:0;">1. Shift Rotation & Single Weekly Off System</h3>
         <p>
           • <b>Continuous Shift Pattern:</b> Follows the continuous 7-day cyclical sequence <b>`E ➔ E ➔ M ➔ M ➔ N ➔ N ➔ O`</b> (2 Evening, 2 Morning, 2 Night, 1 Off).<br>
-          • <b>Weekly Off Synchronization:</b> When an employee's <b>OFF DAY</b> (e.g. <i>Tuesday</i>) is set in Master Data, their 7-day shift cycle aligns directly so that they strictly receive <b>exactly 1 Off per week</b>.
+          • <b>Weekly Off Synchronization:</b> When an employee's <b>OFF DAY</b> is set in Master Data, their 7-day shift cycle aligns directly so that they strictly receive <b>exactly 1 Off per week</b>.
         </p>
 
         <h3 style="color:#1e293b;">2. Smart Role Balancing & Coverage Guarantee</h3>
-        <p>
-          Every shift requires 3 core operational roles (Role 1: BSVI SRU PIC, Role 2: OLD SRU PIC, Role 3: SIC):
-        </p>
+        <p>Every shift requires 3 core operational roles (Role 1: BSVI SRU PIC, Role 2: OLD SRU PIC, Role 3: SIC):</p>
         <ul style="padding-left:20px; margin-top:4px;">
           <li><b>Priority 1 (SIC Allotment):</b> Dedicated SIC staff (Role 3: `M3, E3, N3`) are assigned first.</li>
-          <li><b>Priority 2 (Single-Role PIC):</b> Dedicated single-role PICs (e.g. Role `2` only) receive their designated station.</li>
-          <li><b>Priority 3 (Dual-Role Sequence):</b> Multi-role employees follow the sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b> (1st day: `1`, 2nd day: `2`). If a single-role `2` is present, the dual-role employee automatically shifts to `1` to eliminate station gaps.</li>
+          <li><b>Priority 2 (Single-Role PIC):</b> Dedicated single-role PICs receive their designated station.</li>
+          <li><b>Priority 3 (Dual-Role Sequence):</b> Multi-role employees follow the sequence <b>`E1 ➔ E2 ➔ M1 ➔ M2 ➔ N1 ➔ N2`</b>.</li>
         </ul>
 
-        <h3 style="color:#1e293b;">3. Leave Conflict Policy</h3>
+        <h3 style="color:#1e293b;">3. Multi-User Access & PIN Security</h3>
         <p>
-          • <b>Standard Working Days:</b> The first 3 applicants on any date remain valid. When overlapping leave applications exceed <b>2 consecutive days</b> with <b>4 or more staff on leave</b> simultaneously, the <b>4th applicant onward</b> is flagged with: <b>`⚠️ 4th+ Staff Overlap Caution`</b>.<br>
-          • <b>Special Holiday Rule:</b> If a leave period covers a scheduled <b>Holiday / Festival</b>, stricter staffing limits apply and conflict caution is triggered starting from the <b>3rd applicant onward</b> (**`⚠️ 3rd+ Staff Holiday Overlap Caution`**).
-        </p>
-
-        <h3 style="color:#1e293b;">4. Multi-Year Festival & Holiday Leave Tracking</h3>
-        <p>
-          • The system tracks festival and holiday leaves across <b>All Recorded Years</b> (e.g. Diwali in 2024, 2025, 2026).<br>
-          • Historical records are linked to permanent <b>Finalized Rota Snapshots</b>.
-        </p>
-
-        <h3 style="color:#1e293b;">5. Multi-User Access & PIN Security</h3>
-        <p>
-          • <b>Admin (Default PIN: 1234):</b> Full administrative access to edit Master Data, configure Rota rules, approve leaves, and reset staff PINs.<br>
-          • <b>Employees (Default PIN: 0000):</b> Individual access to apply for leave, manage their own leave requests, and view rosters.
+          • <b>Admin (Default PIN: 1234):</b> Full administrative access to edit Master Data, finalize rota, and reset PINs.<br>
+          • <b>Employees (Default PIN: 0000):</b> Individual access to apply for leave and manage personal records.
         </p>
       </div>
     </div>
@@ -645,7 +622,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   </div>
 </div>
 
-<!-- 📤 Share Rota Modal -->
+<!-- Share Modal -->
 <div class="modal" id="shareModal">
   <div class="modal-card" style="width:400px;">
     <div class="modal-head" style="background:#f8fafc;">
@@ -699,6 +676,7 @@ if(!state.extraDuties) state.extraDuties = [];
 let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
 let rotaSummaryScope = 'MONTH';
 let activeLeaveTab = 'all';
+let isCloudLoaded = false;
 
 const $=id=>document.getElementById(id);
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
@@ -752,33 +730,59 @@ function makeElementDraggable(el, handle) {
   }
 }
 
-/* ==== MULTI-PC CLOUD SYNC ==== */
+/* ==== MULTI-PC CLOUD SYNC (PERMANENT SHEET SYNC) ==== */
 async function fetchCloudData() {
+  const status = $('syncStatus');
+  if(status) { status.textContent = 'Connecting...'; status.className = 'sync'; }
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
     if (data && data.ok && data.payload) {
       const p = data.payload;
+      
       if (p.adminPin) state.adminPin = String(p.adminPin);
-      if (p.employees && p.employees.length) {
-        p.employees.forEach(cloudEmp => {
-           const local = state.employees.find(e => e.id === cloudEmp.id || e.code === cloudEmp.code);
-           if (local) {
-              local.pin = cloudEmp.pin || local.pin || '0000';
-              local.roles = cloudEmp.roles || local.roles;
-              local.weeklyOff = cloudEmp.weeklyOff || local.weeklyOff;
-           } else {
-              state.employees.push(cloudEmp);
-           }
-        });
+      if (p.pattern) state.pattern = String(p.pattern);
+      if (p.colors && Object.keys(p.colors).length) state.colors = Object.assign({}, defaultColors, p.colors);
+      if (p.finalizedRotas && Object.keys(p.finalizedRotas).length) state.finalizedRotas = p.finalizedRotas;
+      if (p.overrides && Object.keys(p.overrides).length) state.overrides = p.overrides;
+
+      if (p.employees && p.employees.length > 0) {
+        state.employees = p.employees;
       }
+      if (p.leaves && Array.isArray(p.leaves)) {
+        state.leaves = p.leaves;
+      }
+      if (p.holidays && Array.isArray(p.holidays)) {
+        state.holidays = p.holidays;
+      }
+      if (p.extraDuties && Array.isArray(p.extraDuties)) {
+        state.extraDuties = p.extraDuties;
+      }
+
+      isCloudLoaded = true;
       save();
+
+      if(status) {
+        status.textContent = '✓ Cloud Connected · ' + new Date().toLocaleTimeString('en-IN');
+        status.className = 'sync ok';
+      }
+
       updateUserUI();
       renderEmployeeData();
+      renderLeaves();
+      renderHolidays();
+      renderExtraDuties();
+      generateRota(false);
       renderDashboard();
+      updateHistoryDropdown();
     }
   } catch(e) {
     console.log("Offline mode or cloud fetch error", e);
+    isCloudLoaded = true;
+    if(status) {
+      status.textContent = '⚠ Offline Mode';
+      status.className = 'sync';
+    }
   }
 }
 
@@ -935,7 +939,7 @@ function showPage(id){
   if(id==='history')renderHistory();
   if(id==='rotaHistory') { updateHistoryDropdown(); generateHistoryRota(); }
   if(id==='dashboard') { generateRota(false); renderDashboard(); }
-  if(id==='guide') { /* System Guide page */ }
+  if(id==='guide') { }
 }
 
 document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
@@ -1072,8 +1076,7 @@ function removeEmployee(id){
 }
 $('empDataSearch').oninput=renderEmployeeData;
 
-
-/* ==== SMART ROTA ENGINE WITH DUAL ROLE E1-E2-M1-M2-N1-N2 SEQUENCE ==== */
+/* ==== SMART ROTA ENGINE ==== */
 function dateRange(month){
  const [y,m]=month.split('-').map(Number),end=new Date(y,m,0),a=[];
  for(let d=1;d<=end.getDate();d++)a.push(new Date(y,m-1,d));
@@ -1098,7 +1101,7 @@ function buildRotaMatrix(month) {
           let base = 'O';
           let cycleDay = 0;
 
-          const isLeave = state.leaves.some(l => l.empId === e.id && l.status === 'Approved' && l.from <= dStr && dStr <= l.to);
+          const isLeave = state.leaves.some(l => l.empId === e.id && l.status !== 'Rejected' && l.from <= dStr && dStr <= l.to);
           if (isLeave) {
               base = 'L';
               cycleDay = 0;
@@ -1194,7 +1197,7 @@ function buildRotaMatrix(month) {
           });
       });
 
-      // Apply Manual Overrides
+      // Apply Overrides
       activeEmps.forEach(e => {
           if (matrix[e.id][dStr].override) {
               const ov = matrix[e.id][dStr].override.toUpperCase();
@@ -1216,7 +1219,7 @@ function getStyleForCode(fullCode) {
   return { bg: state.colors[`${base}_bg`] || '#f1f5f9', txt: state.colors[`${base}_txt`] || '#000' };
 }
 
-/* ==== EMPLOYEE SUMMARY CALCULATOR FOR ROTA COLUMNS ==== */
+/* ==== EMPLOYEE SUMMARY CALCULATOR ==== */
 function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
   let leaveCount = 0;
   let edCount = 0;
@@ -1238,7 +1241,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
         }
       }
     });
-    state.leaves.filter(l => l.empId === empId && l.status === 'Approved').forEach(l => {
+    state.leaves.filter(l => l.empId === empId && l.status !== 'Rejected').forEach(l => {
       const d1 = new Date(l.from); const d2 = new Date(l.to);
       for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
         const dStr = toLocalISO(dt);
@@ -1255,7 +1258,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
         row.shifts.forEach(sh => { if (sh.full === 'L') leaveCount++; });
       }
     });
-    state.leaves.filter(l => l.empId === empId && l.status === 'Approved').forEach(l => {
+    state.leaves.filter(l => l.empId === empId && l.status !== 'Rejected').forEach(l => {
       const d1 = new Date(l.from); const d2 = new Date(l.to);
       for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
         const dStr = toLocalISO(dt);
@@ -1343,7 +1346,7 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (DRAGGABLE) ==== */
+/* ==== CELL EDIT MODAL ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
@@ -1386,7 +1389,7 @@ function applyCellOverride(val) {
 /* ==== ROTA FINALIZATION ==== */
 function finalizeRota() {
    const month = $('rotaMonth').value;
-   if(!confirm(`Finalize Rota for ${month}? This saves an immutable official snapshot and links Dashboard & Reports.`)) return;
+   if(!confirm(`Finalize Rota for ${month}? This saves an official snapshot.`)) return;
    
    const { matrix, dates, activeEmps } = buildRotaMatrix(month);
    const snapshot = activeEmps.map(e => {
@@ -1405,7 +1408,7 @@ function finalizeRota() {
    updateHistoryDropdown();
    renderDashboard();
    renderFinalizedLeaves();
-   alert(`Rota for ${month} finalized successfully! All Overtime Duties & Leaves for this month are now locked.`);
+   alert(`Rota for ${month} finalized successfully & saved!`);
 }
 
 function generateHistoryRota() {
@@ -1454,7 +1457,7 @@ $('historyMonthSelect').onchange = generateHistoryRota;
 
 function deleteFinalizedRota() {
   const month = $('historyMonthSelect').value;
-  if(!month || !state.finalizedRotas[month]) return alert('Select a finalized rota first.');
+  if(!month || !state.finalizedRotas[month]) return alert('Select a finalized month first.');
   if(confirm(`Permanently delete snapshot for ${month}?`)) {
      delete state.finalizedRotas[month];
      save(); log('Finalized Rota Deleted', month); scheduleSync();
@@ -1482,7 +1485,7 @@ function renderCoverage(dates, activeEmps, matrix){
   });
   const gaps=checks.reduce((n,x)=>n+x.issues.length,0);
   panel.innerHTML=`<div class="panel-head"><h2>Manpower Coverage Check</h2><span class="tag ${gaps?'rejected':'approved'}">${gaps?'⚠ '+gaps+' gaps':'✓ Full coverage'}</span></div>
-  <div class="panel-body"><div class="small">Ensures roles 1 (BSVI SRU), 2 (OLD SRU), and 3 (SIC) are fully covered across Morning, Evening, and Night.</div>
+  <div class="panel-body"><div class="small">Ensures roles 1, 2, and 3 are covered across Morning, Evening, and Night.</div>
   <div class="table-wrap" style="margin-top:10px"><table><thead><tr><th>Date</th><th>Morning</th><th>Evening</th><th>Night</th></tr></thead><tbody>`+
   checks.map(x=>`<tr><td>${x.d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',weekday:'short'})}</td>`+
     ['M','E','N'].map(sh=>{const miss=x.issues.filter(v=>v.startsWith(sh));return `<td>${miss.length?'<span class="tag rejected">Missing '+esc(miss.join(', '))+'</span>':'<span class="tag approved">OK</span>'}</td>`}).join('')+
@@ -1490,7 +1493,7 @@ function renderCoverage(dates, activeEmps, matrix){
   document.querySelector('#rota .panel').after(panel);
 }
 
-/* ==== 📤 SHARE ROTA VIA WHATSAPP / TELEGRAM / COPY ==== */
+/* ==== SHARE MODAL ==== */
 let currentShareType = 'active';
 
 function getRotaShareText(type) {
@@ -1500,13 +1503,13 @@ function getRotaShareText(type) {
 
   if (type === 'history' && state.finalizedRotas[month]) {
      const snap = state.finalizedRotas[month];
-     text += `*Finalized Team Shift Schedule:*\n`;
+     text += `*Finalized Shift Schedule:*\n`;
      snap.snapshot.forEach(row => {
         text += `• *${row.name}*: ${row.shifts.map(s=>s.full).join(' ')}\n`;
      });
   } else {
      const { matrix, dates, activeEmps } = buildRotaMatrix(month);
-     text += `*Active Team Shift Schedule:*\n`;
+     text += `*Active Shift Schedule:*\n`;
      activeEmps.forEach(e => {
         const shifts = dates.map(d => matrix[e.id][toLocalISO(d)].full).join(' ');
         text += `• *${e.name}*: ${shifts}\n`;
@@ -1518,7 +1521,7 @@ function getRotaShareText(type) {
 function openShareModal(type) {
   currentShareType = type;
   const month = type === 'history' ? $('historyMonthSelect').value : $('rotaMonth').value;
-  if (type === 'history' && !month) return alert('Select a finalized month first.');
+  if (type === 'history' && !month) return alert('Select a month first.');
   
   $('sharePreviewSummary').innerHTML = `Ready to share shift schedule for <b>${month}</b>.`;
   $('shareModal').classList.add('show');
@@ -1716,8 +1719,7 @@ function renderExtraDuties(){
 $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
-
-/* ==== 3. LEAVE REGISTER (CAUTION ON 4TH+ PERSON & 3RD+ PERSON ON HOLIDAYS) ==== */
+/* ==== 3. LEAVE REGISTER (WITHOUT STATUS COLUMN) ==== */
 let leaveSort = { key: 'applyDate', desc: true };
 function sortLeave(key) {
   if (leaveSort.key === key) { leaveSort.desc = !leaveSort.desc; } 
@@ -1726,7 +1728,7 @@ function sortLeave(key) {
 }
 
 function getConflictedLeaveIds() {
-  const activeLeaves = state.leaves.filter(l => l.status === 'Approved' || l.status === 'Pending')
+  const activeLeaves = state.leaves.filter(l => l.status !== 'Rejected')
     .slice().sort((a, b) => a.applyDate.localeCompare(b.applyDate) || a.id.localeCompare(b.id));
 
   const holidayDates = new Set(state.holidays.map(h => h.date));
@@ -1741,7 +1743,7 @@ function getConflictedLeaveIds() {
     }
   });
 
-  const conflictedIds = new Map(); // id -> caution type
+  const conflictedIds = new Map();
   activeLeaves.forEach(l => {
     let consecutiveConflict = 0;
     let maxConsecutive = 0;
@@ -1753,12 +1755,10 @@ function getConflictedLeaveIds() {
       const appIndex = dateApplicants[ds].indexOf(l.id);
       const isHoliday = holidayDates.has(ds);
 
-      // Holiday Rule: 3rd applicant onward (appIndex >= 2) gets caution
       if (isHoliday && appIndex >= 2) {
         holidayConflict = true;
       }
 
-      // Normal Rule: 4th applicant onward (appIndex >= 3)
       if (appIndex >= 3) {
         consecutiveConflict++;
         if (consecutiveConflict > maxConsecutive) maxConsecutive = consecutiveConflict;
@@ -1783,7 +1783,7 @@ function openLeave(id=null){
   const isEdit = !!id;
   const l = isEdit 
     ? state.leaves.find(x => x.id === id) 
-    : { id: 'L' + Date.now(), empId: currentUser.type === 'ADMIN' ? (state.employees[0]?.id || '') : currentUser.id, from: '', to: '', type: 'CL', reason: '', status: 'Pending', applyDate: toLocalISO(new Date()) };
+    : { id: 'L' + Date.now(), empId: currentUser.type === 'ADMIN' ? (state.employees[0]?.id || '') : currentUser.id, from: '', to: '', type: 'CL', reason: '', status: 'Approved', applyDate: toLocalISO(new Date()) };
 
   if (isEdit && currentUser.type !== 'ADMIN' && l.empId !== currentUser.id) {
     return alert('Permission Denied! You can only edit your own leave requests.');
@@ -1799,25 +1799,16 @@ function openLeave(id=null){
                      <input type="hidden" id="l_emp" value="${currentUser.id}">`;
   }
 
-  let statusHtml = '';
-  if (currentUser.type === 'ADMIN') {
-    statusHtml = `<select id="l_status"><option>Pending</option><option>Approved</option><option>Rejected</option></select>`;
-  } else {
-    statusHtml = `<input id="l_status_display" value="${l.status || 'Pending'}" disabled style="background:#f1f5f9;">
-                  <input type="hidden" id="l_status" value="${l.status || 'Pending'}">`;
-  }
-
+  // STATUS DROPDOWN COMPLETELY REMOVED FROM APPLY MODAL
   $('modalBody').innerHTML = `<div class="form-grid">
     <div class="field"><label>Employee</label>${empSelectHtml}</div>
     <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
     <div class="field"><label>To Date</label><input id="l_to" type="date" value="${esc(l.to)}"></div>
     <div class="field" style="grid-column:1/-1"><label>Reason</label><input id="l_reason" value="${esc(l.reason)}" placeholder="Reason for leave"></div>
-    <div class="field"><label>Status</label>${statusHtml}</div>
   </div>`;
 
   if (currentUser.type === 'ADMIN') {
     $('l_emp').value = l.empId;
-    $('l_status').value = l.status;
   }
 
   $('modalSave').onclick = () => {
@@ -1825,7 +1816,7 @@ function openLeave(id=null){
     l.from = $('l_from').value;
     l.to = $('l_to').value;
     l.reason = $('l_reason').value.trim();
-    l.status = $('l_status').value;
+    l.status = 'Approved'; // Automatically approved and live
 
     if (!l.from || !l.to) return alert('Select dates.');
     if (l.to < l.from) return alert('To date cannot be before From date.');
@@ -1833,14 +1824,13 @@ function openLeave(id=null){
     const d1 = new Date(l.from);
     const d2 = new Date(l.to);
     l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
-
-    l.applyDate = toLocalISO(new Date());
+    l.applyDate = l.applyDate || toLocalISO(new Date());
 
     if (!isEdit) {
       state.leaves.push(l);
       log('Leave applied', `By ${currentUser.name}: ${l.from} to ${l.to}`);
     } else {
-      log('Leave updated', `${l.id} by ${currentUser.name} on ${l.applyDate}`);
+      log('Leave updated', `${l.id} by ${currentUser.name}`);
     }
 
     save();
@@ -1877,20 +1867,18 @@ function removeLeave(id){
 function renderLeaves(){
   const q = ($('leaveSearch')?.value || '').toLowerCase();
   const monthF = ($('leaveMonthFilter')?.value);
-  const statusF = ($('leaveStatusFilter')?.value);
   const conflictedMap = getConflictedLeaveIds();
  
   let displayList = state.leaves.filter(l => {
     const e = state.employees.find(x => x.id === l.empId);
     let matchQ = (e?.name + ' ' + e?.code).toLowerCase().includes(q);
-    let matchS = statusF ? l.status === statusF : true;
     let matchM = true;
     if (monthF) {
       const monthStart = monthF + '-01';
       const monthEnd = monthF + '-31';
       matchM = (l.from <= monthEnd && l.to >= monthStart);
     }
-    return matchQ && matchS && matchM;
+    return matchQ && matchM;
   });
  
   displayList.sort((a, b) => {
@@ -1907,6 +1895,7 @@ function renderLeaves(){
     return 0;
   });
  
+  // STATUS COLUMN REMOVED FROM TABLE DISPLAY
   $('leaveBody').innerHTML = displayList.length ? displayList.map((l, i) => {
     const e = state.employees.find(x => x.id === l.empId) || {};
     const hasPermission = currentUser && (currentUser.type === 'ADMIN' || currentUser.id === l.empId);
@@ -1934,15 +1923,13 @@ function renderLeaves(){
       <td>${formatDateDisplay(l.to)}</td>
       <td><b>${l.days || 1}</b></td>
       <td>${esc(l.reason)}</td>
-      <td><span class="tag ${l.status.toLowerCase()}">${esc(l.status)}</span></td>
       <td>${actionButtons}</td>
     </tr>`;
-  }).join('') : `<tr><td colspan="9" class="empty">No leave records match the filters.</td></tr>`;
+  }).join('') : `<tr><td colspan="8" class="empty">No leave records match the filters.</td></tr>`;
 }
-$('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves; $('leaveStatusFilter').onchange=renderLeaves;
+$('leaveSearch').oninput=renderLeaves; $('leaveMonthFilter').onchange=renderLeaves;
 
-
-/* ==== 6. LEAVE RECORD & MULTI-YEAR FESTIVAL TRACKER ==== */
+/* ==== 6. LEAVE RECORD ==== */
 function toggleFlViewInputs() {
   const type = $('flViewType').value;
   if (type === 'ALL') {
@@ -2027,7 +2014,6 @@ function populateHolidayPicker() {
   sel.innerHTML = '<option value="">All Festivals / Holidays</option>' + 
     distinctHolidays.map(name => `<option value="${name}">${name}</option>`).join('');
 
-  // Collect All Distinct Years available across all data
   const distinctYears = new Set();
   state.holidays.forEach(h => distinctYears.add(h.date.slice(0,4)));
   Object.keys(state.finalizedRotas).forEach(m => distinctYears.add(m.slice(0,4)));
@@ -2051,7 +2037,6 @@ function renderHolidayLeaves() {
      const hYear = h.date.slice(0, 4);
      const hMonth = h.date.slice(0, 7);
 
-     // 1. Check in Finalized Rotas
      if (state.finalizedRotas[hMonth]) {
         const snap = state.finalizedRotas[hMonth];
         const dayIdx = snap.dates.findIndex(ds => toLocalISO(ds) === h.date);
@@ -2069,8 +2054,7 @@ function renderHolidayLeaves() {
            });
         }
      } else {
-        // 2. Check in Active Leave Applications
-        state.leaves.filter(l => l.status === 'Approved' && l.from <= h.date && h.date <= l.to).forEach(l => {
+        state.leaves.filter(l => l.status !== 'Rejected' && l.from <= h.date && h.date <= l.to).forEach(l => {
            const e = state.employees.find(x => x.id === l.empId);
            results.push({
               year: hYear,
@@ -2098,14 +2082,13 @@ function renderHolidayLeaves() {
        <td><span class="tag rejected" style="font-weight:800;">Holiday Leave</span></td>
        <td><span class="small" style="color:var(--muted);">${r.source}</span></td>
      </tr>
-  `) : `<tr><td colspan="7" class="empty">No employees took leave on selected festival/holiday in ${selectedYear==='ALL'?'any recorded year':selectedYear}.</td></tr>`;
+  `) : `<tr><td colspan="7" class="empty">No employees took leave on selected holiday in ${selectedYear==='ALL'?'any recorded year':selectedYear}.</td></tr>`;
 }
 
 if($('flMonthFilter')) $('flMonthFilter').onchange = renderFinalizedLeaves;
 if($('flSearch')) $('flSearch').oninput = () => { if(activeLeaveTab==='all') renderFinalizedLeaves(); else renderHolidayLeaves(); };
 
-
-/* ==== 7. DEDICATED MANPOWER ANALYTICS HUB ==== */
+/* ==== 7. MANPOWER ANALYTICS HUB ==== */
 function toggleHubViewInputs() {
   const type = $('hubViewType').value;
   $('hubMonthFilter').style.display = type === 'MONTH' ? 'inline-block' : 'none';
@@ -2172,7 +2155,7 @@ function renderHubAnalytics() {
         }
      });
 
-     state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => {
+     state.leaves.filter(l => l.empId === emp.id && l.status !== 'Rejected').forEach(l => {
         const d1 = new Date(l.from); const d2 = new Date(l.to);
         for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
            const dStr = toLocalISO(dt);
@@ -2220,7 +2203,7 @@ function renderHubAnalytics() {
      data: {
         labels: labels,
         datasets: [
-           { label: 'Leave Days (Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1.5 },
+           { label: 'Leave Days', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1.5 },
            { label: 'Overtime Duties', data: otData, backgroundColor: '#bbf7d0', borderColor: '#16a34a', borderWidth: 1.5 }
         ]
      },
@@ -2381,7 +2364,7 @@ function renderDashQuickChart() {
            const row = snap.snapshot.find(r => r.empId === emp.id);
            if (row) leaveCount = row.shifts.filter(s => s.full === 'L').length;
        } else {
-           state.leaves.filter(l => l.empId === emp.id && l.status === 'Approved').forEach(l => {
+           state.leaves.filter(l => l.empId === emp.id && l.status !== 'Rejected').forEach(l => {
               const d1 = new Date(l.from); const d2 = new Date(l.to);
               for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
                  if (toLocalISO(dt).startsWith(targetMonth)) leaveCount++;
@@ -2398,7 +2381,7 @@ function renderDashQuickChart() {
        data: {
            labels: labels,
            datasets: [
-               { label: 'Leave Days (Approved)', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
+               { label: 'Leave Days', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1 },
                { label: 'Overtime Duties', data: otData, backgroundColor: '#bbf7d0', borderColor: '#16a34a', borderWidth: 1 }
            ]
        },
@@ -2413,81 +2396,32 @@ function renderDashQuickChart() {
    });
 }
 
-/* ==== BACKEND SYNC ==== */
+/* ==== BACKEND SYNC (WITH SAFEGUARD) ==== */
 let syncTimer=null;
-function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(()=>syncAll(),1500);}
+function scheduleSync(){
+  if(!isCloudLoaded) return; // Never overwrite sheet with stale local data
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>syncAll(),1500);
+}
 
 async function syncAll(){
-  const status=$('syncStatus'); status.textContent='Syncing…';status.className='sync';
+  const status=$('syncStatus'); 
+  if(status) { status.textContent='Syncing…'; status.className='sync'; }
   try{
     const payload={
         employees:state.employees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
         history:state.history, adminPin:state.adminPin, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
-        colors:state.colors, overrides:state.overrides
+        colors:state.colors, overrides:state.overrides, rotaMonth: $('rotaMonth')?.value || '2026-08'
     };
     await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'syncAll',payload})});
-    status.textContent='✓ Synced · '+new Date().toLocaleTimeString('en-IN');status.className='sync ok';
-  }catch(err){status.textContent='✕ Sync failed';status.className='sync bad';}
+    if(status) { status.textContent='✓ Synced · '+new Date().toLocaleTimeString('en-IN'); status.className='sync ok'; }
+  }catch(err){
+    if(status) { status.textContent='✕ Sync failed'; status.className='sync bad'; }
+  }
 }
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sru-rota-backup-'+toLocalISO(new Date())+'.json';a.click();}
 
-/* ==== INITIAL SEED DATA ==== */
-if(!state.employees.length){
- const empSeed=[
- ['83096','Jai Bhagwan',1,'3,2','Tuesday'],
- ['507211','Mohit Suman',2,'3','Sunday'],
- ['510495','Kamlesh Bunkar',3,'3','Thursday'],
- ['510494','Yogesh Meena',4,'3,2,1','Tuesday'],
- ['511305','Deshraj Meena',5,'3,2,1','Saturday'],
- ['514556','Dhruv Singh',6,'3,2,1','Wednesday'],
- ['514528','Srijan Tiwari',7,'3,2,1','Tuesday'],
- ['77818','Pradeep Kumar',8,'2','Sunday'],
- ['515773','Abhishek Jain',9,'1,2','Saturday'],
- ['804420','A. Bala',10,'1,2','Monday'],
- ['517591','Sachin Garg',11,'1,2','Thursday']
- ];
- state.employees=empSeed.map((x,i)=>({
-   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:x[4],pin:'0000',active:true,offset:i%7
- }));
-
- const leaveSeed = [
-   {d:"2026-02-13", n:"Mohit Suman", f:"2026-11-06", t:"2026-11-12", r:""},
-   {d:"2026-02-21", n:"Dhruv Singh", f:"2026-10-29", t:"2026-10-29", r:""},
-   {d:"2026-02-21", n:"Dhruv Singh", f:"2026-08-27", t:"2026-08-28", r:""},
-   {d:"2026-03-13", n:"Sachin Garg", f:"2026-10-21", t:"2026-10-26", r:"planned Trip"},
-   {d:"2026-03-30", n:"Yogesh Meena", f:"2026-11-06", t:"2026-11-13", r:""},
-   {d:"2026-03-30", n:"Srijan Tiwari", f:"2026-10-16", t:"2026-10-22", r:""},
-   {d:"2026-03-30", n:"Srijan Tiwari", f:"2026-10-31", t:"2026-10-31", r:""},
-   {d:"2026-03-30", n:"Srijan Tiwari", f:"2026-11-13", t:"2026-11-18", r:""},
-   {d:"2026-04-02", n:"Kamlesh Bunkar", f:"2026-11-01", t:"2026-11-10", r:"Family function"},
-   {d:"2026-04-02", n:"Sachin Garg", f:"2026-11-06", t:"2026-11-15", r:""},
-   {d:"2026-04-07", n:"A. Bala", f:"2026-11-03", t:"2026-11-09", r:"M on 1st"},
-   {d:"2026-04-12", n:"Yogesh Meena", f:"2026-08-27", t:"2026-09-02", r:""},
-   {d:"2026-04-12", n:"Yogesh Meena", f:"2026-09-30", t:"2026-10-05", r:""},
-   {d:"2026-05-29", n:"Dhruv Singh", f:"2026-11-08", t:"2026-11-08", r:""},
-   {d:"2026-06-10", n:"Dhruv Singh", f:"2026-09-03", t:"2026-09-03", r:""},
-   {d:"2026-06-10", n:"Dhruv Singh", f:"2026-09-21", t:"2026-09-22", r:""},
-   {d:"2026-06-25", n:"Srijan Tiwari", f:"2026-09-08", t:"2026-09-10", r:""},
-   {d:"2026-07-31", n:"Sachin Garg", f:"2026-09-06", t:"2026-09-09", r:"Home Visit"},
-   {d:"2026-07-31", n:"A. Bala", f:"2026-09-18", t:"2026-09-20", r:""},
-   {d:"2026-08-06", n:"Mohit Suman", f:"2026-09-03", t:"2026-09-07", r:"Personal"},
-   {d:"2026-08-06", n:"Pradeep Kumar", f:"2026-08-28", t:"2026-08-29", r:"personal"},
-   {d:"2026-08-07", n:"Dhruv Singh", f:"2026-08-29", t:"2026-08-29", r:"rakhi"},
-   {d:"2026-08-07", n:"Yogesh Meena", f:"2026-09-05", t:"2026-09-05", r:""},
-   {d:"2026-08-07", n:"Yogesh Meena", f:"2026-09-12", t:"2026-09-12", r:""},
-   {d:"2026-08-07", n:"Srijan Tiwari", f:"2026-09-28", t:"2026-09-28", r:"Personal"},
-   {d:"2026-08-22", n:"Kamlesh Bunkar", f:"2026-09-01", t:"2026-09-01", r:"Personal"}
- ];
- 
- state.leaves = leaveSeed.map((l, i) => {
-   const emp = state.employees.find(e => e.name === l.n);
-   const d1 = new Date(l.f); const d2 = new Date(l.t);
-   const days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
-   return { id: 'L10'+i, empId: emp?emp.id:'', applyDate: l.d, from: l.f, to: l.t, days: days, reason: l.r, status: 'Approved' };
- });
- save();
-}
-
+/* ==== START APP & CLOUD FETCH ==== */
 renderEmployeeData();
 renderLeaves();
 renderHistory();

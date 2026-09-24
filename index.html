@@ -283,7 +283,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register (ALL Leaves Default + Oldest Applicant First) -->
+  <!-- 3. Leave Register (ALL Leaves Default + Chronological Sort Earliest First) -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -297,7 +297,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
-          ℹ️ <b>Leave Order Policy:</b> Leaves are arranged in chronological order by <b>Apply Date</b> (Earliest applicant first). Overlapping leaves (>2 days with 4+ staff) are flagged automatically.
+          ℹ️ <b>Default View:</b> Arranged in chronological order by <b>Apply Date (Earliest applicant first)</b>. Overlapping leaves (>2 days with 4+ staff) are flagged automatically.
         </div>
       </div>
       <div class="table-wrap">
@@ -519,7 +519,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 <!-- Standard Modal -->
 <div class="modal" id="modal"><div class="modal-card"><div class="modal-head"><b id="modalTitle">Form</b><button class="btn" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" id="modalSave">Save</button></div></div></div>
 
-<!-- Mandatory Login Gate Modal -->
+<!-- Login Gate Modal -->
 <div class="modal" id="loginModal">
   <div class="modal-card" style="width:350px; box-shadow:0 15px 35px rgba(0,0,0,0.3);">
     <div class="modal-head" style="background:#f8fafc;">
@@ -640,7 +640,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 </div>
 
 <script>
-const KEY='sru_rota_v6';
+const KEY='sru_rota_v8'; // Incremented key to refresh system
 const API_URL = 'https://script.google.com/macros/s/AKfycbwcKDNErrUyFudNKfgo-WYidaj907xDW5T6kLOmwP3NU3viVGOs0NMi-B7I3LGpvazCtg/exec';
 
 const defaultColors = {
@@ -654,7 +654,8 @@ const defaultColors = {
 
 const defaultState={
   employees:[], leaves:[], holidays:[], extraDuties:[], history:[], 
-  adminPin:'1234', pattern:'EEMMNNO', finalizedRotas:{}, colors: defaultColors, overrides:{}
+  adminPin:'1234', pattern:'EEMMNNO', finalizedRotas:{}, colors: defaultColors, overrides:{},
+  seedV8Applied: false
 };
 
 let state=JSON.parse(localStorage.getItem(KEY)||'null')||defaultState;
@@ -671,7 +672,7 @@ let rotaSummaryScope = 'MONTH';
 let activeLeaveTab = 'all';
 let isCloudLoaded = false;
 
-// DEFAULT SORT: Oldest apply date first (Ascending)
+// 1. DEFAULT SORT: Oldest apply date first (Ascending)
 let leaveSort = { key: 'applyDate', desc: false };
 
 const $=id=>document.getElementById(id);
@@ -726,6 +727,56 @@ function makeElementDraggable(el, handle) {
   }
 }
 
+/* ==== 2. THE 30 OFFICIAL LEAVES LIST ==== */
+function getOfficial30Leaves() {
+  const list = [
+    {d:"2026-02-13", n:"Mohit Suman", f:"2026-11-06", t:"2026-11-12", dys:7, r:""},
+    {d:"2026-02-21", n:"Dhruv Singh", f:"2026-10-29", t:"2026-10-29", dys:1, r:""},
+    {d:"2026-02-21", n:"Dhruv Singh", f:"2026-08-27", t:"2026-08-28", dys:2, r:""},
+    {d:"2026-03-13", n:"Sachin Garg", f:"2026-10-21", t:"2026-10-26", dys:6, r:"planned Trip"},
+    {d:"2026-03-30", n:"Yogesh Meena", f:"2026-11-06", t:"2026-11-13", dys:8, r:""},
+    {d:"2026-03-30", n:"Srijan Tiwari", f:"2026-10-16", t:"2026-10-22", dys:7, r:""},
+    {d:"2026-03-30", n:"Srijan Tiwari", f:"2026-10-31", t:"2026-10-31", dys:1, r:""},
+    {d:"2026-03-30", n:"Srijan Tiwari", f:"2026-11-13", t:"2026-11-18", dys:6, r:""},
+    {d:"2026-04-02", n:"Kamlesh Bunkar", f:"2026-11-01", t:"2026-11-10", dys:10, r:"Family function"},
+    {d:"2026-04-02", n:"Sachin Garg", f:"2026-11-06", t:"2026-11-15", dys:9, r:""},
+    {d:"2026-04-07", n:"A. Bala", f:"2026-11-03", t:"2026-11-09", dys:7, r:"M on 1st"},
+    {d:"2026-04-12", n:"Yogesh Meena", f:"2026-08-27", t:"2026-09-02", dys:7, r:""},
+    {d:"2026-04-12", n:"Yogesh Meena", f:"2026-09-30", t:"2026-10-05", dys:6, r:""},
+    {d:"2026-05-29", n:"Dhruv Singh", f:"2026-11-08", t:"2026-11-08", dys:1, r:""},
+    {d:"2026-06-10", n:"Dhruv Singh", f:"2026-09-03", t:"2026-09-03", dys:1, r:""},
+    {d:"2026-06-10", n:"Dhruv Singh", f:"2026-09-21", t:"2026-09-22", dys:2, r:""},
+    {d:"2026-06-25", n:"Srijan Tiwari", f:"2026-09-08", t:"2026-09-10", dys:3, r:""},
+    {d:"2026-07-31", n:"Sachin Garg", f:"2026-09-06", t:"2026-09-09", dys:4, r:"Home Visit"},
+    {d:"2026-07-31", n:"A. Bala", f:"2026-09-18", t:"2026-09-20", dys:3, r:""},
+    {d:"2026-08-06", n:"Mohit Suman", f:"2026-09-03", t:"2026-09-07", dys:5, r:"Personal"},
+    {d:"2026-08-06", n:"Pradeep Kumar", f:"2026-08-28", t:"2026-08-29", dys:2, r:"personal"},
+    {d:"2026-08-07", n:"Dhruv Singh", f:"2026-08-29", t:"2026-08-29", dys:1, r:"rakhi"},
+    {d:"2026-08-07", n:"Yogesh Meena", f:"2026-09-05", t:"2026-09-05", dys:1, r:""},
+    {d:"2026-08-07", n:"Yogesh Meena", f:"2026-09-12", t:"2026-09-12", dys:1, r:""},
+    {d:"2026-08-07", n:"Srijan Tiwari", f:"2026-09-28", t:"2026-09-28", dys:1, r:"Personal"},
+    {d:"2026-08-22", n:"Kamlesh Bunkar", f:"2026-09-01", t:"2026-09-01", dys:1, r:"Personal"},
+    {d:"2026-09-18", n:"Deshraj Meena", f:"2026-10-13", t:"2026-10-23", dys:11, r:"Home town visit"},
+    {d:"2026-09-20", n:"Dhruv Singh", f:"2026-10-05", t:"2026-10-08", dys:4, r:"function"},
+    {d:"2026-09-20", n:"Sachin Garg", f:"2026-10-27", t:"2026-10-29", dys:3, r:""},
+    {d:"2026-09-21", n:"Kamlesh Bunkar", f:"2026-11-25", t:"2026-11-29", dys:5, r:"Wedding function attend"}
+  ];
+
+  return list.map((l, i) => {
+    const emp = state.employees.find(e => e.name.toLowerCase() === l.n.toLowerCase());
+    return {
+      id: 'L' + (100 + i),
+      empId: emp ? emp.id : '',
+      applyDate: l.d,
+      from: l.f,
+      to: l.t,
+      days: l.dys,
+      reason: l.r,
+      status: 'Approved'
+    };
+  });
+}
+
 /* ==== MULTI-PC CLOUD SYNC ==== */
 async function fetchCloudData() {
   const status = $('syncStatus');
@@ -745,9 +796,21 @@ async function fetchCloudData() {
       if (p.employees && p.employees.length > 0) {
         state.employees = p.employees;
       }
-      if (p.leaves && Array.isArray(p.leaves)) {
+
+      // If Google Sheet already has 30 or more leaves, trust Google Sheet
+      if (p.leaves && Array.isArray(p.leaves) && p.leaves.length >= 30) {
+        state.leaves = p.leaves;
+        state.seedV8Applied = true;
+      } else if (!state.seedV8Applied || !p.leaves || p.leaves.length < 30) {
+        // Automatically write the full 30 leaves into Google Sheet once
+        state.leaves = getOfficial30Leaves();
+        state.seedV8Applied = true;
+        save();
+        await syncAll();
+      } else {
         state.leaves = p.leaves;
       }
+
       if (p.holidays && Array.isArray(p.holidays)) {
         state.holidays = p.holidays;
       }
@@ -945,7 +1008,7 @@ let currentM = ('0' + (new Date().getMonth() + 1)).slice(-2);
 $('rotaMonth').value = `${currentY}-${currentM}`;
 $('edMonthFilter').value = `${currentY}-${currentM}`;
 
-// Leave register month filter is empty by default so all leaves are visible
+// Leave register month filter is empty by default so all leaves are displayed
 if ($('leaveMonthFilter')) $('leaveMonthFilter').value = '';
 
 function normalizeRoles(v){
@@ -1716,7 +1779,7 @@ function renderExtraDuties(){
 $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
-/* ==== 3. LEAVE REGISTER (ALL MONTHS DEFAULT + OLDEST APPLICANT FIRST) ==== */
+/* ==== 3. LEAVE REGISTER (ALL MONTHS DEFAULT + OLDEST FIRST) ==== */
 function sortLeave(key) {
   if (leaveSort.key === key) { 
     leaveSort.desc = !leaveSort.desc; 
@@ -1803,8 +1866,10 @@ function openLeave(id=null){
                      <input type="hidden" id="l_emp" value="${currentUser.id}">`;
   }
 
+  // Included Apply Date so back-dated entries can be edited/updated accurately
   $('modalBody').innerHTML = `<div class="form-grid">
     <div class="field"><label>Employee</label>${empSelectHtml}</div>
+    <div class="field"><label>Apply Date</label><input id="l_applyDate" type="date" value="${esc(l.applyDate || toLocalISO(new Date()))}"></div>
     <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
     <div class="field"><label>To Date</label><input id="l_to" type="date" value="${esc(l.to)}"></div>
     <div class="field" style="grid-column:1/-1"><label>Reason</label><input id="l_reason" value="${esc(l.reason)}" placeholder="Reason for leave"></div>
@@ -1816,6 +1881,7 @@ function openLeave(id=null){
 
   $('modalSave').onclick = () => {
     l.empId = $('l_emp').value;
+    l.applyDate = $('l_applyDate').value || l.applyDate || toLocalISO(new Date());
     l.from = $('l_from').value;
     l.to = $('l_to').value;
     l.reason = $('l_reason').value.trim();
@@ -1827,7 +1893,6 @@ function openLeave(id=null){
     const d1 = new Date(l.from);
     const d2 = new Date(l.to);
     l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
-    l.applyDate = l.applyDate || toLocalISO(new Date());
 
     if (!isEdit) {
       state.leaves.push(l);
@@ -1841,7 +1906,7 @@ function openLeave(id=null){
     renderLeaves();
     renderDashboard();
     generateRota();
-    scheduleSync();
+    scheduleSync(); // Permanently writes change to Google Sheet
   };
 
   $('modal').classList.add('show');
@@ -1864,7 +1929,7 @@ function removeLeave(id){
   renderLeaves();
   renderDashboard();
   generateRota();
-  scheduleSync();
+  scheduleSync(); // Permanently deletes row in Google Sheet
 }
 
 function renderLeaves(){
@@ -1872,7 +1937,7 @@ function renderLeaves(){
   const monthF = ($('leaveMonthFilter')?.value || '');
   const conflictedMap = getConflictedLeaveIds();
  
-  // If month filter is empty, ALL leaves are matched
+  // If month filter is empty, ALL leaves are displayed
   let displayList = state.leaves.filter(l => {
     const e = state.employees.find(x => x.id === l.empId);
     let matchQ = (e?.name + ' ' + e?.code).toLowerCase().includes(q);
@@ -1885,7 +1950,7 @@ function renderLeaves(){
     return matchQ && matchM;
   });
  
-  // Chronological sorting (Earliest Applicant first when desc is false)
+  // 1. Strict Ascending Sort by Apply Date (Earliest Applicant first)
   displayList.sort((a, b) => {
     let valA, valB;
     if (leaveSort.key === 'emp') {
@@ -1897,7 +1962,7 @@ function renderLeaves(){
     }
     if (valA < valB) return leaveSort.desc ? 1 : -1;
     if (valA > valB) return leaveSort.desc ? -1 : 1;
-    return (a.id || '').localeCompare(b.id || '');
+    return (a.from || '').localeCompare(b.from || '') || (a.id || '').localeCompare(b.id || '');
   });
  
   $('leaveBody').innerHTML = displayList.length ? displayList.map((l, i) => {
@@ -2401,7 +2466,7 @@ function renderDashQuickChart() {
    });
 }
 
-/* ==== BACKEND SYNC (WITH SAFEGUARD) ==== */
+/* ==== BACKEND SYNC (SAFEGUARDED) ==== */
 let syncTimer=null;
 function scheduleSync(){
   if(!isCloudLoaded) return;
@@ -2426,7 +2491,34 @@ async function syncAll(){
 }
 function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sru-rota-backup-'+toLocalISO(new Date())+'.json';a.click();}
 
-/* ==== START APP & CLOUD FETCH ==== */
+/* ==== INITIAL EMPLOYEE MASTER SEED ==== */
+if(!state.employees.length){
+ const empSeed=[
+ ['83096','Jai Bhagwan',1,'3,2','Tuesday'],
+ ['507211','Mohit Suman',2,'3','Sunday'],
+ ['510495','Kamlesh Bunkar',3,'3','Thursday'],
+ ['510494','Yogesh Meena',4,'3,2,1','Tuesday'],
+ ['511305','Deshraj Meena',5,'3,2,1','Saturday'],
+ ['514556','Dhruv Singh',6,'3,2,1','Wednesday'],
+ ['514528','Srijan Tiwari',7,'3,2,1','Tuesday'],
+ ['77818','Pradeep Kumar',8,'2','Sunday'],
+ ['515773','Abhishek Jain',9,'1,2','Saturday'],
+ ['804420','A. Bala',10,'1,2','Monday'],
+ ['517591','Sachin Garg',11,'1,2','Thursday']
+ ];
+ state.employees=empSeed.map((x,i)=>({
+   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:x[4],pin:'0000',active:true,offset:i%7
+ }));
+}
+
+// Initial 30 leaves loading
+if(!state.leaves || state.leaves.length < 30 || !state.seedV8Applied){
+  state.leaves = getOfficial30Leaves();
+  state.seedV8Applied = true;
+  save();
+}
+
+/* ==== BOOT APP & FETCH CLOUD ==== */
 renderEmployeeData();
 renderLeaves();
 renderHistory();

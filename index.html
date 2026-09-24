@@ -1866,10 +1866,9 @@ function openLeave(id=null){
                      <input type="hidden" id="l_emp" value="${currentUser.id}">`;
   }
 
-  // Included Apply Date so back-dated entries can be edited/updated accurately
+ 
   $('modalBody').innerHTML = `<div class="form-grid">
     <div class="field"><label>Employee</label>${empSelectHtml}</div>
-    <div class="field"><label>Apply Date</label><input id="l_applyDate" type="date" value="${esc(l.applyDate || toLocalISO(new Date()))}"></div>
     <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
     <div class="field"><label>To Date</label><input id="l_to" type="date" value="${esc(l.to)}"></div>
     <div class="field" style="grid-column:1/-1"><label>Reason</label><input id="l_reason" value="${esc(l.reason)}" placeholder="Reason for leave"></div>
@@ -1881,7 +1880,7 @@ function openLeave(id=null){
 
   $('modalSave').onclick = () => {
     l.empId = $('l_emp').value;
-    l.applyDate = $('l_applyDate').value || l.applyDate || toLocalISO(new Date());
+    l.applyDate = l.applyDate || toLocalISO(new Date());
     l.from = $('l_from').value;
     l.to = $('l_to').value;
     l.reason = $('l_reason').value.trim();
@@ -1978,7 +1977,7 @@ function renderLeaves(){
     }
 
     const actionButtons = hasPermission 
-      ? `<button class="btn" onclick="openLeave('${l.id}')">Edit</button> <button class="btn danger" onclick="removeLeave('${l.id}')">Del</button>`
+      ? `<button class="btn danger" onclick="removeLeave('${l.id}')">Del</button>`
       : `<span class="small" style="color:var(--muted); font-weight:600;">🔒 Restricted</span>`;
 
     return `<tr class="${conflictType ? 'conflict-row' : ''}">

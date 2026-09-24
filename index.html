@@ -30,7 +30,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .pending{background:#fff3dc;color:#b54708}.approved{background:#eaf8ef;color:#087443}.rejected{background:#fee2e2;color:#b91c1c}
 .conflict-row{background:#fff1f2 !important;}
 
-/* Screen-Fit Compact Rota Grid Styles */
+/* Compact Grid */
 .rota-table { table-layout: fixed; width: 100%; border-collapse: separate; border-spacing: 0; }
 .rota-table th, .rota-table td { padding: 3px 1px; text-align: center; font-size: 11px; border: 1px solid #e2e8f0; overflow: hidden; }
 .rota-table th:first-child, .rota-table td:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 3; width: 108px; min-width: 105px; max-width: 110px; padding: 3px 5px; font-weight: 700; border-right: 2px solid #cbd5e1; text-overflow: ellipsis; overflow: hidden; }
@@ -54,7 +54,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   line-height: 1;
 }
 
-/* Double Duty Badge Optimization */
 .shift-cell .tag.double-shift {
   display: flex !important;
   flex-direction: column !important;
@@ -67,17 +66,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   border-width: 1.5px !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
-.shift-cell .tag.double-shift .d-top {
-  font-size: 9px !important;
-  font-weight: 900 !important;
-  letter-spacing: -0.2px;
-}
-.shift-cell .tag.double-shift .d-bot {
-  font-size: 8px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.2px;
-  opacity: 0.95;
-}
+.shift-cell .tag.double-shift .d-top { font-size: 9px !important; font-weight: 900 !important; }
+.shift-cell .tag.double-shift .d-bot { font-size: 8px !important; font-weight: 800 !important; opacity: 0.95; }
 
 .summary-col-head { width: 48px; min-width: 46px; font-size: 9.5px; padding: 2px 1px; line-height: 1.1; }
 .summary-cell { width: 48px; min-width: 46px; font-weight: 800; font-size: 11px; text-align: center; }
@@ -92,7 +82,6 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 .color-config input{width:100%;height:24px;padding:2px;cursor:pointer}
 .quick-btn{padding:5px 7px; border-radius:5px; border:1px solid var(--line); background:#f8fafc; font-weight:bold; cursor:pointer; font-size:11px;} .quick-btn:hover{background:#e2e8f0;}
 
-/* Dashboard Grids */
 .dash-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:14px; align-items:start;}
 .dash-list{display:flex; flex-direction:column; gap:7px; margin-top:7px;}
 .dash-item{display:flex; justify-content:space-between; padding:7px 9px; background:#f8fafc; border-radius:7px; border:1px solid var(--line); font-size:11.5px;}
@@ -283,7 +272,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register (ALL Leaves Default + Chronological Sort Earliest First) -->
+  <!-- 3. Leave Register -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -298,7 +287,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       <div class="panel-body" style="padding-bottom:0;">
         <div class="notice">
            ℹ️ <b>Leave Conflict Policy:</b> The first 3 applicants on normal dates remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b>. <b>Special Holiday Rule:</b> If the leave period encompasses a scheduled <b>Holiday</b>, conflict caution is triggered starting from the <b>3rd applicant onward</b>.
-</div>
+        </div>
       </div>
       <div class="table-wrap">
         <table>
@@ -374,27 +363,31 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 6. Leave Record -->
+  <!-- 6. Leave Record (Direct Register + Finalized Rota + Festival Tracker) -->
   <section id="finalizedLeave" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>Leave Record & Festival Tracker</h2>
         <div class="toolbar">
            <select id="flViewType" onchange="toggleFlViewInputs()" style="min-width:85px;">
-             <option value="MONTH" selected>By Month</option>
+             <option value="ALL" selected>All Time</option>
+             <option value="MONTH">By Month</option>
              <option value="YEAR">By Year</option>
-             <option value="ALL">All Time</option>
            </select>
-           <select id="flMonthFilter" style="min-width:120px;"></select>
-           <input type="number" id="flYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderFinalizedLeaves()" title="Select Year">
+           <!-- Dropdown for Finalized Rota months -->
+           <select id="flMonthFilter" style="min-width:120px; display:none;"></select>
+           <!-- Standard Month Picker for Direct Register -->
+           <input type="month" id="flRegMonthFilter" style="min-width:120px; display:none;" onchange="renderActiveLeaveTab()">
+           <input type="number" id="flYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderActiveLeaveTab()" title="Select Year">
            <input id="flSearch" placeholder="Search Employee...">
-           <button class="btn primary" onclick="renderFinalizedLeaves()">Refresh</button>
+           <button class="btn primary" onclick="renderActiveLeaveTab()">Refresh</button>
         </div>
       </div>
       
       <div class="panel-body" style="padding-bottom:0;">
          <div class="sub-tabs">
-            <button class="sub-tab-btn active" id="tabAllLeavesBtn" onclick="switchLeaveRecordTab('all')">📋 All Finalized Leaves</button>
+            <button class="sub-tab-btn active" id="tabRegisterLeavesBtn" onclick="switchLeaveRecordTab('register')">📑 Leave Register Records (Direct)</button>
+            <button class="sub-tab-btn" id="tabAllLeavesBtn" onclick="switchLeaveRecordTab('finalized')">📋 Finalized Leaves (Rota Snapshot)</button>
             <button class="sub-tab-btn" id="tabHolidayLeavesBtn" onclick="switchLeaveRecordTab('holiday')">🎉 Festival / Holiday Leaves Tracker (All Years)</button>
          </div>
          <div id="holidayFilterBar" style="display:none; margin-bottom:10px;" class="toolbar">
@@ -406,13 +399,23 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
 
       <div class="table-wrap">
-        <table id="allFinalizedLeavesTable">
+        <!-- View 1: Direct from Leave Register (Always accessible) -->
+        <table id="registerLeavesTable">
+          <thead><tr>
+            <th>Sr. No.</th><th>Date</th><th style="text-align:left">Employee Name</th><th>Shift Code</th><th>Reason</th><th>Apply Date</th><th>Source</th>
+          </tr></thead>
+          <tbody id="registerLeaveBody"></tbody>
+        </table>
+
+        <!-- View 2: All Finalized Leaves (From Finalized Rota snapshots) -->
+        <table id="allFinalizedLeavesTable" style="display:none;">
           <thead><tr>
             <th>Sr. No.</th><th>Date</th><th style="text-align:left">Employee Name</th><th>Shift Code</th><th>Status</th><th>Source</th>
           </tr></thead>
           <tbody id="finalizedLeaveBody"></tbody>
         </table>
 
+        <!-- View 3: Multi-Year Holiday Leaves Tracker -->
         <table id="holidayLeavesTrackerTable" style="display:none;">
           <thead><tr>
             <th>Sr. No.</th><th>Year</th><th>Festival / Holiday Name</th><th>Holiday Date</th><th style="text-align:left">Employee on Leave</th><th>Status</th><th>Source</th>
@@ -423,20 +426,26 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 7. Analytics Hub -->
+  <!-- 7. Analytics Hub (With Source Selector) -->
   <section id="analyticsHub" class="page">
     <div class="panel">
       <div class="panel-head">
         <h2>📊 Manpower Analytics Hub</h2>
         <div class="toolbar">
           <select id="hubViewType" onchange="toggleHubViewInputs()" style="min-width:90px;">
+            <option value="ALL" selected>All Time</option>
             <option value="MONTH">By Month</option>
             <option value="YEAR">By Year</option>
-            <option value="ALL" selected>All Time</option>
           </select>
           <input type="month" id="hubMonthFilter" value="2026-08" style="width:120px; display:none;" onchange="renderHubAnalytics()">
           <input type="number" id="hubYearFilter" min="2020" max="2035" value="2026" style="width:80px; display:none;" onchange="renderHubAnalytics()">
           <select id="hubEmpFilter" onchange="renderHubAnalytics()" style="min-width:130px;"></select>
+          <!-- Source Selector for Chart & Metrics -->
+          <select id="hubSourceFilter" onchange="renderHubAnalytics()" style="min-width:170px; font-weight:700; color:#1e40af; background:#eff6ff; border-color:#93c5fd;">
+            <option value="REGISTER" selected>📊 Source: Leave Register (Live)</option>
+            <option value="FINALIZED">📁 Source: Finalized Rota (Snapshots)</option>
+            <option value="COMBINED">🔄 Source: Combined</option>
+          </select>
           <button class="btn primary" onclick="renderHubAnalytics()">Refresh</button>
         </div>
       </div>
@@ -452,7 +461,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
          </div>
          <div class="table-wrap">
             <table>
-              <thead><tr><th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th><th>Total Leaves</th><th>Total Overtime Duties</th></tr></thead>
+              <thead><tr><th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th><th id="hubLeaveColHead">Total Leaves</th><th>Total Overtime Duties</th></tr></thead>
               <tbody id="hubBreakdownBody"></tbody>
             </table>
          </div>
@@ -640,7 +649,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 </div>
 
 <script>
-const KEY='sru_rota_v8'; // Incremented key to refresh system
+const KEY='sru_rota_v9';
 const API_URL = 'https://script.google.com/macros/s/AKfycbwcKDNErrUyFudNKfgo-WYidaj907xDW5T6kLOmwP3NU3viVGOs0NMi-B7I3LGpvazCtg/exec';
 
 const defaultColors = {
@@ -669,10 +678,8 @@ if(!state.extraDuties) state.extraDuties = [];
 
 let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
 let rotaSummaryScope = 'MONTH';
-let activeLeaveTab = 'all';
+let activeLeaveTab = 'register'; // Default to direct register records
 let isCloudLoaded = false;
-
-// 1. DEFAULT SORT: Oldest apply date first (Ascending)
 let leaveSort = { key: 'applyDate', desc: false };
 
 const $=id=>document.getElementById(id);
@@ -683,6 +690,12 @@ function toLocalISO(d) {
   const dt = new Date(d);
   const offset = dt.getTimezoneOffset() * 60000;
   return new Date(dt.getTime() - offset).toISOString().slice(0, 10);
+}
+
+function parseISODate(s) {
+  if (!s) return new Date();
+  const parts = s.split('-').map(Number);
+  return new Date(parts[0], parts[1]-1, parts[2], 12, 0, 0);
 }
 
 function log(action,details){
@@ -727,7 +740,7 @@ function makeElementDraggable(el, handle) {
   }
 }
 
-/* ==== 2. THE 30 OFFICIAL LEAVES LIST ==== */
+/* ==== 30 OFFICIAL LEAVES LIST ==== */
 function getOfficial30Leaves() {
   const list = [
     {d:"2026-02-13", n:"Mohit Suman", f:"2026-11-06", t:"2026-11-12", dys:7, r:""},
@@ -797,12 +810,10 @@ async function fetchCloudData() {
         state.employees = p.employees;
       }
 
-      // If Google Sheet already has 30 or more leaves, trust Google Sheet
       if (p.leaves && Array.isArray(p.leaves) && p.leaves.length >= 30) {
         state.leaves = p.leaves;
         state.seedV8Applied = true;
       } else if (!state.seedV8Applied || !p.leaves || p.leaves.length < 30) {
-        // Automatically write the full 30 leaves into Google Sheet once
         state.leaves = getOfficial30Leaves();
         state.seedV8Applied = true;
         save();
@@ -834,6 +845,7 @@ async function fetchCloudData() {
       generateRota(false);
       renderDashboard();
       updateHistoryDropdown();
+      renderActiveLeaveTab();
     }
   } catch(e) {
     console.log("Offline mode or cloud fetch error", e);
@@ -991,7 +1003,7 @@ function showPage(id){
   if(id==='employeeData')renderEmployeeData();
   if(id==='rota') { loadSettingsUI(); generateRota(); }
   if(id==='leave')renderLeaves();
-  if(id==='finalizedLeave')renderFinalizedLeaves();
+  if(id==='finalizedLeave') { populateHolidayPicker(); renderActiveLeaveTab(); }
   if(id==='analyticsHub')renderHubAnalytics();
   if(id==='holidays')renderHolidays();
   if(id==='extraDuty')renderExtraDuties();
@@ -1008,7 +1020,6 @@ let currentM = ('0' + (new Date().getMonth() + 1)).slice(-2);
 $('rotaMonth').value = `${currentY}-${currentM}`;
 $('edMonthFilter').value = `${currentY}-${currentM}`;
 
-// Leave register month filter is empty by default so all leaves are displayed
 if ($('leaveMonthFilter')) $('leaveMonthFilter').value = '';
 
 function normalizeRoles(v){
@@ -1199,7 +1210,7 @@ function buildRotaMatrix(month) {
               empRoles[e.id] = normalizeRoles(e.roles).split(',').filter(Boolean);
           });
 
-          // STEP 1: SIC duty (Role 3) first
+          // Priority 1: SIC
           let sicCandidate = empsInShift.find(e => empRoles[e.id].length === 1 && empRoles[e.id][0] === '3');
           if (!sicCandidate) {
               sicCandidate = empsInShift.find(e => empRoles[e.id].includes('3'));
@@ -1209,7 +1220,7 @@ function buildRotaMatrix(month) {
               needed = needed.filter(x => x !== '3');
           }
 
-          // STEP 2: Single-role PIC
+          // Priority 2: Single-role PIC
           empsInShift.forEach(e => {
               if (assignments[e.id]) return;
               let r = empRoles[e.id];
@@ -1219,9 +1230,8 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // STEP 3: Dual/Multi-role PICs
+          // Priority 3: Dual/Multi-role
           let remainingEmps = empsInShift.filter(e => !assignments[e.id]);
-
           remainingEmps.forEach(e => {
               let r = empRoles[e.id];
               let cycleDay = matrix[e.id][dStr].cycleDay;
@@ -1239,7 +1249,7 @@ function buildRotaMatrix(month) {
               }
           });
 
-          // STEP 4: Excess manpower fallback
+          // Priority 4: Fallback
           empsInShift.forEach(e => {
               if (!assignments[e.id]) {
                   let r = empRoles[e.id];
@@ -1302,7 +1312,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
       }
     });
     state.leaves.filter(l => l.empId === empId && l.status !== 'Rejected').forEach(l => {
-      const d1 = new Date(l.from); const d2 = new Date(l.to);
+      const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
       for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
         const dStr = toLocalISO(dt);
         if (dStr.startsWith(targetYear) && !state.finalizedRotas[dStr.slice(0, 7)]) {
@@ -1319,7 +1329,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix) {
       }
     });
     state.leaves.filter(l => l.empId === empId && l.status !== 'Rejected').forEach(l => {
-      const d1 = new Date(l.from); const d2 = new Date(l.to);
+      const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
       for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
         const dStr = toLocalISO(dt);
         if (!state.finalizedRotas[dStr.slice(0, 7)]) {
@@ -1467,7 +1477,7 @@ function finalizeRota() {
    save(); log('Rota Finalized', month); scheduleSync();
    updateHistoryDropdown();
    renderDashboard();
-   renderFinalizedLeaves();
+   renderActiveLeaveTab();
    alert(`Rota for ${month} finalized successfully & saved!`);
 }
 
@@ -1521,7 +1531,7 @@ function deleteFinalizedRota() {
   if(confirm(`Permanently delete snapshot for ${month}?`)) {
      delete state.finalizedRotas[month];
      save(); log('Finalized Rota Deleted', month); scheduleSync();
-     updateHistoryDropdown(); generateHistoryRota(); renderDashboard(); renderFinalizedLeaves();
+     updateHistoryDropdown(); generateHistoryRota(); renderDashboard(); renderActiveLeaveTab();
   }
 }
 
@@ -1779,7 +1789,7 @@ function renderExtraDuties(){
 $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
-/* ==== 3. LEAVE REGISTER (ALL MONTHS DEFAULT + OLDEST FIRST) ==== */
+/* ==== 3. LEAVE REGISTER ==== */
 function sortLeave(key) {
   if (leaveSort.key === key) { 
     leaveSort.desc = !leaveSort.desc; 
@@ -1802,7 +1812,7 @@ function getConflictedLeaveIds() {
   const dateApplicants = {};
 
   activeLeaves.forEach(l => {
-    const d1 = new Date(l.from); const d2 = new Date(l.to);
+    const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
       const ds = toLocalISO(dt);
       if (!dateApplicants[ds]) dateApplicants[ds] = [];
@@ -1816,7 +1826,7 @@ function getConflictedLeaveIds() {
     let maxConsecutive = 0;
     let holidayConflict = false;
 
-    const d1 = new Date(l.from); const d2 = new Date(l.to);
+    const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate()+1)) {
       const ds = toLocalISO(dt);
       const appIndex = dateApplicants[ds].indexOf(l.id);
@@ -1866,7 +1876,6 @@ function openLeave(id=null){
                      <input type="hidden" id="l_emp" value="${currentUser.id}">`;
   }
 
- 
   $('modalBody').innerHTML = `<div class="form-grid">
     <div class="field"><label>Employee</label>${empSelectHtml}</div>
     <div class="field"><label>From Date</label><input id="l_from" type="date" value="${esc(l.from)}"></div>
@@ -1889,8 +1898,8 @@ function openLeave(id=null){
     if (!l.from || !l.to) return alert('Select dates.');
     if (l.to < l.from) return alert('To date cannot be before From date.');
 
-    const d1 = new Date(l.from);
-    const d2 = new Date(l.to);
+    const d1 = parseISODate(l.from);
+    const d2 = parseISODate(l.to);
     l.days = Math.ceil(Math.abs(d2 - d1) / (1000 * 3600 * 24)) + 1;
 
     if (!isEdit) {
@@ -1905,7 +1914,8 @@ function openLeave(id=null){
     renderLeaves();
     renderDashboard();
     generateRota();
-    scheduleSync(); // Permanently writes change to Google Sheet
+    renderActiveLeaveTab();
+    scheduleSync();
   };
 
   $('modal').classList.add('show');
@@ -1928,7 +1938,8 @@ function removeLeave(id){
   renderLeaves();
   renderDashboard();
   generateRota();
-  scheduleSync(); // Permanently deletes row in Google Sheet
+  renderActiveLeaveTab();
+  scheduleSync();
 }
 
 function renderLeaves(){
@@ -1936,7 +1947,6 @@ function renderLeaves(){
   const monthF = ($('leaveMonthFilter')?.value || '');
   const conflictedMap = getConflictedLeaveIds();
  
-  // If month filter is empty, ALL leaves are displayed
   let displayList = state.leaves.filter(l => {
     const e = state.employees.find(x => x.id === l.empId);
     let matchQ = (e?.name + ' ' + e?.code).toLowerCase().includes(q);
@@ -1949,7 +1959,6 @@ function renderLeaves(){
     return matchQ && matchM;
   });
  
-  // 1. Strict Ascending Sort by Apply Date (Earliest Applicant first)
   displayList.sort((a, b) => {
     let valA, valB;
     if (leaveSort.key === 'emp') {
@@ -1998,40 +2007,104 @@ function renderLeaves(){
 $('leaveSearch').oninput=renderLeaves; 
 if ($('leaveMonthFilter')) $('leaveMonthFilter').onchange=renderLeaves;
 
-/* ==== 6. LEAVE RECORD ==== */
+/* ==== 6. LEAVE RECORD (WITH 3 SUB-TABS) ==== */
 function toggleFlViewInputs() {
   const type = $('flViewType').value;
+  const isFinalizedTab = (activeLeaveTab === 'finalized');
+
   if (type === 'ALL') {
     $('flMonthFilter').style.display = 'none';
+    $('flRegMonthFilter').style.display = 'none';
     $('flYearFilter').style.display = 'none';
   } else if (type === 'YEAR') {
     $('flMonthFilter').style.display = 'none';
+    $('flRegMonthFilter').style.display = 'none';
     $('flYearFilter').style.display = 'inline-block';
-  } else {
-    $('flMonthFilter').style.display = 'inline-block';
+  } else { // MONTH
+    if (isFinalizedTab) {
+      $('flMonthFilter').style.display = 'inline-block';
+      $('flRegMonthFilter').style.display = 'none';
+    } else {
+      $('flMonthFilter').style.display = 'none';
+      $('flRegMonthFilter').style.display = 'inline-block';
+    }
     $('flYearFilter').style.display = 'none';
   }
-  if (activeLeaveTab === 'all') renderFinalizedLeaves();
-  else renderHolidayLeaves();
+  renderActiveLeaveTab();
 }
 
 function switchLeaveRecordTab(tab) {
   activeLeaveTab = tab;
-  $('tabAllLeavesBtn').classList.toggle('active', tab === 'all');
+  $('tabRegisterLeavesBtn').classList.toggle('active', tab === 'register');
+  $('tabAllLeavesBtn').classList.toggle('active', tab === 'finalized');
   $('tabHolidayLeavesBtn').classList.toggle('active', tab === 'holiday');
-  $('allFinalizedLeavesTable').style.display = tab === 'all' ? 'table' : 'none';
+
+  $('registerLeavesTable').style.display = tab === 'register' ? 'table' : 'none';
+  $('allFinalizedLeavesTable').style.display = tab === 'finalized' ? 'table' : 'none';
   $('holidayLeavesTrackerTable').style.display = tab === 'holiday' ? 'table' : 'none';
   $('holidayFilterBar').style.display = tab === 'holiday' ? 'flex' : 'none';
 
-  if (tab === 'all') renderFinalizedLeaves();
-  else {
-    populateHolidayPicker();
-    renderHolidayLeaves();
-  }
+  toggleFlViewInputs();
 }
 
+function renderActiveLeaveTab() {
+  if (activeLeaveTab === 'register') renderRegisterLeaves();
+  else if (activeLeaveTab === 'finalized') renderFinalizedLeaves();
+  else renderHolidayLeaves();
+}
+
+// 1. Direct from Leave Register (Live)
+function renderRegisterLeaves() {
+  const viewType = $('flViewType')?.value || 'ALL';
+  const month = $('flRegMonthFilter')?.value;
+  const year = $('flYearFilter')?.value;
+  const q = ($('flSearch')?.value || '').toLowerCase();
+  
+  let records = [];
+  const activeLeaves = state.leaves.filter(l => l.status !== 'Rejected');
+
+  activeLeaves.forEach(l => {
+     const emp = state.employees.find(e => e.id === l.empId) || { name: 'Unknown' };
+     const d1 = parseISODate(l.from);
+     const d2 = parseISODate(l.to);
+
+     for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
+        const dStr = toLocalISO(dt);
+        if (viewType === 'MONTH' && month && !dStr.startsWith(month)) continue;
+        if (viewType === 'YEAR' && year && !dStr.startsWith(String(year))) continue;
+
+        records.push({
+           date: dStr,
+           empName: emp.name,
+           shiftCode: 'L',
+           reason: l.reason || '—',
+           applyDate: l.applyDate,
+           source: 'Live Leave Register'
+        });
+     }
+  });
+
+  if (q) {
+     records = records.filter(r => r.empName.toLowerCase().includes(q) || r.reason.toLowerCase().includes(q));
+  }
+  records.sort((a,b) => a.date.localeCompare(b.date) || a.empName.localeCompare(b.empName));
+
+  $('registerLeaveBody').innerHTML = records.length ? records.map((r, i) => `
+     <tr>
+       <td>${i+1}</td>
+       <td>${formatDateDisplay(r.date)}</td>
+       <td style="text-align:left;font-weight:600">${esc(r.empName)}</td>
+       <td><span class="tag" style="background:${state.colors.L_bg};color:${state.colors.L_txt};">L</span></td>
+       <td>${esc(r.reason)}</td>
+       <td>${formatDateDisplay(r.applyDate)}</td>
+       <td><span class="tag approved" style="background:#e0f2fe;color:#0369a1;">Live Register</span></td>
+     </tr>
+  `).join('') : `<tr><td colspan="7" class="empty">No leave records found in Leave Register for selected timeframe.</td></tr>`;
+}
+
+// 2. Finalized Leaves from Rota Snapshot
 function renderFinalizedLeaves(){
-  const viewType = $('flViewType')?.value || 'MONTH';
+  const viewType = $('flViewType')?.value || 'ALL';
   const month = $('flMonthFilter')?.value;
   const year = $('flYearFilter')?.value;
   const q = ($('flSearch')?.value || '').toLowerCase();
@@ -2075,6 +2148,7 @@ function renderFinalizedLeaves(){
   `).join('') : `<tr><td colspan="6" class="empty">No finalized leaves recorded for selected timeframe.</td></tr>`;
 }
 
+// 3. Holiday Tracker
 function populateHolidayPicker() {
   const sel = $('holidayPickerSelect');
   const ySel = $('holidayYearPicker');
@@ -2154,10 +2228,10 @@ function renderHolidayLeaves() {
   `) : `<tr><td colspan="7" class="empty">No employees took leave on selected holiday in ${selectedYear==='ALL'?'any recorded year':selectedYear}.</td></tr>`;
 }
 
-if($('flMonthFilter')) $('flMonthFilter').onchange = renderFinalizedLeaves;
-if($('flSearch')) $('flSearch').oninput = () => { if(activeLeaveTab==='all') renderFinalizedLeaves(); else renderHolidayLeaves(); };
+if($('flMonthFilter')) $('flMonthFilter').onchange = renderActiveLeaveTab;
+if($('flSearch')) $('flSearch').oninput = renderActiveLeaveTab;
 
-/* ==== 7. MANPOWER ANALYTICS HUB ==== */
+/* ==== 7. MANPOWER ANALYTICS HUB (WITH SOURCE SELECTOR) ==== */
 function toggleHubViewInputs() {
   const type = $('hubViewType').value;
   $('hubMonthFilter').style.display = type === 'MONTH' ? 'inline-block' : 'none';
@@ -2182,6 +2256,7 @@ function renderHubAnalytics() {
   const monthF = $('hubMonthFilter')?.value || '2026-08';
   const yearF = $('hubYearFilter')?.value || '2026';
   const selectedEmpId = $('hubEmpFilter')?.value;
+  const leaveSourceType = $('hubSourceFilter')?.value || 'REGISTER';
 
   const allED = [...state.extraDuties, ...getAutoExtraDuties(viewType === 'MONTH' ? monthF : null)];
   const filteredED = allED.filter(ed => {
@@ -2207,37 +2282,72 @@ function renderHubAnalytics() {
      let leaveCount = 0;
      const countedDates = new Set();
 
-     Object.keys(state.finalizedRotas).forEach(m => {
-        if (viewType === 'MONTH' && m !== monthF) return;
-        if (viewType === 'YEAR' && !m.startsWith(String(yearF))) return;
+     if (leaveSourceType === 'FINALIZED') {
+        // Strictly from Finalized Rota Snapshots
+        Object.keys(state.finalizedRotas).forEach(m => {
+           if (viewType === 'MONTH' && m !== monthF) return;
+           if (viewType === 'YEAR' && !m.startsWith(String(yearF))) return;
 
-        const snap = state.finalizedRotas[m];
-        const dates = snap.dates.map(ds => toLocalISO(ds));
-        const row = snap.snapshot.find(r => r.empId === emp.id);
-        if (row) {
-           row.shifts.forEach((sh, idx) => {
-              if (sh.full === 'L') {
-                 leaveCount++;
-                 countedDates.add(dates[idx]);
-              }
-           });
-        }
-     });
-
-     state.leaves.filter(l => l.empId === emp.id && l.status !== 'Rejected').forEach(l => {
-        const d1 = new Date(l.from); const d2 = new Date(l.to);
-        for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
-           const dStr = toLocalISO(dt);
-           if (viewType === 'MONTH' && !dStr.startsWith(monthF)) continue;
-           if (viewType === 'YEAR' && !dStr.startsWith(String(yearF))) continue;
-
-           const mStr = dStr.slice(0, 7);
-           if (!state.finalizedRotas[mStr] && !countedDates.has(dStr)) {
-               leaveCount++;
-               countedDates.add(dStr);
+           const snap = state.finalizedRotas[m];
+           const dates = snap.dates.map(ds => toLocalISO(ds));
+           const row = snap.snapshot.find(r => r.empId === emp.id);
+           if (row) {
+              row.shifts.forEach((sh, idx) => {
+                 if (sh.full === 'L') {
+                    leaveCount++;
+                    countedDates.add(dates[idx]);
+                 }
+              });
            }
-        }
-     });
+        });
+     } else if (leaveSourceType === 'REGISTER') {
+        // Strictly from Live Leave Register
+        state.leaves.filter(l => l.empId === emp.id && l.status !== 'Rejected').forEach(l => {
+           const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
+           for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
+              const dStr = toLocalISO(dt);
+              if (viewType === 'MONTH' && !dStr.startsWith(monthF)) continue;
+              if (viewType === 'YEAR' && !dStr.startsWith(String(yearF))) continue;
+              if (!countedDates.has(dStr)) {
+                 leaveCount++;
+                 countedDates.add(dStr);
+              }
+           }
+        });
+     } else {
+        // COMBINED (Finalized if available, else register)
+        Object.keys(state.finalizedRotas).forEach(m => {
+           if (viewType === 'MONTH' && m !== monthF) return;
+           if (viewType === 'YEAR' && !m.startsWith(String(yearF))) return;
+
+           const snap = state.finalizedRotas[m];
+           const dates = snap.dates.map(ds => toLocalISO(ds));
+           const row = snap.snapshot.find(r => r.empId === emp.id);
+           if (row) {
+              row.shifts.forEach((sh, idx) => {
+                 if (sh.full === 'L') {
+                    leaveCount++;
+                    countedDates.add(dates[idx]);
+                 }
+              });
+           }
+        });
+
+        state.leaves.filter(l => l.empId === emp.id && l.status !== 'Rejected').forEach(l => {
+           const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
+           for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
+              const dStr = toLocalISO(dt);
+              if (viewType === 'MONTH' && !dStr.startsWith(monthF)) continue;
+              if (viewType === 'YEAR' && !dStr.startsWith(String(yearF))) continue;
+
+              const mStr = dStr.slice(0, 7);
+              if (!state.finalizedRotas[mStr] && !countedDates.has(dStr)) {
+                  leaveCount++;
+                  countedDates.add(dStr);
+              }
+           }
+        });
+     }
 
      let otCount = filteredED.filter(ed => ed.empId === emp.id).length;
 
@@ -2265,6 +2375,10 @@ function renderHubAnalytics() {
   $('hubStatOT').textContent = totalOTPeriod;
   $('hubStatTopOT').textContent = topOTEmp;
   $('hubStatTopLeave').textContent = topLeaveEmp;
+  
+  const sourceLabel = leaveSourceType === 'FINALIZED' ? 'Finalized Rota' : (leaveSourceType === 'REGISTER' ? 'Live Register' : 'Combined');
+  if ($('hubLeaveColHead')) $('hubLeaveColHead').textContent = `Total Leaves (${sourceLabel})`;
+
   $('hubBreakdownBody').innerHTML = breakdownRows.join('') || `<tr><td colspan="6" class="empty">No data available.</td></tr>`;
 
   hubChart = new Chart(ctx, {
@@ -2272,7 +2386,7 @@ function renderHubAnalytics() {
      data: {
         labels: labels,
         datasets: [
-           { label: 'Leave Days', data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1.5 },
+           { label: `Leave Days (${sourceLabel})`, data: leaveData, backgroundColor: '#fecaca', borderColor: '#ef4444', borderWidth: 1.5 },
            { label: 'Overtime Duties', data: otData, backgroundColor: '#bbf7d0', borderColor: '#16a34a', borderWidth: 1.5 }
         ]
      },
@@ -2434,7 +2548,7 @@ function renderDashQuickChart() {
            if (row) leaveCount = row.shifts.filter(s => s.full === 'L').length;
        } else {
            state.leaves.filter(l => l.empId === emp.id && l.status !== 'Rejected').forEach(l => {
-              const d1 = new Date(l.from); const d2 = new Date(l.to);
+              const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
               for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
                  if (toLocalISO(dt).startsWith(targetMonth)) leaveCount++;
               }

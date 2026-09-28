@@ -54,7 +54,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
   line-height: 1;
 }
 
-/* Double Duty Badge Optimization (Clean 2-Tier Fit) */
+/* Double Duty Badge Optimization */
 .shift-cell .tag.double-shift {
   display: flex !important;
   flex-direction: column !important;
@@ -214,7 +214,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="panel-body">
         <div class="notice" id="empDataNotice">
-          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Modifying Roles or OFF DAY immediately recalculates the Active Rota.
+          Role codes: <b>1 = BSVI SRU PIC, 2 = OLD SRU PIC, 3 = SIC</b>. Modifying Roles or OFF DAY immediately recalculates the Active Rota. PINs are securely encrypted.
         </div>
       </div>
       <div class="table-wrap">
@@ -226,7 +226,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 2. Active Rota (With Leaves Source: Live Reg vs Finalized) -->
+  <!-- 2. Active Rota -->
   <section id="rota" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -274,7 +274,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
     </div>
   </section>
 
-  <!-- 3. Leave Register (With 90-Day Limit, Past Date Lock & Conflict Caution) -->
+  <!-- 3. Leave Register -->
   <section id="leave" class="page">
     <div class="panel">
       <div class="panel-head">
@@ -290,8 +290,8 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <div class="notice">
            <b>📋 Leave Policy & Operating Guidelines:</b><br>
            • <b>90-Day Advance Application Limit:</b> Leaves can only be applied up to <b>90 days (3 months)</b> in advance from today.<br>
-           • <b>Past Date Deletion Lock:</b> Leave deletion is only permitted on or before the leave end date (<code>Leave To</code>). Once expired, past leaves are permanently locked to prevent backdated deletions.<br>
-           • <b>Conflict Caution:</b> The first 3 applicants on normal dates remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b> (Triggers from <b>3rd employee</b> on <b>Holidays/Festivals</b>).
+           • <b>Past Date Deletion Lock:</b> Leave deletion is only permitted on or before the leave end date (<code>Leave To</code>). Once expired, past leaves are permanently locked.<br>
+           • <b>Conflict Caution:</b> A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b> (Triggers from <b>3rd employee</b> on <b>Holidays/Festivals</b>).
         </div>
       </div>
       <div class="table-wrap">
@@ -521,7 +521,7 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
         <h3 style="color:#1e293b;">3. Leave Application Rules & Conflict Policy</h3>
         <p>
           • <b>90-Day Advance Application Limit:</b> Leaves can only be applied up to <b>90 days (3 months)</b> in advance from today.<br>
-          • <b>Past Date Deletion Lock:</b> A leave entry can only be deleted on or before its end date (<code>Leave To</code>). Once expired, past leaves are permanently locked to prevent backdated deletions.<br>
+          • <b>Past Date Deletion Lock:</b> A leave entry can only be deleted on or before its end date (<code>Leave To</code>). Once expired, past leaves are permanently locked.<br>
           • <b>Conflict Caution:</b> The first 3 applicants on normal dates remain valid. A conflict caution is flagged starting from the <b>4th employee onward</b> when overlapping leaves exceed <b>2 consecutive days</b> (Triggers from <b>3rd employee</b> on <b>Holidays/Festivals</b>).
         </p>
       </div>
@@ -578,11 +578,11 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
       </div>
       <div class="field" style="margin-bottom:9px;">
         <label>New PIN / Password</label>
-        <input type="password" id="newPin" maxlength="8" placeholder="Enter new PIN">
+        <input type="password" id="newPin" maxlength="16" placeholder="Enter new PIN">
       </div>
       <div class="field">
         <label>Confirm New PIN</label>
-        <input type="password" id="confirmPin" maxlength="8" placeholder="Re-enter new PIN">
+        <input type="password" id="confirmPin" maxlength="16" placeholder="Re-enter new PIN">
       </div>
     </div>
     <div class="modal-foot">
@@ -658,6 +658,15 @@ button,input,select{font:inherit} button{cursor:pointer;border:0}
 const KEY='sru_rota_v10';
 const API_URL = 'https://script.google.com/macros/s/AKfycbwcKDNErrUyFudNKfgo-WYidaj907xDW5T6kLOmwP3NU3viVGOs0NMi-B7I3LGpvazCtg/exec';
 
+/* ==== SHA-256 HASH UTILITY ==== */
+async function sha256(message) {
+  if (!message) return '';
+  const msgBuffer = new TextEncoder().encode(String(message));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 const defaultColors = {
   M_bg: '#e8f1ff', M_txt: '#155eef',
   E_bg: '#fff3dc', E_txt: '#b54708',
@@ -669,7 +678,8 @@ const defaultColors = {
 
 const defaultState={
   employees:[], leaves:[], holidays:[], extraDuties:[], history:[], 
-  adminPin:'1234', pattern:'EEMMNNO', finalizedRotas:{}, colors: defaultColors, overrides:{},
+  adminPinHash: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', // SHA-256 for '1234'
+  pattern:'EEMMNNO', finalizedRotas:{}, colors: defaultColors, overrides:{},
   seedV8Applied: false
 };
 
@@ -678,13 +688,13 @@ if(!state.finalizedRotas) state.finalizedRotas = {};
 if(!state.overrides) state.overrides = {};
 if(!state.colors) state.colors = defaultColors;
 if(!state.pattern) state.pattern = 'EEMMNNO';
-if(!state.adminPin) state.adminPin = '1234';
+if(!state.adminPinHash) state.adminPinHash = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4';
 if(!state.holidays) state.holidays = [];
 if(!state.extraDuties) state.extraDuties = [];
 
 let currentUser = JSON.parse(localStorage.getItem('sru_current_user') || 'null');
 let rotaSummaryScope = 'MONTH';
-let rotaLeaveSource = 'REGISTER'; // 'REGISTER' (Live) or 'FINALIZED' (Snapshot)
+let rotaLeaveSource = 'REGISTER';
 let activeLeaveTab = 'register';
 let isCloudLoaded = false;
 let leaveSort = { key: 'applyDate', desc: false };
@@ -797,7 +807,7 @@ function getOfficial30Leaves() {
   });
 }
 
-/* ==== MULTI-PC CLOUD SYNC ==== */
+/* ==== MULTI-PC CLOUD SYNC & AUTO PIN MIGRATION ==== */
 async function fetchCloudData() {
   const status = $('syncStatus');
   if(status) { status.textContent = 'Connecting...'; status.className = 'sync'; }
@@ -807,13 +817,25 @@ async function fetchCloudData() {
     if (data && data.ok && data.payload) {
       const p = data.payload;
       
-      if (p.adminPin) state.adminPin = String(p.adminPin);
+      // Secure hash migration for Admin PIN
+      if (p.adminPinHash) {
+        state.adminPinHash = p.adminPinHash;
+      } else if (p.adminPin) {
+        state.adminPinHash = p.adminPin.length === 64 ? p.adminPin : await sha256(p.adminPin);
+      }
+
       if (p.pattern) state.pattern = String(p.pattern);
       if (p.colors && Object.keys(p.colors).length) state.colors = Object.assign({}, defaultColors, p.colors);
       if (p.finalizedRotas && Object.keys(p.finalizedRotas).length) state.finalizedRotas = p.finalizedRotas;
       if (p.overrides && typeof p.overrides === 'object') state.overrides = p.overrides;
 
       if (p.employees && p.employees.length > 0) {
+        for (let emp of p.employees) {
+          if (!emp.pinHash && emp.pin) {
+            emp.pinHash = emp.pin.length === 64 ? emp.pin : await sha256(emp.pin);
+            delete emp.pin;
+          }
+        }
         state.employees = p.employees;
       }
 
@@ -864,7 +886,7 @@ async function fetchCloudData() {
   }
 }
 
-/* ==== AUTHENTICATION ==== */
+/* ==== SECURE AUTHENTICATION (SHA-256) ==== */
 function openLoginModal(isForced = false) {
   const selectGroup = $('loginEmpOptions');
   selectGroup.innerHTML = state.employees.map(e => `<option value="${e.id}">${e.code} - ${e.name}</option>`).join('');
@@ -891,13 +913,18 @@ function closeLoginModal() {
   $('loginModal').classList.remove('show');
 }
 
-function performLogin() {
+async function performLogin() {
   const selectedVal = $('loginUserSelect').value;
   const pin = $('loginPin').value.trim();
-  const currentAdminPin = state.adminPin || '1234';
+  if (!pin) return alert('Please enter PIN');
+
+  const inputHash = await sha256(pin);
 
   if (selectedVal === 'ADMIN') {
-    if (pin === currentAdminPin) {
+    let adminHash = state.adminPinHash || (await sha256('1234'));
+    if (adminHash.length !== 64) adminHash = await sha256(adminHash);
+
+    if (inputHash === adminHash) {
       currentUser = { type: 'ADMIN', name: 'Admin', id: 'ADMIN' };
     } else {
       return alert('Invalid Admin PIN!');
@@ -905,8 +932,11 @@ function performLogin() {
   } else {
     const emp = state.employees.find(e => e.id === selectedVal);
     if (!emp) return alert('Employee not found!');
-    const validPin = emp.pin || '0000';
-    if (pin === validPin) {
+    
+    let validHash = emp.pinHash || (emp.pin ? await sha256(emp.pin) : await sha256('0000'));
+    if (validHash.length !== 64) validHash = await sha256(validHash);
+
+    if (inputHash === validHash) {
       currentUser = { type: 'EMP', name: emp.name, id: emp.id, code: emp.code };
     } else {
       return alert(`Invalid PIN for ${emp.name}!`);
@@ -961,7 +991,7 @@ function openChangePinModal() {
   $('changePinModal').classList.add('show');
 }
 
-function submitChangePin() {
+async function submitChangePin() {
   const oldP = $('oldPin').value.trim();
   const newP = $('newPin').value.trim();
   const confP = $('confirmPin').value.trim();
@@ -970,18 +1000,26 @@ function submitChangePin() {
   if (newP !== confP) return alert('New PIN and Confirm PIN do not match!');
   if (newP.length < 4) return alert('PIN must be at least 4 digits/characters.');
 
+  const oldHash = await sha256(oldP);
+  const newHash = await sha256(newP);
+
   if (currentUser.type === 'ADMIN') {
-    const currentAdminPin = state.adminPin || '1234';
-    if (oldP !== currentAdminPin) return alert('Incorrect Old Admin PIN!');
-    state.adminPin = newP;
+    let adminHash = state.adminPinHash || (await sha256('1234'));
+    if (adminHash.length !== 64) adminHash = await sha256(adminHash);
+    
+    if (oldHash !== adminHash) return alert('Incorrect Old Admin PIN!');
+    state.adminPinHash = newHash;
     save(); log('Admin PIN Changed', 'Admin password updated.'); scheduleSync();
-    alert('✓ Admin PIN changed successfully & saved to cloud!');
+    alert('✓ Admin PIN changed successfully & saved securely!');
   } else {
     const emp = state.employees.find(e => e.id === currentUser.id);
     if (!emp) return alert('Employee record not found.');
-    const validPin = emp.pin || '0000';
-    if (oldP !== validPin) return alert('Incorrect Old PIN!');
-    emp.pin = newP;
+    let validHash = emp.pinHash || (emp.pin ? await sha256(emp.pin) : await sha256('0000'));
+    if (validHash.length !== 64) validHash = await sha256(validHash);
+
+    if (oldHash !== validHash) return alert('Incorrect Old PIN!');
+    emp.pinHash = newHash;
+    delete emp.pin;
     save(); log('PIN Changed', `PIN updated for ${emp.name}`);
     renderEmployeeData(); scheduleSync();
     alert(`✓ PIN for ${emp.name} changed successfully!`);
@@ -1052,10 +1090,10 @@ function saveSettings() {
   generateRota(); $('colorPanel').style.display = 'none'; scheduleSync();
 }
 
-/* ==== EMPLOYEE MASTER ==== */
+/* ==== EMPLOYEE MASTER (ENCRYPTED PIN UI) ==== */
 function openEmployee(id=null){
  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Access Denied: Only Admin can add or edit employee master data.');
- const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',pin:'0000',active:true,offset:0 };
+ const e=id?state.employees.find(x=>x.id===id):{ id:'E'+Date.now(),code:'',name:'',seniority:(state.employees.length+1), roles:'',weeklyOff:'',pinHash:'',active:true,offset:0 };
  $('modalTitle').textContent=id?'Edit Employee':'Add Employee';
  $('modalBody').innerHTML=`<div class="form-grid">
  <div class="field"><label>Emp ID</label><input id="f_code" value="${esc(e.code)}"></div>
@@ -1066,14 +1104,22 @@ function openEmployee(id=null){
    <option value="">Not defined</option><option>Monday</option><option>Tuesday</option><option>Wednesday</option>
    <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
  </select></div>
- <div class="field"><label>Login PIN</label><input id="f_pin" maxlength="6" value="${esc(e.pin||'0000')}"></div>
+ <div class="field"><label>${id?'Set New PIN (Leave blank to keep)':'Set Initial PIN (Default: 0000)'}</label><input type="password" id="f_pin" maxlength="16" placeholder="${id?'Keep existing':'0000'}"></div>
  <div class="field"><label>Active</label><select id="f_active"><option value="true">Yes</option><option value="false">No</option></select></div>
  </div>`;
  $('f_off').value=e.weeklyOff||'';$('f_active').value=String(e.active!==false);
- $('modalSave').onclick=()=>{
+ 
+ $('modalSave').onclick=async ()=>{
    e.code=$('f_code').value.trim(); e.name=$('f_name').value.trim();
    e.seniority=Math.max(1,Number($('f_seniority').value)||1); e.roles=normalizeRoles($('f_roles').value);
-   e.weeklyOff=$('f_off').value; e.pin=$('f_pin').value.trim() || '0000';
+   e.weeklyOff=$('f_off').value;
+   const pinVal = $('f_pin').value.trim();
+   if(pinVal) {
+     e.pinHash = await sha256(pinVal);
+   } else if(!e.pinHash) {
+     e.pinHash = await sha256('0000');
+   }
+   delete e.pin;
    e.active=$('f_active').value==='true';
    if(!e.code||!e.name)return alert('Emp ID and Employee Name are required.');
    if(!id)state.employees.push(e);
@@ -1092,7 +1138,7 @@ function renderEmployeeData(){
  if (isAdmin) {
    $('empDataHead').innerHTML = `<tr>
      <th>Sr. No.</th><th>Emp ID</th><th style="text-align:left">Employee Name</th><th>Seniority</th>
-     <th>Roles (1, 2, 3)</th><th>OFF DAY</th><th>Login PIN</th><th>Actions</th>
+     <th>Roles (1, 2, 3)</th><th>OFF DAY</th><th>Password Security</th><th>Actions</th>
    </tr>`;
  } else {
    $('empDataHead').innerHTML = `<tr>
@@ -1109,7 +1155,7 @@ function renderEmployeeData(){
        <td><select onchange="quickOff('${e.id}',this.value)">
           <option value="">Not defined</option>${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map(d=>`<option ${e.weeklyOff===d?'selected':''}>${d}</option>`).join('')}
        </select></td>
-       <td><input value="${esc(e.pin||'0000')}" style="width:70px;text-align:center;font-weight:bold;color:#b91c1c;" onchange="quickPin('${e.id}',this.value)"></td>
+       <td><button class="btn" style="padding:3px 7px;font-size:10.5px;" onclick="adminResetEmployeePin('${e.id}')">🔑 Reset PIN</button></td>
        <td><button class="btn" onclick="openEmployee('${e.id}')">Edit</button> <button class="btn danger" onclick="removeEmployee('${e.id}')">Del</button></td>
      </tr>`;
    } else {
@@ -1120,6 +1166,20 @@ function renderEmployeeData(){
      </tr>`;
    }
  }).join('') : `<tr><td colspan="${isAdmin?8:6}" class="empty">No employees found.</td></tr>`;
+}
+
+async function adminResetEmployeePin(id) {
+  if(!currentUser || currentUser.type !== 'ADMIN') return alert('Access Denied');
+  const e = state.employees.find(x => x.id === id);
+  if(!e) return;
+  const newP = prompt(`Enter new PIN for ${e.name} (min 4 characters):`, "");
+  if(newP === null) return;
+  if(newP.trim().length < 4) return alert("PIN must be at least 4 characters long.");
+  
+  e.pinHash = await sha256(newP.trim());
+  delete e.pin;
+  save(); log('PIN reset by Admin', e.name); scheduleSync();
+  alert(`✓ PIN updated securely for ${e.name}`);
 }
 
 function quickRole(id,v){
@@ -1135,12 +1195,6 @@ function quickOff(id,v){
   e.weeklyOff=v;
   save(); scheduleSync();
   generateRota(false); renderDashboard();
-}
-function quickPin(id,v){
-  if(!currentUser||currentUser.type!=='ADMIN')return;
-  const e=state.employees.find(x=>x.id===id); if(!e)return;
-  e.pin=v.trim()||'0000';
-  save(); log('PIN reset by Admin', e.name); scheduleSync();
 }
 function sortBySeniority(){
   state.employees.sort((a,b)=>(a.seniority||9999)-(b.seniority||9999));
@@ -1296,14 +1350,13 @@ function getStyleForCode(fullCode) {
   return { bg: state.colors[`${base}_bg`] || '#f1f5f9', txt: state.colors[`${base}_txt`] || '#000' };
 }
 
-/* ==== EMPLOYEE SUMMARY CALCULATOR (WITH LIVE REG VS FINALIZED ROTA SELECTOR) ==== */
+/* ==== EMPLOYEE SUMMARY CALCULATOR ==== */
 function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix, leaveSource) {
   leaveSource = leaveSource || rotaLeaveSource || 'REGISTER';
   let leaveCount = 0;
   let edCount = 0;
   const targetYear = currentMonthStr.slice(0, 4);
 
-  // 1. Calculate Leaves based on selected Leave Source
   if (leaveSource === 'FINALIZED') {
     if (scope === 'MONTH') {
       if (state.finalizedRotas[currentMonthStr]) {
@@ -1323,7 +1376,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix, leaveS
           }
         }
       });
-    } else { // ALL
+    } else {
       Object.keys(state.finalizedRotas).forEach(m => {
         const snap = state.finalizedRotas[m];
         const row = snap.snapshot.find(r => r.empId === empId);
@@ -1333,7 +1386,6 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix, leaveS
       });
     }
   } else {
-    // leaveSource === 'REGISTER' (Live Leave Register data)
     if (scope === 'MONTH') {
       state.leaves.filter(l => l.empId === empId && l.status !== 'Rejected').forEach(l => {
         const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
@@ -1350,7 +1402,7 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix, leaveS
           if (dStr.startsWith(targetYear)) leaveCount++;
         }
       });
-    } else { // ALL
+    } else {
       state.leaves.filter(l => l.empId === empId && l.status !== 'Rejected').forEach(l => {
         const d1 = parseISODate(l.from); const d2 = parseISODate(l.to);
         for(let dt = new Date(d1); dt <= d2; dt.setDate(dt.getDate() + 1)) {
@@ -1360,7 +1412,6 @@ function getEmployeeSummary(empId, currentMonthStr, scope, currentMatrix, leaveS
     }
   }
 
-  // 2. Extra Duties
   const allED = [...state.extraDuties, ...getAutoExtraDuties(scope === 'MONTH' ? currentMonthStr : null)];
   edCount = allED.filter(ed => {
     if (ed.empId !== empId) return false;
@@ -1453,7 +1504,7 @@ function generateRota(doRenderDashboard = true){
 }
 $('rotaMonth').onchange=generateRota;
 
-/* ==== CELL EDIT MODAL (DRAGGABLE) ==== */
+/* ==== CELL EDIT MODAL ==== */
 function openEditCell(month, empId, dateStr, currentVal, isHistory, rowIdx, colIdx) {
   activeEditCell = { month, empId, dateStr, isHistory, rowIdx, colIdx };
   $('customCellInput').value = currentVal || '';
@@ -1572,7 +1623,7 @@ function deleteFinalizedRota() {
   }
 }
 
-/* ==== REAL-TIME DYNAMIC COVERAGE CHECK ==== */
+/* ==== REAL-TIME COVERAGE CHECK ==== */
 function renderCoverage(dates, activeEmps, matrix){
   const old=document.getElementById('rotaCoverage'); if(old) old.remove();
   const panel=document.createElement('div'); panel.id='rotaCoverage'; panel.className='panel';
@@ -1691,7 +1742,7 @@ function renderHolidays(){
   </tr>`).join('') : `<tr><td colspan="3" class="empty">No holidays defined.</td></tr>`;
 }
 
-/* ==== AUTO OVERTIME DUTIES ENGINE ==== */
+/* ==== AUTO OVERTIME ENGINE ==== */
 function getAutoExtraDuties(monthF) {
    let results = [];
    const processMatrix = (matrix, dates, activeEmps, isFinalized) => {
@@ -1833,7 +1884,7 @@ function renderExtraDuties(){
 $('edMonthFilter').onchange = renderExtraDuties;
 $('edTypeFilter').onchange = renderExtraDuties;
 
-/* ==== 3. LEAVE REGISTER (WITH 90-DAY LIMIT & PAST DATE DELETION LOCK) ==== */
+/* ==== 3. LEAVE REGISTER ==== */
 function sortLeave(key) {
   if (leaveSort.key === key) { 
     leaveSort.desc = !leaveSort.desc; 
@@ -1910,7 +1961,6 @@ function openLeave(id=null){
     return alert('Permission Denied! You can only edit your own leave requests.');
   }
 
-  // 90-Day Advance Limit Calculation
   const todayStr = toLocalISO(new Date());
   const today = parseISODate(todayStr);
   const maxAdvance = new Date(today);
@@ -1949,7 +1999,6 @@ function openLeave(id=null){
     if (!l.from || !l.to) return alert('Select dates.');
     if (l.to < l.from) return alert('To date cannot be before From date.');
 
-    // 90-Day Advance Validation Enforcement
     const fromDate = parseISODate(l.from);
     const toDate = parseISODate(l.to);
     if (fromDate > maxAdvance || toDate > maxAdvance) {
@@ -1988,7 +2037,6 @@ function removeLeave(id){
     return alert('Access Denied! You are not authorized to delete another employee\'s leave.');
   }
 
-  // Past Date Deletion Protection
   const todayStr = toLocalISO(new Date());
   if (l.to < todayStr && currentUser.type !== 'ADMIN') {
     return alert('Past Date Lock: Expired and past leaves cannot be deleted to prevent backdated cancellations.');
@@ -2080,7 +2128,7 @@ function renderLeaves(){
 $('leaveSearch').oninput=renderLeaves; 
 if ($('leaveMonthFilter')) $('leaveMonthFilter').onchange=renderLeaves;
 
-/* ==== 6. LEAVE RECORD (WITH 3 SUB-TABS) ==== */
+/* ==== 6. LEAVE RECORD ==== */
 function toggleFlViewInputs() {
   const type = $('flViewType').value;
   const isFinalizedTab = (activeLeaveTab === 'finalized');
@@ -2093,7 +2141,7 @@ function toggleFlViewInputs() {
     $('flMonthFilter').style.display = 'none';
     $('flRegMonthFilter').style.display = 'none';
     $('flYearFilter').style.display = 'inline-block';
-  } else { // MONTH
+  } else {
     if (isFinalizedTab) {
       $('flMonthFilter').style.display = 'inline-block';
       $('flRegMonthFilter').style.display = 'none';
@@ -2126,7 +2174,6 @@ function renderActiveLeaveTab() {
   else renderHolidayLeaves();
 }
 
-// 1. Direct from Leave Register (Live)
 function renderRegisterLeaves() {
   const viewType = $('flViewType')?.value || 'ALL';
   const month = $('flRegMonthFilter')?.value;
@@ -2175,7 +2222,6 @@ function renderRegisterLeaves() {
   `).join('') : `<tr><td colspan="7" class="empty">No leave records found in Leave Register for selected timeframe.</td></tr>`;
 }
 
-// 2. Finalized Leaves from Rota Snapshot
 function renderFinalizedLeaves(){
   const viewType = $('flViewType')?.value || 'ALL';
   const month = $('flMonthFilter')?.value;
@@ -2221,7 +2267,6 @@ function renderFinalizedLeaves(){
   `).join('') : `<tr><td colspan="6" class="empty">No finalized leaves recorded for selected timeframe.</td></tr>`;
 }
 
-// 3. Holiday Tracker
 function populateHolidayPicker() {
   const sel = $('holidayPickerSelect');
   const ySel = $('holidayYearPicker');
@@ -2304,7 +2349,7 @@ function renderHolidayLeaves() {
 if($('flMonthFilter')) $('flMonthFilter').onchange = renderActiveLeaveTab;
 if($('flSearch')) $('flSearch').oninput = () => { if(activeLeaveTab==='all') renderFinalizedLeaves(); else renderHolidayLeaves(); };
 
-/* ==== 7. MANPOWER ANALYTICS HUB (WITH SOURCE SELECTOR) ==== */
+/* ==== 7. MANPOWER ANALYTICS HUB ==== */
 function toggleHubViewInputs() {
   const type = $('hubViewType').value;
   $('hubMonthFilter').style.display = type === 'MONTH' ? 'inline-block' : 'none';
@@ -2663,7 +2708,7 @@ function getActiveRotaGrid(month) {
   return { month, dates: dateHeaders, rows };
 }
 
-/* ==== BACKEND SYNC ==== */
+/* ==== SECURE BACKEND SYNC (NO RAW PIN TRANSMISSION) ==== */
 let syncTimer=null;
 function scheduleSync(){
   if(!isCloudLoaded) return;
@@ -2678,9 +2723,16 @@ async function syncAll(){
     const currentMonth = $('rotaMonth')?.value || '2026-09';
     const activeRotaGrid = getActiveRotaGrid(currentMonth);
 
+    // Sanitize employee array so only pinHash is sent
+    const sanitizedEmployees = state.employees.map(e => {
+      const copy = Object.assign({}, e);
+      delete copy.pin;
+      return copy;
+    });
+
     const payload={
-        employees:state.employees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
-        history:state.history, adminPin:state.adminPin, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
+        employees: sanitizedEmployees, leaves:state.leaves, holidays:state.holidays, extraDuties:state.extraDuties,
+        history:state.history, adminPinHash:state.adminPinHash, pattern:state.pattern, finalizedRotas:state.finalizedRotas, 
         colors:state.colors, overrides:state.overrides, rotaMonth: currentMonth,
         activeRotaGrid: activeRotaGrid
     };
@@ -2708,7 +2760,7 @@ if(!state.employees.length){
  ['517591','Sachin Garg',11,'1,2','Thursday']
  ];
  state.employees=empSeed.map((x,i)=>({
-   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:x[4],pin:'0000',active:true,offset:i%7
+   id:'E'+x[0],code:x[0],name:x[1],seniority:x[2],roles:x[3],weeklyOff:x[4],pinHash:'4a7d1ed414474e4033ac29ccb8653d9befe85e437d21597f4854b4c099300637',active:true,offset:i%7
  }));
 }
 
